@@ -5,15 +5,19 @@ import predictor
 
 
 def main():
-    print 'main function begin.'
-    if len(sys.argv) != 4:
-        print 'parameter is incorrect!'
-        print 'Usage: python esc.py ecsDataPath inputFilePath resultFilePath'
-        exit(1)
-    # Read the input files
-    ecsDataPath = sys.argv[1]
-    inputFilePath = sys.argv[2]
-    resultFilePath = sys.argv[3]
+#    print 'main function begin.'
+#    if len(sys.argv) != 4:
+#        print 'parameter is incorrect!'
+#        print 'Usage: python esc.py ecsDataPath inputFilePath resultFilePath'
+#        exit(1)
+#    # Read the input files
+#    ecsDataPath = sys.argv[1]
+#    inputFilePath = sys.argv[2]
+#    resultFilePath = sys.argv[3]
+    
+    ecsDataPath = "../../../data/exercise/data_2015_1_to_2015_3.txt"
+    inputFilePath = "../../../data/exercise/input_file.txt"
+    resultFilePath = "../../../data/exercise/output_file.txt"
 
     ecs_infor_array = read_lines(ecsDataPath)
     input_file_array = read_lines(inputFilePath)
