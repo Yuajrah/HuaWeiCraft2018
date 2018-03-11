@@ -2,8 +2,9 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from get_sets import get_sets
+from get_sets import get_sets, get_sets_dataframe
 from plot_data import plot_set_data, plot_set_cumsum_data, plot_set_single_vm_data, plot_set_single_vm_cumsum_data
+from test_stationarity import draw_trend, test_stationarity, draw_acf_pacf
 
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
@@ -18,16 +19,22 @@ def predict_vm(ecs_lines, input_lines):
     
     # 该函数用于处理原始数据，分割得到训练集，测试集，验证集
     data = get_sets(ecs_lines, set_dates, target_types)
+    dataframe = get_sets_dataframe(ecs_lines, set_dates, target_types)
     print data['flavor1']
+    print dataframe
 
-    # 绘制集合信息
-    plot_set_data(data, "../../../imgs/train_info.png")
-    plot_set_cumsum_data(data, "../../../imgs/train_cumsum_info.png")
+     # 绘制集合信息
+#    plot_set_data(data, "../../../imgs/train_info.png")
+#    plot_set_cumsum_data(data, "../../../imgs/train_cumsum_info.png")
     
     # 绘制集合中单个vm的信息
-    for type in target_types:
-        plot_set_single_vm_data(type, data, "../../../imgs/single/train_" + type)    
-        plot_set_single_vm_cumsum_data(type, data, "../../../imgs/single_cumsum/train_" + type)    
+#    for type in target_types:
+#        plot_set_single_vm_data(type, data, "../../../imgs/single/train_" + type)    
+#        plot_set_single_vm_cumsum_data(type, data, "../../../imgs/single_cumsum/train_" + type)  
+    
+    test_stationarity(dataframe['flavor15'])
+    draw_acf_pacf(dataframe['flavor15'])
+    
         
     result = []
     if ecs_lines is None:
