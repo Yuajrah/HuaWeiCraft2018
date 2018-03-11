@@ -32,7 +32,7 @@ def get_sets(ecs_lines, set_dates, target_types):
             # 判断是都在目标日期之内
             if set_dates[0] <= date <= set_dates[1]:
                 data[type][date] = data.setdefault(type, OrderedDict()).setdefault(date, 0) + 1
-            elif data > set_dates[1]:
+            elif date > set_dates[1]:
                 break
     return data
 
@@ -60,7 +60,7 @@ def get_test_data(ecs_lines, set_dates, target_types):
             #是否在目标日期之内
             if set_dates[0] <= date <= set_dates[1]:
                 data[type] = data.setdefault(type, 0) + 1
-            elif data > set_dates[1]:
+            elif date > set_dates[1]:
                 break
     return data
             
