@@ -105,6 +105,8 @@ venv.bak/
 .mypy_cache/
 
 # others
-
 练习数据/
 练习数据.zip
+
+# img
+imgs/

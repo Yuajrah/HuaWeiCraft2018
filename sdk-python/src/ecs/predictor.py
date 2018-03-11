@@ -1,7 +1,9 @@
 # coding=utf-8
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from get_sets import get_sets
+from plot_data import plot_set_data, plot_set_cumsum_data
 
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
@@ -21,6 +23,9 @@ def predict_vm(ecs_lines, input_lines):
     # 该函数用于处理原始数据，分割得到训练集，测试集，验证集
     [train_info, test_info, validate_info] = get_sets(ecs_lines, set_dates, target_types)
     print train_info['flavor1']
+
+    plot_set_data(train_info, "../../../imgs/train_info.png")
+    plot_set_cumsum_data(train_info, "../../../imgs/train_cumsum_info.png");
     
     result = []
     if ecs_lines is None:

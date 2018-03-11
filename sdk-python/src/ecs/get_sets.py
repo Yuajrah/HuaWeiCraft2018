@@ -2,6 +2,7 @@
 import re
 from collections import OrderedDict
 
+# 该函数用于处理原始数据，分割得到训练集，测试集，验证集
 def get_sets(ecs_lines, set_dates, target_types):
     # 为每一个所需要预测的虚拟机，分配一个数据结构，存放信息，即，训练集中某一天，有多少数目的该虚拟机
     # 格式如
