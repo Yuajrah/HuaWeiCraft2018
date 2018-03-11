@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from get_sets import get_sets
-from plot_data import plot_set_data, plot_set_cumsum_data
+from plot_data import plot_set_data, plot_set_cumsum_data, plot_set_single_vm_data
 
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
@@ -22,8 +22,11 @@ def predict_vm(ecs_lines, input_lines):
 
     # 绘制集合信息
     plot_set_data(data, "../../../imgs/train_info.png")
-    plot_set_cumsum_data(data, "../../../imgs/train_cumsum_info.png");
+    plot_set_cumsum_data(data, "../../../imgs/train_cumsum_info.png")
     
+    # 绘制集合中单个vm的信息
+    for type in target_types:
+        plot_set_single_vm_data(type, data, "../../../imgs/single/train_" + type)    
     result = []
     if ecs_lines is None:
         print 'ecs information is none'
