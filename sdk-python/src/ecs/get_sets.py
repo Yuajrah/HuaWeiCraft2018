@@ -1,7 +1,16 @@
 # -*- coding: utf-8 -*-
 import re
+import pandas as pd
 from collections import OrderedDict
 
+# 返回dataframe，这个dataframe的数据的断天是填充的
+# 参数和get_sets相同
+def get_sets_dataframe(ecs_lines, set_dates, target_types):
+    data = get_sets(ecs_lines, set_dates, target_types)
+    dataframe = pd.DataFrame(data).fillna(0) # 进行一次内键合并，NAN填充0，但是此时仍然有断天
+    retframe = pd.DataFrame(index=pd.date_range(set_dates[0], set_dates[1])) # 生成连续的天的索引
+    return retframe.join(dataframe).fillna(0) # 填充，并将NaA置位0
+    
 # 该函数用于处理原始数据，分割得到训练集
 def get_sets(ecs_lines, set_dates, target_types):
     # 为每一个所需要预测的虚拟机，分配一个数据结构，存放信息，即，训练集中某一天，有多少数目的该虚拟机
