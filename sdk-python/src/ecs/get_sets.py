@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+from collections import OrderedDict
 
 def get_sets(ecs_lines, set_dates, target_types):
     # 为每一个所需要预测的虚拟机，分配一个数据结构，存放信息，即，训练集中某一天，有多少数目的该虚拟机
@@ -8,11 +9,11 @@ def get_sets(ecs_lines, set_dates, target_types):
     #     flavor1: {2015.01.01: 3, 2015.01.02: 4, 2015.01.03: 5},
     #     flavor2: {2015.01.01: 5, 2015.02.03: 5, 2015.02.06: 6}
     # }
-    train_info = dict()
+    train_info = OrderedDict()
     # 同上，不过是存放测试集的信息
-    test_info = dict()
+    test_info = OrderedDict()
     # 同上，不过是存放验证集的信息
-    validate_info = dict()
+    validate_info = OrderedDict()
     
     for esc_line in ecs_lines:
         # 每行按空串分割三次，分割结果：[id, type, date, time]
@@ -27,11 +28,11 @@ def get_sets(ecs_lines, set_dates, target_types):
             # 上面这两行代码 等同于 下面这行代码
             # 判断属于训练集、测试集还是验证集
             if set_dates['train'][0] <= date <= set_dates['train'][1]:
-                train_info[type][date] = train_info.setdefault(type, dict()).setdefault(date, 0) + 1
+                train_info[type][date] = train_info.setdefault(type, OrderedDict()).setdefault(date, 0) + 1
             elif set_dates['test'][0] <= date <= set_dates['test'][1]:
-                test_info[type][date] = test_info.setdefault(type, dict()).setdefault(date, 0) + 1
+                test_info[type][date] = test_info.setdefault(type, OrderedDict()).setdefault(date, 0) + 1
             elif set_dates['validate'][0] <= date <= set_dates['validate'][1] <= date <= validate_end_date:
-                validate_info[type][date] = validate_info.setdefault(type, dict()).setdefault(date, 0) + 1
+                validate_info[type][date] = validate_info.setdefault(type, OrderedDict()).setdefault(date, 0) + 1
     
     return [train_info, test_info, validate_info]        
      
