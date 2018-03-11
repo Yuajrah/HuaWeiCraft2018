@@ -10,6 +10,12 @@ def mkdir(filename_path):
     if not os.path.isdir(file_dir):
         os.makedirs(file_dir)
 
+# 检车info中有无某类型的vm
+def hasVmType(set_info, vm_type):
+    if not set_info.has_key(vm_type):
+        print "没有vm类型：" + vm_type
+        return False
+    
 # 绘制集合中所有虚拟机的信息
 def plot_set_data(set_info, save_filename=None):      
     dataframe = pd.DataFrame(set_info).fillna(0)
@@ -33,7 +39,14 @@ def plot_set_cumsum_data(set_info, save_filename=None):
     
 # 绘制集合中，某个vm的信息
 def plot_set_single_vm_data(vm_type, set_info, save_filename=None):
-    if not set_info.has_key(vm_type):
-        print "没有vm类型：" + vm_type
+    if not hasVmType(set_info, vm_type):
         return False
+    
     plot_set_data({vm_type: set_info[vm_type]}, save_filename)
+    
+# 绘制集合中，某个vm的累计信息
+def plot_set_single_vm_cumsum_data(vm_type, set_info, save_filename=None):
+    if not hasVmType(set_info, vm_type):
+        return False
+    
+    plot_set_cumsum_data({vm_type: set_info[vm_type]}, save_filename)
