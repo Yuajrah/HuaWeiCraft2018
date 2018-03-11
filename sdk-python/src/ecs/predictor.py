@@ -9,11 +9,7 @@ def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
     
     # 存放训练集，测试集，验证集的起止数据
-    set_dates = {
-            'train' : ["2015-01-01", "2015-05-30"],
-            'test': ["1900-01-01", "1900-01-01"],
-            'validate': ["1900-01-01", "1900-01-01"]
-    }
+    set_dates =  ["2015-01-01", "2015-05-30"]
     
     # 所需要预测的虚拟机类型
     target_types = ["flavor1", "flavor2", "flavor3", "flavor4", "flavor5",
@@ -21,11 +17,12 @@ def predict_vm(ecs_lines, input_lines):
                   "flavor11", "flavor12", "flavor13", "flavor14", "flavor15"]
     
     # 该函数用于处理原始数据，分割得到训练集，测试集，验证集
-    [train_info, test_info, validate_info] = get_sets(ecs_lines, set_dates, target_types)
-    print train_info['flavor1']
+    data = get_sets(ecs_lines, set_dates, target_types)
+    print data['flavor1']
 
-    plot_set_data(train_info, "../../../imgs/train_info.png")
-    plot_set_cumsum_data(train_info, "../../../imgs/train_cumsum_info.png");
+    # 绘制集合信息
+    plot_set_data(data, "../../../imgs/train_info.png")
+    plot_set_cumsum_data(data, "../../../imgs/train_cumsum_info.png");
     
     result = []
     if ecs_lines is None:
