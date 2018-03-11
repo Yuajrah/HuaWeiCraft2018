@@ -1,5 +1,4 @@
 # coding=utf-8
-import sys
 import os
 import predictor
 
@@ -15,7 +14,7 @@ def main():
 #    inputFilePath = sys.argv[2]
 #    resultFilePath = sys.argv[3]
     
-    ecsDataPath = "../../../data/exercise/data_2015_1_to_2015_3.txt"
+    ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
     inputFilePath = "../../../data/exercise/input_file.txt"
     resultFilePath = "../../../data/exercise/output_file.txt"
 
