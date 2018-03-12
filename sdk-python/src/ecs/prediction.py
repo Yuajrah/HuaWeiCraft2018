@@ -52,11 +52,11 @@ def mv_and_ar(train_series, watch_windows, predict_dates, target_types, actual_d
     
 # 直接计算平均值来预测
 def predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_types):
-    prediction_dataframe = train_dataframe.mean() * get_periods_sub(predict_dates)
-    dataframe = pd.DataFrame(index=target_types, columns=['actual', 'predict'])
-    for type in target_types:
-        dataframe.loc[type].predict = prediction_dataframe[type]
-        dataframe.loc[type].actual = actual_data.setdefault(type, 0)
+    prediction_series = train_dataframe.mean() * get_periods_sub(predict_dates)
+    # axis=1，是按横向拼接
+    # keys, 对列索引重命名
+    # reindex, 按照指定行索引顺序重新排列行
+    dataframe = pd.concat([pd.Series(actual_data), prediction_series], axis=1, keys=['actual', 'predict']).reindex(target_types)
     print dataframe
     get_score(dataframe.predict, dataframe.actual)
     print "train dates:  %s - %s" % (train_dataframe.index[0].strftime('%Y-%m-%d'), train_dataframe.index[-1].strftime('%Y-%m-%d'))
