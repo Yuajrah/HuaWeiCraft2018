@@ -11,7 +11,7 @@ from prediction import ar, print_ar_res
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
     
-    train_dates = ["2015-01-01", "2015-05-24"]
+    train_dates = ["2015-01-01", "2015-05-31"]
     predict_dates = ["2015-05-25", "2015-05-31"]
     # 所需要预测的虚拟机类型
     target_types = ["flavor1", "flavor2", "flavor3", "flavor4", "flavor5",
@@ -30,9 +30,9 @@ def predict_vm(ecs_lines, input_lines):
 #    plot_set_cumsum_data(data, "../../../imgs/train_cumsum_info.png")
     
     # 绘制集合中单个vm的信息
-    for type in target_types:
-        plot_set_single_vm_data(type, train_data, "../../../imgs/single/train_" + type)    
-        plot_set_single_vm_cumsum_data(type, train_data, "../../../imgs/single_cumsum/train_" + type)  
+#    for type in target_types:
+#        plot_set_single_vm_data(type, train_data, "../../../imgs/single/train_" + type)    
+#        plot_set_single_vm_cumsum_data(type, train_data, "../../../imgs/single_cumsum/train_" + type)  
     
     # ar部分的预测结果
     # print_ar_res(train_dataframe, predict_dates, actual_data, target_types)

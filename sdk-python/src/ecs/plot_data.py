@@ -15,7 +15,8 @@ def hasVmType(set_info, vm_type):
     if not set_info.has_key(vm_type):
         print "没有vm类型：" + vm_type
         return False
-    
+    return True
+
 # 绘制集合中所有虚拟机的信息
 def plot_set_data(set_info, save_filename=None):      
     dataframe = pd.DataFrame(set_info).fillna(0)
@@ -38,7 +39,7 @@ def plot_set_cumsum_data(set_info, save_filename=None):
         pass
     
 # 绘制集合中，某个vm的信息
-def plot_set_single_vm_data(vm_type, set_info, save_filename=None):
+def plot_set_single_vm_data(vm_type, set_info, save_filename=None): 
     if not hasVmType(set_info, vm_type):
         return False
     
