@@ -48,6 +48,5 @@ def read_lines(file_path):
         print 'file not exist: ' + file_path
         return None
 
-
 if __name__ == "__main__":
     main()

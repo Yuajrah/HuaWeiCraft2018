@@ -35,11 +35,11 @@ def draw_ts(timeSeries):
    root, with the alternative that there is no unit root. That is to say the
    bigger the p-value the more reason we assert that there is a unit root
 '''
-def test_stationarity(timeseries):
+def test_stationarity(timeseries, watch_windows = 12):
     
     #这里以一年为一个窗口，每一个时间t的值由它前面12个月（包括自己）的均值代替，标准差同理。
-    rolmean = pd.rolling_mean(timeseries,window=12)
-    rolstd = pd.rolling_std(timeseries, window=12)
+    rolmean = pd.rolling_mean(timeseries,window=watch_windows)
+    rolstd = pd.rolling_std(timeseries, window=watch_windows)
     
     #plot rolling statistics:
     fig = plt.figure(figsize=(16,16))
