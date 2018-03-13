@@ -5,6 +5,8 @@ import numpy as np
 from statsmodels.tsa.ar_model import AR
 from sklearn.metrics import mean_squared_error
 import datetime
+from statsmodels.tsa.arima_model import ARMA
+from test_stationarity import adf_test
 
 def get_periods_sub(periods):
     start_day = datetime.datetime.strptime(periods[0],"%Y-%m-%d")
@@ -61,3 +63,17 @@ def predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_ty
     get_score(dataframe.predict, dataframe.actual)
     print "train dates:  %s - %s" % (train_dataframe.index[0].strftime('%Y-%m-%d'), train_dataframe.index[-1].strftime('%Y-%m-%d'))
     print "predict dates:%s - %s" % (predict_dates[0], predict_dates[1])
+    
+# 使用arma方法
+# 直接调用pandas中arma方法
+def arma(train_series, watch_windows, predict_dates, target_types, actual_data):
+    pass
+
+# 使用arima方法
+def arima(train_series, watch_windows, predict_dates, target_types, actual_data, p_value):
+    for type in target_types:
+        #进行adf——test
+        if not adf_test(train_series[type], p_value):
+            print type
+        
+    
