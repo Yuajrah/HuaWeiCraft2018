@@ -66,6 +66,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h">
+			<Option target="ecs"/>
+		</Unit>
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ecs.cpp">
 			<Option target="ecs"/>
 		</Unit>

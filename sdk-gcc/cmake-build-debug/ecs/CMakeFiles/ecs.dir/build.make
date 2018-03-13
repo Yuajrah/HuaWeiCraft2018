@@ -57,9 +57,33 @@ include ecs/CMakeFiles/ecs.dir/progress.make
 # Include the compile flags for this target's objects.
 include ecs/CMakeFiles/ecs.dir/flags.make
 
+ecs/CMakeFiles/ecs.dir/date_utils.cpp.o: ecs/CMakeFiles/ecs.dir/flags.make
+ecs/CMakeFiles/ecs.dir/date_utils.cpp.o: ../ecs/date_utils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object ecs/CMakeFiles/ecs.dir/date_utils.cpp.o"
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/date_utils.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp
+
+ecs/CMakeFiles/ecs.dir/date_utils.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ecs.dir/date_utils.cpp.i"
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp > CMakeFiles/ecs.dir/date_utils.cpp.i
+
+ecs/CMakeFiles/ecs.dir/date_utils.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ecs.dir/date_utils.cpp.s"
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp -o CMakeFiles/ecs.dir/date_utils.cpp.s
+
+ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.requires:
+
+.PHONY : ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.requires
+
+ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.provides: ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.requires
+	$(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.provides.build
+.PHONY : ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.provides
+
+ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.provides.build: ecs/CMakeFiles/ecs.dir/date_utils.cpp.o
+
+
 ecs/CMakeFiles/ecs.dir/ecs.cpp.o: ecs/CMakeFiles/ecs.dir/flags.make
 ecs/CMakeFiles/ecs.dir/ecs.cpp.o: ../ecs/ecs.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object ecs/CMakeFiles/ecs.dir/ecs.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object ecs/CMakeFiles/ecs.dir/ecs.cpp.o"
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/ecs.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ecs.cpp
 
 ecs/CMakeFiles/ecs.dir/ecs.cpp.i: cmake_force
@@ -83,7 +107,7 @@ ecs/CMakeFiles/ecs.dir/ecs.cpp.o.provides.build: ecs/CMakeFiles/ecs.dir/ecs.cpp.
 
 ecs/CMakeFiles/ecs.dir/io.cpp.o: ecs/CMakeFiles/ecs.dir/flags.make
 ecs/CMakeFiles/ecs.dir/io.cpp.o: ../ecs/io.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object ecs/CMakeFiles/ecs.dir/io.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object ecs/CMakeFiles/ecs.dir/io.cpp.o"
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/io.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/io.cpp
 
 ecs/CMakeFiles/ecs.dir/io.cpp.i: cmake_force
@@ -107,7 +131,7 @@ ecs/CMakeFiles/ecs.dir/io.cpp.o.provides.build: ecs/CMakeFiles/ecs.dir/io.cpp.o
 
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ecs/CMakeFiles/ecs.dir/flags.make
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/predict.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object ecs/CMakeFiles/ecs.dir/predict.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object ecs/CMakeFiles/ecs.dir/predict.cpp.o"
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/predict.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.cpp
 
 ecs/CMakeFiles/ecs.dir/predict.cpp.i: cmake_force
@@ -131,6 +155,7 @@ ecs/CMakeFiles/ecs.dir/predict.cpp.o.provides.build: ecs/CMakeFiles/ecs.dir/pred
 
 # Object files for target ecs
 ecs_OBJECTS = \
+"CMakeFiles/ecs.dir/date_utils.cpp.o" \
 "CMakeFiles/ecs.dir/ecs.cpp.o" \
 "CMakeFiles/ecs.dir/io.cpp.o" \
 "CMakeFiles/ecs.dir/predict.cpp.o"
@@ -138,12 +163,13 @@ ecs_OBJECTS = \
 # External object files for target ecs
 ecs_EXTERNAL_OBJECTS =
 
+bin/ecs: ecs/CMakeFiles/ecs.dir/date_utils.cpp.o
 bin/ecs: ecs/CMakeFiles/ecs.dir/ecs.cpp.o
 bin/ecs: ecs/CMakeFiles/ecs.dir/io.cpp.o
 bin/ecs: ecs/CMakeFiles/ecs.dir/predict.cpp.o
 bin/ecs: ecs/CMakeFiles/ecs.dir/build.make
 bin/ecs: ecs/CMakeFiles/ecs.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable ../bin/ecs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable ../bin/ecs"
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ecs.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -151,6 +177,7 @@ ecs/CMakeFiles/ecs.dir/build: bin/ecs
 
 .PHONY : ecs/CMakeFiles/ecs.dir/build
 
+ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.requires
 ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/ecs.cpp.o.requires
 ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/io.cpp.o.requires
 ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/predict.cpp.o.requires

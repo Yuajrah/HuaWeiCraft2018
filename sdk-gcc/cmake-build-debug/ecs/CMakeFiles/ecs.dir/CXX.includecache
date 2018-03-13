@@ -10,6 +10,16 @@
 
 ../ecs/lib/lib_time.h
 
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp
+stdio.h
+-
+date_utils.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h
+
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h
+ctime
+-
+
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ecs.cpp
 predict.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
@@ -41,6 +51,8 @@ signal.h
 -
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.cpp
+date_utils.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h
 predict.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
 stdio.h

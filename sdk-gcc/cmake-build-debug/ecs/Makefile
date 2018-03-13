@@ -125,6 +125,33 @@ ecs/fast:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/build
 .PHONY : ecs/fast
 
+date_utils.o: date_utils.cpp.o
+
+.PHONY : date_utils.o
+
+# target to build an object file
+date_utils.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/date_utils.cpp.o
+.PHONY : date_utils.cpp.o
+
+date_utils.i: date_utils.cpp.i
+
+.PHONY : date_utils.i
+
+# target to preprocess a source file
+date_utils.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/date_utils.cpp.i
+.PHONY : date_utils.cpp.i
+
+date_utils.s: date_utils.cpp.s
+
+.PHONY : date_utils.s
+
+# target to generate assembly for a file
+date_utils.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/date_utils.cpp.s
+.PHONY : date_utils.cpp.s
+
 ecs.o: ecs.cpp.o
 
 .PHONY : ecs.o
@@ -215,6 +242,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... ecs"
+	@echo "... date_utils.o"
+	@echo "... date_utils.i"
+	@echo "... date_utils.s"
 	@echo "... ecs.o"
 	@echo "... ecs.i"
 	@echo "... ecs.s"
