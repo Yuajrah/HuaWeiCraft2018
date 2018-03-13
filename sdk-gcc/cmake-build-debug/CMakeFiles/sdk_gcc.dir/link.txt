@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/sdk_gcc.dir/ecs/ecs.cpp.o CMakeFiles/sdk_gcc.dir/ecs/io.cpp.o CMakeFiles/sdk_gcc.dir/ecs/predict.cpp.o  -o sdk_gcc 
