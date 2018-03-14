@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.tsa.stattools import adfuller
 
 # 移动平均图
 def draw_trend(timeSeries, size):
@@ -73,3 +74,18 @@ def draw_acf_pacf(ts, lags=31):
     plot_pacf(ts, lags=31, ax=ax2)
     plt.show()
 
+#进行adf测试，如果满足平稳就返回true
+def adf_test(data, p_value):
+    result = adfuller(data)
+    if (result[1] >= p_value):
+        print('ADF statistc: %f' %result[0])
+        print('p-value: %f' %result[1])
+        print('Critical Values:')
+        for key, value in result[4].items():
+            print('\t%s:%.3f' %(key,value))
+        return False
+    return  True
+
+#进行白噪声检测
+def white_noise_test(data, p_value):
+    pass
