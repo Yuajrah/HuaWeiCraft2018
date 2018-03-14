@@ -6,7 +6,9 @@ from statsmodels.tsa.ar_model import AR
 from sklearn.metrics import mean_squared_error
 import datetime
 from statsmodels.tsa.arima_model import ARMA
-from test_stationarity import adf_test
+from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.stattools import arma_order_select_ic
+from test_stationarity import adf_test, white_noise_test
 
 def get_periods_sub(periods):
     start_day = datetime.datetime.strptime(periods[0],"%Y-%m-%d")
@@ -66,14 +68,26 @@ def predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_ty
     
 # 使用arma方法
 # 直接调用pandas中arma方法
-def arma(train_series, watch_windows, predict_dates, target_types, actual_data):
-    pass
+def arma(train_series, watch_windows, predict_dates, target_types, actual_data, p_value):
+    dataframe = pd.DataFrame(index=target_types, columns=['actual', 'predict'])
+    for type in target_types:
+        dataframe.loc[type].actual = actual_data.setdefault(type, 0)
+        if adf_test(train_series[type], p_value):
+            order = arma_order_select_ic(train_series[type],max_ar=watch_windows, max_ma=watch_windows,ic=['aic', 'bic', 'hqic'])
+            model = ARMA(train_series[type], order=order.bic_min_order)
+            arma = model.fit()
+            result = arma.predict(predict_dates[0], predict_dates[1])
+            print result
+            
+            
+        
+    print dataframe
+    get_score(dataframe.predict, dataframe.actual)
+    print "train dates:  %s - %s" % (train_dataframe.index[0].strftime('%Y-%m-%d'), train_dataframe.index[-1].strftime('%Y-%m-%d'))
+    print "predict dates:%s - %s" % (predict_dates[0], predict_dates[1])
 
 # 使用arima方法
 def arima(train_series, watch_windows, predict_dates, target_types, actual_data, p_value):
-    for type in target_types:
-        #进行adf——test
-        if not adf_test(train_series[type], p_value):
-            print type
+    pass
         
     

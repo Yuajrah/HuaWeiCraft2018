@@ -3,12 +3,12 @@
 # https://www.cnblogs.com/foley/p/5582358.html
 # https://www.cnblogs.com/bradleon/p/6832867.html
 
-from statsmodels.tsa.stattools import adfuller
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.stattools import adfuller
+from statsmodels.stats.diagnostic import acorr_ljungbox
 
 # 移动平均图
 def draw_trend(timeSeries, size):
@@ -88,4 +88,11 @@ def adf_test(data, p_value):
 
 #进行白噪声检测
 def white_noise_test(data, p_value):
-    pass
+    result = acorr_ljungbox(data)
+    if result[1][0] > p_value:
+        print('state value: %f'  %result[0][0])
+        print('p value: %f'  %result[1][0])
+        return False
+    else:
+        return True
+
