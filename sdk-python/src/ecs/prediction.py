@@ -16,6 +16,10 @@ def get_periods_sub(periods):
     days =(end_day- start_day).days + 1
     return days
 
+# 原来结果保存在dataframe，改变成dict并返回
+def dataframe_to_dict(dataframe):
+    data = dataframe["predict"]
+    return data.to_dict()
 
 #输出预测的得分，输入参数为两个list
 def get_score(predict, actual):
@@ -39,24 +43,25 @@ def ar(train_series, predict_dates):
 def print_ar_res(train_dataframe, predict_dates, actual_data, target_types):
     dataframe = pd.DataFrame(index=target_types, columns=['actual', 'predict'])
     for type in target_types:
-        dataframe.loc[type].predict = max(round(sum(ar(train_dataframe[type], predict_dates))), 0)
+        dataframe.loc[type].predict = round(max(round(sum(ar(train_dataframe[type], predict_dates))), 0))
         dataframe.loc[type].actual = actual_data.setdefault(type, 0)
         
     print dataframe
     get_score(dataframe.predict, dataframe.actual)
     print "train dates:  %s - %s" % (train_dataframe.index[0].strftime('%Y-%m-%d'), train_dataframe.index[-1].strftime('%Y-%m-%d'))
     print "predict dates:%s - %s" % (predict_dates[0], predict_dates[1])
+    return dataframe_to_dict(dataframe)
 
 
 def mv_and_ar(train_series, watch_windows, predict_dates, target_types, actual_data):
     #show_data(train_series, target_types)
     data_ma = train_series.rolling(window=watch_windows,center=False).mean()
     data_ma = data_ma.dropna(axis=0, how='any')
-    print_ar_res(data_ma, predict_dates, actual_data,  target_types )
+    return print_ar_res(data_ma, predict_dates, actual_data,  target_types )
     
 # 直接计算平均值来预测
 def predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_types):
-    prediction_series = train_dataframe.mean() * get_periods_sub(predict_dates)
+    prediction_series = np.round(train_dataframe.mean() * get_periods_sub(predict_dates))
     # axis=1，是按横向拼接
     # keys, 对列索引重命名
     # reindex, 按照指定行索引顺序重新排列行
@@ -65,6 +70,7 @@ def predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_ty
     get_score(dataframe.predict, dataframe.actual)
     print "train dates:  %s - %s" % (train_dataframe.index[0].strftime('%Y-%m-%d'), train_dataframe.index[-1].strftime('%Y-%m-%d'))
     print "predict dates:%s - %s" % (predict_dates[0], predict_dates[1])
+    return dataframe_to_dict(dataframe)
     
 # 使用arma方法
 # 直接调用pandas中arma方法
