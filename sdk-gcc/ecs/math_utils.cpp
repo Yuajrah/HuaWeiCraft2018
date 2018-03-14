@@ -55,8 +55,8 @@ std::vector<Double> getAutoCor(std::vector<Double> data){
     std::cout<<"AutoCor:自协方差：end"<<std::endl;
     **/
 
-    for(int k=0;k<data.size();k++){
-        AutoCor.push_back(AutoCov[k] / AutoCov[0]);
+    for(int k=0;k<data.size()-1;k++){
+        AutoCor.push_back(AutoCov[k+1] / AutoCov[0]);
     }
 
     /**
@@ -115,6 +115,7 @@ std::vector<Double> getBiasCor(std::vector<Double> AutoCor){
  * 根据计算aic自动选取p
  * 需要根据自协方差AutoCov和计算，并要事先定下p的上界p_max，从[1-p_max]中选取最小aic的p
  * aic(k) =  ln [ likehood(k) ^ 2 ] + 2 * k / n , 计算k从1开始计算. 因为aic(0) = auto_cov[0]
+ * 注意：本程序中getBiasCor得到的是从1开始的，getAutoCor也是1开始的
  * likehood(k) ^ 2 = auto_cov[0] - [BiasCor(1) ... BiasCor(k)] * [AutoCov(1) ... AutoCov(k)]'
  *
  */
@@ -124,7 +125,7 @@ std::vector<Double> get_p(std::vector<Double> AutoCov, std::vector<Double> BiasC
     aic.push_back(AutoCov[0]);
     for (int k = 1; k <= p_max; k++) {
         Double sum = 0;
-        for (int j = 1; j <= k ; j++) {
+        for (int j = 0; j < k ; j++) {
             sum += BiasCor[j] * AutoCov[j];
         }
         Double likehood_square = AutoCov[0] - sum;
