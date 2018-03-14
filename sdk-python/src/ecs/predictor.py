@@ -11,8 +11,8 @@ from prediction import ar, print_ar_res, mv_and_ar, predict_by_train_mean, arima
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
     
-    train_dates = ["2015-01-01", "2015-02-23"]
-    predict_dates = ["2015-02-24", "2015-03-02"]
+    train_dates = ["2015-12-01", "2016-01-23"]
+    predict_dates = ["2016-01-24", "2016-01-30"]
     # 所需要预测的虚拟机类型
     target_types = ["flavor1", "flavor2", "flavor3", "flavor4", "flavor5",
                   "flavor6", "flavor7", "flavor8", "flavor9", "flavor10",
@@ -35,22 +35,24 @@ def predict_vm(ecs_lines, input_lines):
 #        plot_set_single_vm_cumsum_data(type, train_data, "../../../imgs/single_cumsum/train_" + type)  
     
     # ar部分的预测结果
-    #print "result of ar:"
-    #print_ar_res(train_dataframe, predict_dates, actual_data, target_types)
+    print "result of ar:"
+    print_ar_res(train_dataframe, predict_dates, actual_data, target_types)
     
     #使用移动平均和自回归进行预测
-    #print "result of mv_and_ar:"
+    print "result of mv_and_ar:"
     watch_windows = 7
-    #mv_and_ar(train_dataframe, watch_windows, predict_dates, target_types, actual_data)
+    mv_and_ar(train_dataframe, watch_windows, predict_dates, target_types, actual_data)
 
     # 直接使用平均值来预测
-    #print "result of mean:"
-    #predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_types)
+    print "result of mean:"
+    predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_types)
     
     #使用ARIMA和ARMA综合
     #p_value为接收平稳的
-    p_value = 0.01 
-    arima(train_dataframe, watch_windows, predict_dates, target_types, actual_data, p_value)
+    #代码未完成
+    #print "result of primary arma:"
+    #p_value = 0.05
+    #arma(train_dataframe, watch_windows, predict_dates, target_types, actual_data, p_value)
     result = []
     if ecs_lines is None:
         print 'ecs information is none'
