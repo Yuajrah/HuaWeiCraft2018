@@ -125,6 +125,33 @@ ecs/fast:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/build
 .PHONY : ecs/fast
 
+ar.o: ar.cpp.o
+
+.PHONY : ar.o
+
+# target to build an object file
+ar.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ar.cpp.o
+.PHONY : ar.cpp.o
+
+ar.i: ar.cpp.i
+
+.PHONY : ar.i
+
+# target to preprocess a source file
+ar.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ar.cpp.i
+.PHONY : ar.cpp.i
+
+ar.s: ar.cpp.s
+
+.PHONY : ar.s
+
+# target to generate assembly for a file
+ar.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ar.cpp.s
+.PHONY : ar.cpp.s
+
 date_utils.o: date_utils.cpp.o
 
 .PHONY : date_utils.o
@@ -206,6 +233,33 @@ io.cpp.s:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/io.cpp.s
 .PHONY : io.cpp.s
 
+math_utils.o: math_utils.cpp.o
+
+.PHONY : math_utils.o
+
+# target to build an object file
+math_utils.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/math_utils.cpp.o
+.PHONY : math_utils.cpp.o
+
+math_utils.i: math_utils.cpp.i
+
+.PHONY : math_utils.i
+
+# target to preprocess a source file
+math_utils.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/math_utils.cpp.i
+.PHONY : math_utils.cpp.i
+
+math_utils.s: math_utils.cpp.s
+
+.PHONY : math_utils.s
+
+# target to generate assembly for a file
+math_utils.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/math_utils.cpp.s
+.PHONY : math_utils.cpp.s
+
 predict.o: predict.cpp.o
 
 .PHONY : predict.o
@@ -242,6 +296,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... ecs"
+	@echo "... ar.o"
+	@echo "... ar.i"
+	@echo "... ar.s"
 	@echo "... date_utils.o"
 	@echo "... date_utils.i"
 	@echo "... date_utils.s"
@@ -251,6 +308,9 @@ help:
 	@echo "... io.o"
 	@echo "... io.i"
 	@echo "... io.s"
+	@echo "... math_utils.o"
+	@echo "... math_utils.i"
+	@echo "... math_utils.s"
 	@echo "... predict.o"
 	@echo "... predict.i"
 	@echo "... predict.s"

@@ -66,6 +66,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.h">
+			<Option target="ecs"/>
+		</Unit>
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp">
 			<Option target="ecs"/>
 		</Unit>
@@ -76,6 +82,12 @@
 			<Option target="ecs"/>
 		</Unit>
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/io.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h">
 			<Option target="ecs"/>
 		</Unit>
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.cpp">

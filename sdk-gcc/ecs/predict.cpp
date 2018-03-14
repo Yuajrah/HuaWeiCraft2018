@@ -1,11 +1,22 @@
 #include "date_utils.h"
 #include "predict.h"
 #include <stdio.h>
+#include "ar.h"
+
+/*
+ *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
+ *   inputFilePath = "../../../data/exercise/input_file.txt"
+ *   resultFilePath = "../../../data/exercise/output_file.txt"
+ *   项目可执行文件的参数： "../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../data/exercise/input_file.txt" resultFilePath = "../../../data/exercise/output_file.txt"
+ * */
 //你要完成的功能总入口
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
-    int days = get_days("2013-03-15", "2013-03-16");
-    printf("%d\n", days);
+    /*int days = get_days("2013-03-15", "2013-03-16");
+    printf("%d\n", days);*/
+
+    test_ar();
+
 	// 需要输出的内容
 	char * result_file = (char *)"17\n\n0 8 0 20";
 

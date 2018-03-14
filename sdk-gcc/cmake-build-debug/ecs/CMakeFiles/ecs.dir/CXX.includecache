@@ -10,6 +10,18 @@
 
 ../ecs/lib/lib_time.h
 
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.cpp
+ar.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.h
+math_utils.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h
+iostream
+-
+
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.h
+vector
+-
+
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp
 stdio.h
 -
@@ -50,6 +62,16 @@ unistd.h
 signal.h
 -
 
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.cpp
+math_utils.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h
+iostream
+-
+
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h
+vector
+-
+
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.cpp
 date_utils.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h
@@ -57,6 +79,8 @@ predict.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
 stdio.h
 -
+ar.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.h
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
 lib_io.h
