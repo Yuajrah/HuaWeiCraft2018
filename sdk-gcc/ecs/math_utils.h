@@ -12,7 +12,7 @@ typedef long double Double;
  *自相关系数 AutoCov[k] = AutoCov[k] / AutoCov[0]
  */
 
-
+std::vector<Double> getAutoCov(std::vector<Double> data);
 std::vector<Double> getAutoCor(std::vector<Double> data);
 
 

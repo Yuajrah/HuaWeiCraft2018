@@ -67,6 +67,10 @@ math_utils.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h
 iostream
 -
+cmath
+-
+cstdio
+-
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h
 vector

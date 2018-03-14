@@ -261,7 +261,7 @@ void test_ar() {
     }
 
     //计算p
-    //Calculate_p(data);
+    Calculate_p(data);
 
     a = LeastSquares(data,p);
 
