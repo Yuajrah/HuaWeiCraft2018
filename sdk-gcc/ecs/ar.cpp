@@ -12,24 +12,52 @@
 #include "ar.h"
 #include "math_utils.h"
 #include <iostream>
+#include <cmath>
 
-
-int Calculate_p(std::vector<Double> data)
-{
-    Double mean; //输入数据的均值
-    std::vector<Double> AutoCor;//自相关系数AutoCorrelation
-    std::vector<Double> BiasCor;//偏相关系数
-
-    AutoCor = getAutoCor(data); //得到的自相关系数
-    BiasCor = getBiasCor(AutoCor); // 得到偏相关系数
-
-    for(int k=0;k<BiasCor.size();k++){
-        std::cout<<BiasCor[k]<<"\t";
+/**
+ * 根据计算aic自动选取p
+ * 需要根据自协方差AutoCov和计算，并要事先定下p的上界p_max，从[1-p_max]中选取最小aic的p
+ * aic(k) =  ln [ likehood(k) ^ 2 ] + 2 * k / n , 计算k从1开始计算. 因为aic(0) = auto_cov[0]
+ * 注意：本程序中getBiasCor得到的是从滞后1开始的, getAutoCov是从滞后0开始的
+ * likehood(k) ^ 2 = auto_cov[0] - [BiasCor(1) ... BiasCor(k)] * [AutoCov(1) ... AutoCov(k)]'
+ *
+ */
+std::vector<double> get_p(std::vector<double> AutoCov, std::vector<double> BiasCor, int p_max){
+    std::vector<double> aic;
+    int n = AutoCov.size();
+    aic.push_back(AutoCov[0]);
+    for (int k = 1; k <= p_max; k++) {
+        double likehood_square = AutoCov[0];
+        for (int j = 1; j <= k ; j++) {
+            likehood_square -= BiasCor[j-1] * AutoCov[j];
+        }
+        std::cout << likehood_square << std::endl;
+        aic.push_back(log(likehood_square) + 2 * k / double(n));
     }
 
-    return 0;
+    std::cout<<"Aic：begin"<<std::endl;
+    for(int k=0;k<aic.size();k++){
+        std::cout<<aic[k]<<" ";
+    }
+    std::cout<<"Aic：end"<<std::endl;
+
+    return aic;
 }
 
+
+void print_bais_cor(std::vector<double> data)
+{
+    double mean; //输入数据的均值
+    std::vector<double> auto_cor;//自相关系数AutoCorrelation
+    std::vector<double> bias_cor;//偏相关系数
+
+    auto_cor = get_auto_cor(data); //得到的自相关系数
+    bias_cor = get_bias_cor(auto_cor); // 得到偏相关系数
+
+    for(int k=0;k<bias_cor.size();k++){
+        std::cout<<bias_cor[k]<<"\t";
+    }
+}
 
 
 /**
@@ -43,8 +71,8 @@ int Calculate_p(std::vector<Double> data)
  * -*- : 矩阵乘法
  * inv(x): 矩阵的逆
  */
-std::vector<std::vector<Double> > y; //y = [data[p+1, ..., n]]
-std::vector<std::vector<Double> > x;
+std::vector<std::vector<double> > y; //y = [data[p+1, ..., n]]
+std::vector<std::vector<double> > x;
 
 /**
   [ data[p, ..., 1] ]
@@ -57,11 +85,11 @@ std::vector<std::vector<Double> > x;
  */
 
 
-void formatData(std::vector<Double> data,int p){
-    std::vector<Double> tmpy;
+void formatData(std::vector<double> data,int p){
+    std::vector<double> tmpy;
     for(int i=p;i<data.size();i++){
         tmpy.push_back(data[i]);
-        std::vector<Double> tmp;
+        std::vector<double> tmp;
         for(int j=i-1;j>=i-p;j--){
             tmp.push_back(data[j]);
         }
@@ -94,10 +122,10 @@ void formatData(std::vector<Double> data,int p){
  * a = inv(t(x) _*_ x) _*_ t(x) _*_ Y
  * e = sum(a) / (n-p)
  */
-std::vector<Double> LeastSquares(std::vector<Double> data,int p){
+std::vector<double> LeastSquares(std::vector<double> data,int p){
     formatData(data,p);
 
-    std::vector<std::vector<Double> > a, tx,invx,tmp;
+    std::vector<std::vector<double> > a, tx,invx,tmp;
     tx = t(x);
     invx = inv(mulMat(tx, x));
     //std::cout<<invx.size()<<std::endl;
@@ -129,13 +157,13 @@ std::vector<Double> LeastSquares(std::vector<Double> data,int p){
 /**
  *得到e
  */
-Double getBias(std::vector<Double> data,std::vector<Double> a,int n,int p){
-    Double sum = 0;
-    std::vector<Double> calPN(data.begin(),data.begin()+p);
+double getBias(std::vector<double> data,std::vector<double> a,int n,int p){
+    double sum = 0;
+    std::vector<double> calPN(data.begin(),data.begin()+p);
 
 
     for(int i=p;i<data.size();i++){
-        Double s = 0;
+        double s = 0;
         int t = calPN.size();
         for(int j=0;j<p;j++){
             s += a[j] * calPN[t-j-1];
@@ -167,13 +195,13 @@ Double getBias(std::vector<Double> data,std::vector<Double> a,int n,int p){
 
  */
 
-int calP_N(std::vector<Double> data,std::vector<Double> a,int p){
+int calP_N(std::vector<double> data,std::vector<double> a,int p){
 
     int n = data.size();
-    std::vector<Double> calPN(data.begin(),data.begin()+p);
+    std::vector<double> calPN(data.begin(),data.begin()+p);
 
     for(int i=p;i<data.size();i++){
-        Double s = 0;
+        double s = 0;
         int t = calPN.size();
         for(int j=0;j<p;j++){
             s += a[j] * calPN[t-j-1];
@@ -182,17 +210,16 @@ int calP_N(std::vector<Double> data,std::vector<Double> a,int p){
     }
 
     //std::cout<<calPN.size()<<std::endl;
-    std::vector<Double> var;
+    std::vector<double> var;
     //计算残差
     for(int i=p;i<calPN.size();i++){
         var.push_back(data[i] - calPN[i]);
     }
 
-    std::vector<Double> Avar;//自相关系数AutoCorrelation
-    std::vector<Double> Bvar;//偏相关系数
+    std::vector<double> Avar;//自相关系数AutoCorrelation
+    std::vector<double> Bvar;//偏相关系数
 
-    Avar = getAutoCor(var); //得到的自相关系数
-    Bvar = getBiasCor(Avar); // 得到偏相关系数
+
     /**
     for(int k=0;k<Avar.size();k++){
         std::cout<<Avar[k]<<"\t";
@@ -209,7 +236,7 @@ int calP_N(std::vector<Double> data,std::vector<Double> a,int p){
     //检验是否有 68.3% 的 点 落 在 纵 坐 标ρ = ± 1 / n 内
     //约 有 95.4% 的 点 落 在 纵 坐 标 ρ = ± 2 / n 内
     int k1 = 0,k2 = 0;
-    Double p1 = 1.0 / Avar.size(),p2 = 2.0 / Avar.size();
+    double p1 = 1.0 / Avar.size(),p2 = 2.0 / Avar.size();
     for(int k=0;k<Avar.size();k++){
         if(Avar[k] >= -p1 && Avar[k] <= p1) k1++;
         if(Avar[k] >= -p2 && Avar[k] <= p2) k2++;
@@ -232,10 +259,10 @@ int calP_N(std::vector<Double> data,std::vector<Double> a,int p){
  *如果给出的k>n，会预测[n,k]的所有位置，并添加大原数据上。
  */
 
-Double predict(std::vector<Double> &data,std::vector<Double> a,int k,int p){
-    Double res;
+double predict(std::vector<double> &data,std::vector<double> a,int k,int p){
+    double res;
     for(int i=data.size();i<k;i++){
-        Double s = 0;
+        double s = 0;
         int t = data.size();
         for(int j=0;j<p;j++){
             s += a[j] * data[t-j-1];
@@ -248,20 +275,27 @@ Double predict(std::vector<Double> &data,std::vector<Double> a,int k,int p){
 
 void test_ar() {
     //北京1987-2014人口: 35
-    Double xx[] = {871.5,897.1,904.3,919.2,935.0,950.0,965.0,981.0,1028.0,1047.0,1061.0,1075.0,
+    std::vector<double> data = {871.5,897.1,904.3,919.2,935.0,950.0,965.0,981.0,1028.0,1047.0,1061.0,1075.0,
                    1086.0,1094.0,1102.0,1112.0,1125.0,1251.1,1259.4,1240.0,1245.6,1257.2,1363.6,
                    1385.1,1423.2,1456.4,1492.7,1538.0,1601.0,1676.0,1771.0,1860.0,1961.9,2018.6,2069.3
     };
     //读入数据
     int p = 16;//原则上p可以选择[16-N],但是由于p大于18时，计算会超过精度，又考虑到模型尽可能简单，参数尽可能少，选择p=[15,16,17]
     //这里分别用excel纪录了图像描述
-    std::vector<Double> data,a;
-    for(int i=0;i<35;i++){
-        data.push_back(xx[i]);
-    }
+    std::vector<double> a;
 
-    //计算p
-    Calculate_p(data);
+    std::vector<double> auto_cov = get_auto_cov(data);
+
+    std::vector<double> bias_cor = get_bias_cor(auto_cov); // 得到偏相关系数
+    std::cout<<"bias cor: 偏自相关系数：begin"<<std::endl;
+    std::cout<<bias_cor.size()<<std::endl;
+    for(int k=0;k<bias_cor.size();k++){
+        std::cout<<bias_cor[k]<<" ";
+    }
+    std::cout<<std::endl;
+    std::cout<<"bias cor: 偏自相关系数：end"<<std::endl;
+
+    get_p(auto_cov, bias_cor, 30);
 
     a = LeastSquares(data,p);
 
@@ -272,12 +306,13 @@ void test_ar() {
 
     std::cout<<std::endl;
 
+
     //std::cout<<e<<std::endl;
 
     //检验算法的性能,可以设置p=[16,17]通过作图，观测算法的性能
     calP_N(data,a,p);
 
     //预测第37个数据的值
-    Double x = predict(data,a,37,p);
+    double x = predict(data,a,37,p);
     std::cout<<x<<std::endl;
 }

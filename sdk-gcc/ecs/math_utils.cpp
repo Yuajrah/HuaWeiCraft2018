@@ -12,25 +12,25 @@
  *自相关系数 AutoCov[k] = AutoCov[k] / AutoCov[0]
  */
 
-std::vector<Double> getAutoCov(std::vector<Double> data){
+std::vector<double> get_auto_cov(std::vector<double> data){
     //计算自相关系数矩阵
     int n = data.size();
 
-    Double mean = 0; //数据的均值
+    double mean = 0; //数据的均值
     for(int i=0;i<n;i++){
         mean += data[i];
     }
     mean /= n;
     //std::cout<<"mean::"<<mean<<std::endl;
     //将每个数据都减去均值得到新的数据
-    std::vector<Double> prodata;
+    std::vector<double> prodata;
 
     for(int i=0;i<n;i++){
         prodata.push_back(data[i] - mean);
         //std::cout<<"prodata[i] "<<prodata[i]<<std::endl;
     }
 
-    std::vector<Double> AutoCov(n,0);//自协方差AutoCovariance
+    std::vector<double> AutoCov(n,0);//自协方差AutoCovariance
     for(int k=0;k<n;k++){
         for(int i=0;i<n-k;i++){
             AutoCov[k] += prodata[i] * prodata[i+k];
@@ -41,11 +41,9 @@ std::vector<Double> getAutoCov(std::vector<Double> data){
     return AutoCov;
 }
 
+std::vector<double> get_auto_cor(std::vector<double> auto_cov){
 
-std::vector<Double> getAutoCor(std::vector<Double> data){
-
-    std::vector<Double> AutoCor,AutoCov;//自相关系数AutoCorrelation，注意下标从0开始
-    AutoCov = getAutoCov(data);
+    std::vector<double> auto_cor;
 
     /**
     std::cout<<"AutoCor:自协方差：begin"<<std::endl;
@@ -55,8 +53,8 @@ std::vector<Double> getAutoCor(std::vector<Double> data){
     std::cout<<"AutoCor:自协方差：end"<<std::endl;
     **/
 
-    for(int k=0;k<data.size()-1;k++){
-        AutoCor.push_back(AutoCov[k+1] / AutoCov[0]);
+    for(int k=0;k<auto_cov.size();k++){
+        auto_cor.push_back(auto_cov[k] / auto_cov[0]);
     }
 
     /**
@@ -66,7 +64,7 @@ std::vector<Double> getAutoCor(std::vector<Double> data){
     }
     std::cout<<"AutoCor:自协方差系数：end"<<std::endl;
     **/
-    return AutoCor;
+    return auto_cor;
 }
 
 
@@ -77,11 +75,11 @@ std::vector<Double> getAutoCor(std::vector<Double> data){
  *BiasCor[j,k] = BiasCor[j,k-1] - BiasCor[k,k]*BiasCor[k-j,k-1] j = 0...k
  *
  */
-std::vector<Double> getBiasCor(std::vector<Double> AutoCor){
+std::vector<double> getBiasCor(std::vector<double> AutoCor){
     //计算BiasCor[i,j],为了直接访问下标，首先初始化
-    std::vector< std::vector<Double> > BiasCor;
+    std::vector< std::vector<double> > BiasCor;
     for(int i=0;i<AutoCor.size();i++){
-        std::vector<Double> tmp(AutoCor.size(),0);
+        std::vector<double> tmp(AutoCor.size(),0);
         BiasCor.push_back(tmp);
     }
 
@@ -89,7 +87,7 @@ std::vector<Double> getBiasCor(std::vector<Double> AutoCor){
 
     for(int k=1;k<AutoCor.size();k++){
         BiasCor[k][k] = AutoCor[k];
-        Double t1,t2;
+        double t1,t2;
         for(int j=0;j<=k-1;j++){
             t1 = AutoCor[k-j] * BiasCor[j][k-1];
             t2 = AutoCor[j] * BiasCor[j][k-1];
@@ -102,7 +100,7 @@ std::vector<Double> getBiasCor(std::vector<Double> AutoCor){
             BiasCor[k][j] = BiasCor[j][k] = BiasCor[j][k-1] - BiasCor[k][k] * BiasCor[k-j][k-1];
         }
     }
-    std::vector<Double> res;
+    std::vector<double> res;
     for(int k=0;k<AutoCor.size();k++){
         res.push_back(BiasCor[k][k]);
     }
@@ -111,29 +109,59 @@ std::vector<Double> getBiasCor(std::vector<Double> AutoCor){
 
 }
 
-/**
- * 根据计算aic自动选取p
- * 需要根据自协方差AutoCov和计算，并要事先定下p的上界p_max，从[1-p_max]中选取最小aic的p
- * aic(k) =  ln [ likehood(k) ^ 2 ] + 2 * k / n , 计算k从1开始计算. 因为aic(0) = auto_cov[0]
- * 注意：本程序中getBiasCor得到的是从1开始的，getAutoCor也是1开始的
- * likehood(k) ^ 2 = auto_cov[0] - [BiasCor(1) ... BiasCor(k)] * [AutoCov(1) ... AutoCov(k)]'
- *
+/*
+ * auto_cov的长度，就是输入数据的长度len
+ * 偏自相关系数，没有滞后为0的时候的值，只有滞后1,一直到滞后len-1的时候的值，因此a的大小实际上是len-1 * len-1的矩阵
+ * 对角线元素，即为滞后的偏自相关系数
+ * 输入 auto_cov，从滞后0开始，一直到滞后数据长度-1
  */
-std::vector<Double> get_p(std::vector<Double> AutoCov, std::vector<Double> BiasCor, int p_max){
-    std::vector<Double> aic;
-    int n = AutoCov.size();
-    aic.push_back(AutoCov[0]);
-    for (int k = 1; k <= p_max; k++) {
-        Double sum = 0;
-        for (int j = 0; j < k ; j++) {
-            sum += BiasCor[j] * AutoCov[j];
+std::vector<double> get_bias_cor(std::vector<double> auto_cov) {
+    // 迭代得到矩阵a
+    std::vector<std::vector<double>> a;
+    a.push_back(std::vector<double>{auto_cov[1] / auto_cov[0]}); // a[0][0], 即为a11
+    for (int k=1;k<auto_cov.size()-1;k++) {
+        double t1 = 0;
+        double t2 = 0;
+        for (int j=1;j<=k;j++) {
+            t1 += auto_cov[k+1-j]*a[k-1][j-1];
+            t2 += auto_cov[j]*a[k-1][j-1];
         }
-        Double likehood_square = AutoCov[0] - sum;
-        aic.push_back(log(likehood_square) + 2 * k / Double(n));
+        a.push_back(std::vector<double>(k+1, -1));
+        a[k][k] = (auto_cov[k+1] - t1) / (auto_cov[0] - t2);
+        for (int j=1;j<=k;j++) {
+            a[k][j-1] = (a[k-1][j-1] - a[k][k] * a[k-1][k-j]);
+        }
     }
-    for (auto a: aic) {
-        printf("%f ", a);
+
+    for (int i=0;i<a.size();i++) {
+        std::cout << std::endl;
+        for (int j=0;j<a[i].size();j++) {
+            std::cout << a[i][j] << " ";
+        }
     }
+    std::cout << std::endl;
+
+    // 偏自相关系数
+    std::vector<double> bias_cor;
+    for (int k=0;k<auto_cov.size()-1;k++) {
+        bias_cor.push_back(a[k][k]);
+    }
+
+    // auto_cov的长度，就是输入数据的长度len
+    // 白噪声的方差，从0开始计数，一直到len-1
+    std::vector<double> noise_var;
+    noise_var.push_back(auto_cov[0]);
+    for (int k = 1; k < auto_cov.size(); k++) {
+        printf("noise_var[k-1] = %f, a[k-1][k-1]) = %f, res = %f\n", noise_var[k-1], a[k-1][k-1], 1 - a[k-1][k-1]);
+        noise_var.push_back(noise_var[k-1] * (1 - a[k-1][k-1]));
+    }
+    std::cout<<"noise_var: begin" << std::endl;
+    for (int i=0;i<noise_var.size();i++) {
+        std::cout<< noise_var[i] << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "noise_var: end" << std::endl;
+    return bias_cor;
 }
 
 /**
@@ -147,12 +175,12 @@ std::vector<Double> get_p(std::vector<Double> AutoCov, std::vector<Double> BiasC
 /**
  *矩阵转置
  */
-std::vector<std::vector<Double> > t(std::vector<std::vector<Double> > x){
+std::vector<std::vector<double> > t(std::vector<std::vector<double> > x){
     //x的装置矩阵
-    std::vector<std::vector<Double> > tx;
+    std::vector<std::vector<double> > tx;
     //tx初始化便于直接访问下标,这是原矩阵的转置的形式
     for(int i=0;i<x[0].size();i++){
-        std::vector<Double> tmp(x.size(),0);
+        std::vector<double> tmp(x.size(),0);
         tx.push_back(tmp);
     }
 
@@ -167,11 +195,11 @@ std::vector<std::vector<Double> > t(std::vector<std::vector<Double> > x){
 /**
  *矩阵乘法
  */
-std::vector<std::vector<Double> > mulMat(std::vector<std::vector<Double> > tx, std::vector<std::vector<Double> > x){
-    std::vector<std::vector<Double> > res;
+std::vector<std::vector<double> > mulMat(std::vector<std::vector<double> > tx, std::vector<std::vector<double> > x){
+    std::vector<std::vector<double> > res;
     //初始化结果矩阵的格式row(tx) X col(x)
     for(int i=0;i<tx.size();i++){
-        std::vector<Double> tmp(x[0].size(),0);
+        std::vector<double> tmp(x[0].size(),0);
         res.push_back(tmp);
     }
 
@@ -190,11 +218,11 @@ std::vector<std::vector<Double> > mulMat(std::vector<std::vector<Double> > tx, s
  *矩阵的行列式，行列变化为上三角矩阵
  */
 
-Double det(std::vector<std::vector<Double> > x){
+double det(std::vector<std::vector<double> > x){
     //只有一个元素
     //if(x.size() == 1 && x[0].size() == 1) return x[0][0];
 
-    Double det = 1;
+    double det = 1;
     //交换数组指定的两行，即进行行变换（具体为行交换）
     int iter = 0;  //记录行变换的次数（交换）
     for(int i=0;i<x.size();i++){
@@ -207,7 +235,7 @@ Double det(std::vector<std::vector<Double> > x){
             }
         }
         for(int k=i+1;k<x.size();k++){
-            Double yin = -1 * x[k][i] / x[i][i] ;
+            double yin = -1 * x[k][i] / x[i][i] ;
             for(int u=0; u<x[0].size(); u++){
                 x[k][u] = x[k][u] + x[i][u] * yin;
             }
@@ -234,10 +262,10 @@ Double det(std::vector<std::vector<Double> > x){
 /**
  *删除矩阵的第r行，第c列
  */
-std::vector<std::vector<Double> > delMat(std::vector<std::vector<Double> > x,int r,int c){
-    std::vector<std::vector<Double> > Ax;
+std::vector<std::vector<double> > delMat(std::vector<std::vector<double> > x,int r,int c){
+    std::vector<std::vector<double> > Ax;
     for(int i=0;i<x.size();i++){
-        std::vector<Double> tmp;
+        std::vector<double> tmp;
         for(int j=0;j<x[0].size();j++){
             if(i != r && j != c) tmp.push_back(x[i][j]);
         }
@@ -250,12 +278,12 @@ std::vector<std::vector<Double> > delMat(std::vector<std::vector<Double> > x,int
 /**
  *求矩阵的伴随矩阵
  */
-std::vector<std::vector<Double> > A(std::vector<std::vector<Double> > x){
-    std::vector<std::vector<Double> > tmp(x),res;
+std::vector<std::vector<double> > A(std::vector<std::vector<double> > x){
+    std::vector<std::vector<double> > tmp(x),res;
 
     //tx初始化便于直接访问下标,这是原矩阵的转置的形式
     for(int i=0;i<x.size();i++){
-        std::vector<Double> tp(x[0].size(),0);
+        std::vector<double> tp(x[0].size(),0);
         res.push_back(tp);
     }
 
@@ -274,9 +302,9 @@ std::vector<std::vector<Double> > A(std::vector<std::vector<Double> > x){
 /**
  *矩阵的逆
  */
-std::vector<std::vector<Double> > inv(std::vector<std::vector<Double> > x){
-    std::vector<std::vector<Double> > res = A(x);
-    Double dets = det(x);
+std::vector<std::vector<double> > inv(std::vector<std::vector<double> > x){
+    std::vector<std::vector<double> > res = A(x);
+    double dets = det(x);
     for(int i=0;i<res.size();i++){
         for(int j=0;j<res[0].size();j++){
             res[i][j] /= dets;
@@ -289,7 +317,7 @@ std::vector<std::vector<Double> > inv(std::vector<std::vector<Double> > x){
 /**
  *合并两个行相同的矩阵
  */
-std::vector<std::vector<Double> > ConRows(std::vector<std::vector<Double> > x, std::vector<std::vector<Double> > y){
+std::vector<std::vector<double> > ConRows(std::vector<std::vector<double> > x, std::vector<std::vector<double> > y){
     //行相同，添加列
     for(int i=0;i<y.size();i++){
         for(int j=0;j<y[0].size();j++){
@@ -302,10 +330,10 @@ std::vector<std::vector<Double> > ConRows(std::vector<std::vector<Double> > x, s
 /**
  *合并两个列相同的矩阵
  */
-std::vector<std::vector<Double> > ConCols(std::vector<std::vector<Double> > x, std::vector<std::vector<Double> > y){
+std::vector<std::vector<double> > ConCols(std::vector<std::vector<double> > x, std::vector<std::vector<double> > y){
     //列相同，添加行
     for(int i=0;i<y.size();i++){
-        std::vector<Double> row;
+        std::vector<double> row;
         for(int j=0;j<y[0].size();j++){
             row.push_back(y[i][j]);
         }
@@ -323,12 +351,12 @@ std::vector<std::vector<Double> > ConCols(std::vector<std::vector<Double> > x, s
  *测试矩阵运算成功
  */
 void test_Mat(){
-    std::vector<std::vector<Double> > data,tdata,res,Ax;
+    std::vector<std::vector<double> > data,tdata,res,Ax;
     //data = getdata();
-    Double x[] = {2,1,-1,2,1,0,1,-1,1};
+    double x[] = {2,1,-1,2,1,0,1,-1,1};
 
     for(int i=0;i<3;i++){
-        std::vector<Double> tmp;
+        std::vector<double> tmp;
         data.push_back(tmp);
         for(int j=0;j<3;j++){
             data[i].push_back(x[i*3+j]);
@@ -368,7 +396,7 @@ void test_Mat(){
 /**
 int main()
 {
-    std::vector<Double> data;
+    std::vector<double> data;
     test_Mat();
     return 0;
 }

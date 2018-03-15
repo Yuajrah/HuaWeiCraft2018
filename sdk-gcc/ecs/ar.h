@@ -6,7 +6,6 @@
 #define SDK_GCC_AR_H
 
 #include <vector>
-typedef long double Double;
 /**
  *依据已知样本值 x 1 , x 2 , L , x n 对 AR ( p ) 模型作出估计 称为自回归模型拟合自回归
  *模型拟合内容包括
@@ -15,9 +14,10 @@ typedef long double Double;
  *3 对模型作拟合检验
  */
 
+std::vector<double> get_p(std::vector<double> AutoCov, std::vector<double> BiasCor, int p_max);
 
 
-int Calculate_p(std::vector<Double> data);
+void print_bais_cor(std::vector<double> data);
 
 
 
@@ -37,8 +37,8 @@ int Calculate_p(std::vector<Double> data);
 /**
  *根据p得到数据矩阵形式
  */
-/*std::vector<std::vector<Double> > y; //y = [data[p+1, ..., n]]
-std::vector<std::vector<Double> > x;*/
+/*std::vector<std::vector<double> > y; //y = [data[p+1, ..., n]]
+std::vector<std::vector<double> > x;*/
 /**
   [ data[p, ..., 1] ]
   [ data[p+1, ..., 2] ]
@@ -50,18 +50,18 @@ std::vector<std::vector<Double> > x;*/
  */
 
 
-void formatData(std::vector<Double> data,int p);
+void formatData(std::vector<double> data,int p);
 
 /**
  *最小二乘法求参数
  * a = inv(t(x) _*_ x) _*_ t(x) _*_ Y
  * e = sum(a) / (n-p)
  */
-std::vector<Double> LeastSquares(std::vector<Double> data,int p);
+std::vector<double> LeastSquares(std::vector<double> data,int p);
 /**
  *得到e
  */
-Double getBias(std::vector<Double> data,std::vector<Double> a,int n,int p);
+double getBias(std::vector<double> data,std::vector<double> a,int n,int p);
 
 
 /**
@@ -78,14 +78,14 @@ Double getBias(std::vector<Double> data,std::vector<Double> a,int n,int p);
 
  */
 
-int calP_N(std::vector<Double> data,std::vector<Double> a,int p);
+int calP_N(std::vector<double> data,std::vector<double> a,int p);
 
 /**
  *根据模型预测以后的数据，k表示第k个数据，这里k大于n,注意时间序列，必须先预测得到n，才能得到n+1，
  *如果给出的k>n，会预测[n,k]的所有位置，并添加大原数据上。
  */
 
-Double predict(std::vector<Double> &data,std::vector<Double> a,int k,int p);
+double predict(std::vector<double> &data,std::vector<double> a,int k,int p);
 
 void test_ar();
 
