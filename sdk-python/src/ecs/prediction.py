@@ -18,6 +18,7 @@ def get_periods_sub(periods):
 
 # 原来结果保存在dataframe，改变成dict并返回
 def dataframe_to_dict(dataframe):
+    dataframe["predict"] = dataframe["predict"].astype(int)
     data = dataframe["predict"]
     return data.to_dict()
 

@@ -7,11 +7,15 @@ from plot_data import plot_set_data, plot_set_cumsum_data, plot_set_single_vm_da
 from test_stationarity import draw_trend, test_stationarity, draw_acf_pacf
 import statsmodels as sm
 from prediction import ar, print_ar_res, mv_and_ar, predict_by_train_mean, arima, arma
+from allocate import frist_fit
 
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
     
     train_dates = ["2015-12-01", "2016-01-20"]
+    #获取需要优化的信息
+    server_data, flavor_types, flavor_data, target_resource, predict_dates = get_flavor_data(input_lines)
+    #测试方便，直接覆盖掉
     predict_dates = ["2016-01-21", "2016-01-27"]
     # 所需要预测的虚拟机类型
     target_types = ["flavor1", "flavor2", "flavor3", "flavor4", "flavor5",
@@ -24,10 +28,7 @@ def predict_vm(ecs_lines, input_lines):
     
     train_dataframe = get_sets_dataframe(ecs_lines, train_dates, target_types)
     actual_dataframe = get_sets_dataframe(ecs_lines, predict_dates, target_types)
-    
-    #获取需要优化的信息
-    server_data, target_types, flavor_data, target_resource, predict_dates = get_flavor_data(input_lines)
-     # 绘制集合信息
+    # 绘制集合信息
 #    plot_set_data(data, "../../../imgs/train_info.png")
 #    plot_set_cumsum_data(data, "../../../imgs/train_cumsum_info.png")
     
@@ -37,8 +38,9 @@ def predict_vm(ecs_lines, input_lines):
 #        plot_set_single_vm_cumsum_data(type, train_data, "../../../imgs/single_cumsum/train_" + type)  
     
     # ar部分的预测结果
-    #print "result of ar:"
-    #ar_predict = print_ar_res(train_dataframe, predict_dates, actual_data, target_types)
+    print "result of ar:"
+    ar_predict = print_ar_res(train_dataframe, predict_dates, actual_data, target_types)
+    
     
     #使用移动平均和自回归进行预测
     #print "result of mv_and_ar:"
@@ -55,6 +57,10 @@ def predict_vm(ecs_lines, input_lines):
     #print "result of primary arma:"
     #p_value = 0.05
     #arma(train_dataframe, watch_windows, predict_dates, target_types, actual_data, p_value)
+    #
+    print "############################################################################"
+    print "allocate begin:"
+    frist_fit(server_data, flavor_data, target_resource, need_allocate = ar_predict)
     result = []
     if ecs_lines is None:
         print 'ecs information is none'
