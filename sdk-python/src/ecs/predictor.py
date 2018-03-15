@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from get_sets import get_sets, get_sets_dataframe, get_test_data
+from get_sets import get_sets, get_sets_dataframe, get_test_data, get_flavor_data
 from plot_data import plot_set_data, plot_set_cumsum_data, plot_set_single_vm_data, plot_set_single_vm_cumsum_data
 from test_stationarity import draw_trend, test_stationarity, draw_acf_pacf
 import statsmodels as sm
@@ -24,7 +24,9 @@ def predict_vm(ecs_lines, input_lines):
     
     train_dataframe = get_sets_dataframe(ecs_lines, train_dates, target_types)
     actual_dataframe = get_sets_dataframe(ecs_lines, predict_dates, target_types)
-        
+    
+    #获取需要优化的信息
+    server_data, target_types, flavor_data, target_resource, predict_dates = get_flavor_data(input_lines)
      # 绘制集合信息
 #    plot_set_data(data, "../../../imgs/train_info.png")
 #    plot_set_cumsum_data(data, "../../../imgs/train_cumsum_info.png")
@@ -35,17 +37,17 @@ def predict_vm(ecs_lines, input_lines):
 #        plot_set_single_vm_cumsum_data(type, train_data, "../../../imgs/single_cumsum/train_" + type)  
     
     # ar部分的预测结果
-    print "result of ar:"
-    ar_predict = print_ar_res(train_dataframe, predict_dates, actual_data, target_types)
+    #print "result of ar:"
+    #ar_predict = print_ar_res(train_dataframe, predict_dates, actual_data, target_types)
     
     #使用移动平均和自回归进行预测
-    print "result of mv_and_ar:"
-    watch_windows = 7
-    mv_and_ar_predict = mv_and_ar(train_dataframe, watch_windows, predict_dates, target_types, actual_data)
+    #print "result of mv_and_ar:"
+    #watch_windows = 7
+    #mv_and_ar_predict = mv_and_ar(train_dataframe, watch_windows, predict_dates, target_types, actual_data)
 
     # 直接使用平均值来预测
-    print "result of mean:"
-    mean_predict = predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_types)
+    #print "result of mean:"
+    #mean_predict = predict_by_train_mean(train_dataframe, predict_dates, actual_data, target_types)
     
     #使用ARIMA和ARMA综合
     #p_value为接收平稳的
