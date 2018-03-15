@@ -63,6 +63,58 @@ def get_test_data(ecs_lines, set_dates, target_types):
             elif date > set_dates[1]:
                 break
     return data
-            
+
+#读取输入文件信息，依次返回读取内容，数据格式为：
+    #物理服务器信息：server_data  {“CPU”:vlaue, MEM:value}
+    #需要观察的虚拟服务器类型: flavor_type [flavor1, flavor2....] 
+    #虚拟服务器信息：flavor_data
+    #{
+    #      flavor1:{CPU: value, MEM: value}
+    #      flavor2:{CPU: value, MEM: vlaue}
+    #      ........ 
+    #}
+    #目标优化资源:target_resource CPU/MEM
+    #预测的起始日期： predict_dates [2016-01-01, 2016-01-07]
+def get_flavor_data(input_lines):
+    server_data = {}
+    flavor_type = []
+    flavor_data = {}
+     
+    predict_dates = []
+    line_number = 0
+    #首先读取物理服务器信息
+    server_line = input_lines[line_number]
+    server_line_split = server_line.split() 
+    server_data["CPU"] = int(server_line_split[0])
+    server_data["MEM"] = int (server_line_split[1])
+    #跳过空行
+    line_number += 2
+    
+    #开始读取虚拟服务器信息 
+    flavor_number = int(input_lines[line_number])
+    line_number += 1
+    change__to_Gb = 1024
+    for i in range(line_number, line_number+flavor_number):
+        flavor_line = input_lines[i]
+        flavor_line_split = flavor_line.split()
+        flavor_type.append(flavor_line_split[0])
+        tmp_flavor = {}
+        tmp_flavor["CPU"] = int(flavor_line_split[1])
+        tmp_flavor["MEM"] = int(flavor_line_split[2])/change__to_Gb
+        flavor_data[flavor_line_split[0]] = tmp_flavor
+        line_number += 1
+    
+    #开始读取需要优化的资源
+    line_number += 1
+    target_resource = input_lines[line_number]
+    
+    #开始读取预测日期
+    line_number += 2
+    for i in range(line_number, line_number+2):
+        date = input_lines[i]
+        date_split = date.split()
+        predict_dates.append(date_split[0])
+    return server_data, flavor_type, flavor_data, target_resource, predict_dates
+    
     
     
