@@ -19,7 +19,7 @@
 
 AR::AR(std::vector<double> data):data(data){};
 
-void AR::fit(int p_max) {
+void AR::fit(int p, int p_max) {
     if (p_max == -1) {
         p_max = data.size()-1;
     }
@@ -65,15 +65,19 @@ void AR::fit(int p_max) {
 
     // 找出滞后[1..p_max]中aic最小的p_max
     double min_aic = DBL_MAX;
-    int best_p = -1;
-    for (int k=1;k<=p_max;k++) {
-        aic.push_back(log(noise_var[k]) + 2 * k / double(data.size()));
-        if (aic.back() < min_aic) { // aic的计算公式
-            best_p = k;
+    if (p == -1) {
+        int best_p = -1;
+        for (int k=1;k<=p_max;k++) {
+            aic.push_back(log(noise_var[k]) + 2 * k / double(data.size()));
+            if (aic.back() < min_aic) { // aic的计算公式
+                best_p = k;
+            }
         }
+        this->best_p = best_p;
+    } else {
+        this->best_p = p;
     }
-    this->best_p = best_p;
-    this->a.assign(aa[best_p - 1].begin(), aa[best_p - 1].end());
+    this->a.assign(aa[this->best_p - 1].begin(), aa[this->best_p - 1].end());
 }
 
 /**
@@ -223,6 +227,7 @@ std::vector<double> AR::predict(int k){
         data_copy.push_back(s);
     }
     std::vector<double> predict_res(data_copy.begin() + data.size(), data_copy.end());
+    this->res.assign(predict_res.begin(), predict_res.end());
     return predict_res;
 }
 
@@ -273,6 +278,10 @@ void AR::print_model_info() {
     }
     printf("\n\nnoise_var size：size = %d\n", noise_var.size());
     for (auto t: noise_var) {
+        printf("%f ", t);
+    }
+    printf("\n\nres size：size = %d\n", res.size());
+    for (auto t: res) {
         printf("%f ", t);
     }
 }
