@@ -93,6 +93,8 @@ test.cpp
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.cpp
 cstdio
 -
+map
+-
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
 lib_io.h
