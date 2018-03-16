@@ -89,10 +89,14 @@ predict.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
 AR.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.h
+test.cpp
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.cpp
 cstdio
 -
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
 lib_io.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/lib_io.h
+
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.cpp
 

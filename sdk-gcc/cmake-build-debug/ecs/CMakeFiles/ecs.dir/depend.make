@@ -23,4 +23,5 @@ ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/AR.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/date_utils.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/predict.cpp
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/predict.h
+ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/test.cpp
 
