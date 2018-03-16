@@ -25,6 +25,8 @@ cstdio
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.h
 vector
 -
+string
+-
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp
 stdio.h

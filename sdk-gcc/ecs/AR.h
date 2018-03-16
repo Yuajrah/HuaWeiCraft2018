@@ -6,13 +6,14 @@
 #define SDK_GCC_AR_H
 
 #include <vector>
+#include <string>
 class AR {
 private:
 
     std::vector<double> get_auto_cov();
     std::vector<double> get_auto_cor(std::vector<double> auto_cov);
 
-    std::vector<double> aic;
+    std::vector<double> ic_vals;
     std::vector<double> auto_cov;
     std::vector<double> auto_cor;
     std::vector<double> bias_cor;
@@ -25,7 +26,7 @@ public:
 
 
     AR(std::vector<double>);
-    void fit(int p=-1, int p_max=-1);
+    void fit(std::string ic="none", int p=-1, int p_max=-1);
     std::vector<double> predict(int k);
     void print_model_info();
 

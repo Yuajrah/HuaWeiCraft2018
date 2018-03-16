@@ -19,11 +19,8 @@
 
 AR::AR(std::vector<double> data):data(data){};
 
-void AR::fit(int p, int p_max) {
-    if (p_max == -1) {
-        p_max = data.size()-1;
-    }
-    p_max = p_max % data.size();
+void AR::fit(std::string ic, int p, int p_max) {
+
 
 
     std::vector<double> auto_cov = get_auto_cov(); // 得到自协方差
@@ -65,17 +62,46 @@ void AR::fit(int p, int p_max) {
 
     // 找出滞后[1..p_max]中aic最小的p_max
     double min_aic = DBL_MAX;
-    if (p == -1) {
+    if (ic=="none") { // 如果传入none，则根据数据长度瞎jb定
+        this->best_p = int(round(12 * pow((data.size() / 100), 1/4)));
+    } else if (ic=="aic") { // 如果不传入p，则默认值为-1，这是使用aic定阶，这时p_max才有用
+        if (p_max == -1) {
+            p_max = data.size()-1;
+        }
+        p_max = p_max % data.size();
         int best_p = -1;
         for (int k=1;k<=p_max;k++) {
-            aic.push_back(log(noise_var[k]) + 2 * k / double(data.size()));
-            if (aic.back() < min_aic) { // aic的计算公式
+            ic_vals.push_back(log(noise_var[k]) + 2 * k / double(data.size()));
+            if (ic_vals.back() < min_aic) { // aic的计算公式
                 best_p = k;
+                min_aic = ic_vals.back();
             }
         }
         this->best_p = best_p;
-    } else {
+    } else if (ic=="bic") {
+        if (p_max == -1) {
+            p_max = data.size()-1;
+        }
+        p_max = p_max % data.size();
+        int best_p = -1;
+        for (int k=1;k<=p_max;k++) {
+            ic_vals.push_back(log(noise_var[k]) + k * log(data.size()) / double(data.size()));
+            if (ic_vals.back() < min_aic) { // aic的计算公式
+                best_p = k;
+                min_aic = ic_vals.back();
+            }
+        }
+        this->best_p = best_p;
+    } else if (ic=="manual") { // 手动赋值
+        if (p == -1) {
+            this->best_p = 1;
+        }
         this->best_p = p;
+    } else if (ic=="none_and_least_square") { // 使用最小二乘法计算自回归系数a[1..p]
+        this->best_p = int(round(12 * pow((data.size() / 100), 1/4)));
+        std::vector<double> a = least_squares();
+        this->a.assign(a.begin(), a.end());
+        return;
     }
     this->a.assign(aa[this->best_p - 1].begin(), aa[this->best_p - 1].end());
 }
@@ -134,6 +160,9 @@ std::vector<double> AR::least_squares(){
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> form_data = format_data();
     std::vector<std::vector<double>> x = form_data.first;
     std::vector<std::vector<double>> y = form_data.second;
+
+    printf("x.size = %d", x.size());
+    printf("y.size = %d", y.size());
 
     std::vector<std::vector<double> > a, tx,invx,tmp;
     tx = t(x);
@@ -272,8 +301,8 @@ void AR::print_model_info() {
     for (auto t: bias_cor) {
         printf("%f ", t);
     }
-    printf("\n\naic size：size = %d\n", aic.size());
-    for (auto t: aic) {
+    printf("\n\nic_vals size：size = %d\n", ic_vals.size());
+    for (auto t: ic_vals) {
         printf("%f ", t);
     }
     printf("\n\nnoise_var size：size = %d\n", noise_var.size());
