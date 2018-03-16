@@ -35,7 +35,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     AR ar_model = AR(test_data);
     ar_model.fit("none_and_least_square");
-    std::vector<double> res = ar_model.predict(36);
+    std::vector<double> res = ar_model.predict(37);
 
     ar_model.print_model_info();
 
