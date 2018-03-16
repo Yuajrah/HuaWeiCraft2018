@@ -106,7 +106,7 @@ def get_flavor_data(input_lines):
     
     #开始读取需要优化的资源
     line_number += 1
-    target_resource = input_lines[line_number]
+    target_resource = input_lines[line_number][0:3]
     
     #开始读取预测日期
     line_number += 2
