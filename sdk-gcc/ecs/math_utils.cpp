@@ -7,65 +7,7 @@
 #include <cmath>
 #include <cstdio>
 
-/**
- *自协方差 AutoCov[k] = E((x[i] - u)(x[i-k] - u))
- *自相关系数 AutoCov[k] = AutoCov[k] / AutoCov[0]
- */
 
-std::vector<double> get_auto_cov(std::vector<double> data){
-    //计算自相关系数矩阵
-    int n = data.size();
-
-    double mean = 0; //数据的均值
-    for(int i=0;i<n;i++){
-        mean += data[i];
-    }
-    mean /= n;
-    //std::cout<<"mean::"<<mean<<std::endl;
-    //将每个数据都减去均值得到新的数据
-    std::vector<double> prodata;
-
-    for(int i=0;i<n;i++){
-        prodata.push_back(data[i] - mean);
-        //std::cout<<"prodata[i] "<<prodata[i]<<std::endl;
-    }
-
-    std::vector<double> AutoCov(n,0);//自协方差AutoCovariance
-    for(int k=0;k<n;k++){
-        for(int i=0;i<n-k;i++){
-            AutoCov[k] += prodata[i] * prodata[i+k];
-        }
-        AutoCov[k] /= n - k;
-    }
-
-    return AutoCov;
-}
-
-std::vector<double> get_auto_cor(std::vector<double> auto_cov){
-
-    std::vector<double> auto_cor;
-
-    /**
-    std::cout<<"AutoCor:自协方差：begin"<<std::endl;
-    for(int k=0;k<AutoCov.size();k++){
-    	std::cout<<AutoCov[k]<<" ";
-    }
-    std::cout<<"AutoCor:自协方差：end"<<std::endl;
-    **/
-
-    for(int k=0;k<auto_cov.size();k++){
-        auto_cor.push_back(auto_cov[k] / auto_cov[0]);
-    }
-
-    /**
-    std::cout<<"AutoCor:自协方差系数：begin"<<std::endl;
-    for(int k=0;k<AutoCor.size();k++){
-        std::cout<<AutoCor[k]<<" ";
-    }
-    std::cout<<"AutoCor:自协方差系数：end"<<std::endl;
-    **/
-    return auto_cor;
-}
 
 
 /**
@@ -75,39 +17,6 @@ std::vector<double> get_auto_cor(std::vector<double> auto_cov){
  *BiasCor[j,k] = BiasCor[j,k-1] - BiasCor[k,k]*BiasCor[k-j,k-1] j = 0...k
  *
  */
-std::vector<double> getBiasCor(std::vector<double> AutoCor){
-    //计算BiasCor[i,j],为了直接访问下标，首先初始化
-    std::vector< std::vector<double> > BiasCor;
-    for(int i=0;i<AutoCor.size();i++){
-        std::vector<double> tmp(AutoCor.size(),0);
-        BiasCor.push_back(tmp);
-    }
-
-    BiasCor[0][0] = AutoCor[0];
-
-    for(int k=1;k<AutoCor.size();k++){
-        BiasCor[k][k] = AutoCor[k];
-        double t1,t2;
-        for(int j=0;j<=k-1;j++){
-            t1 = AutoCor[k-j] * BiasCor[j][k-1];
-            t2 = AutoCor[j] * BiasCor[j][k-1];
-
-            BiasCor[j][k] = BiasCor[j][k-1] - BiasCor[k][k] * BiasCor[k-j][k-1];
-
-        }
-        BiasCor[k][k] = (BiasCor[k][k] - t1) / t2;
-        for(int j=0;j<=k-1;j++){
-            BiasCor[k][j] = BiasCor[j][k] = BiasCor[j][k-1] - BiasCor[k][k] * BiasCor[k-j][k-1];
-        }
-    }
-    std::vector<double> res;
-    for(int k=0;k<AutoCor.size();k++){
-        res.push_back(BiasCor[k][k]);
-    }
-
-    return res;
-
-}
 
 /*
  * auto_cov的长度，就是输入数据的长度len
@@ -152,15 +61,8 @@ std::vector<double> get_bias_cor(std::vector<double> auto_cov) {
     std::vector<double> noise_var;
     noise_var.push_back(auto_cov[0]);
     for (int k = 1; k < auto_cov.size(); k++) {
-        printf("noise_var[k-1] = %f, a[k-1][k-1]) = %f, res = %f\n", noise_var[k-1], a[k-1][k-1], 1 - a[k-1][k-1]);
         noise_var.push_back(noise_var[k-1] * (1 - a[k-1][k-1]));
     }
-    std::cout<<"noise_var: begin" << std::endl;
-    for (int i=0;i<noise_var.size();i++) {
-        std::cout<< noise_var[i] << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "noise_var: end" << std::endl;
     return bias_cor;
 }
 

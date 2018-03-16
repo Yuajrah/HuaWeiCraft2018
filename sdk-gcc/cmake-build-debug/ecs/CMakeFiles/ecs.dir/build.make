@@ -57,28 +57,28 @@ include ecs/CMakeFiles/ecs.dir/progress.make
 # Include the compile flags for this target's objects.
 include ecs/CMakeFiles/ecs.dir/flags.make
 
-ecs/CMakeFiles/ecs.dir/ar.cpp.o: ecs/CMakeFiles/ecs.dir/flags.make
-ecs/CMakeFiles/ecs.dir/ar.cpp.o: ../ecs/ar.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object ecs/CMakeFiles/ecs.dir/ar.cpp.o"
-	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/ar.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.cpp
+ecs/CMakeFiles/ecs.dir/AR.cpp.o: ecs/CMakeFiles/ecs.dir/flags.make
+ecs/CMakeFiles/ecs.dir/AR.cpp.o: ../ecs/AR.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object ecs/CMakeFiles/ecs.dir/AR.cpp.o"
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/AR.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.cpp
 
-ecs/CMakeFiles/ecs.dir/ar.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ecs.dir/ar.cpp.i"
-	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.cpp > CMakeFiles/ecs.dir/ar.cpp.i
+ecs/CMakeFiles/ecs.dir/AR.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ecs.dir/AR.cpp.i"
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.cpp > CMakeFiles/ecs.dir/AR.cpp.i
 
-ecs/CMakeFiles/ecs.dir/ar.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ecs.dir/ar.cpp.s"
-	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.cpp -o CMakeFiles/ecs.dir/ar.cpp.s
+ecs/CMakeFiles/ecs.dir/AR.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ecs.dir/AR.cpp.s"
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.cpp -o CMakeFiles/ecs.dir/AR.cpp.s
 
-ecs/CMakeFiles/ecs.dir/ar.cpp.o.requires:
+ecs/CMakeFiles/ecs.dir/AR.cpp.o.requires:
 
-.PHONY : ecs/CMakeFiles/ecs.dir/ar.cpp.o.requires
+.PHONY : ecs/CMakeFiles/ecs.dir/AR.cpp.o.requires
 
-ecs/CMakeFiles/ecs.dir/ar.cpp.o.provides: ecs/CMakeFiles/ecs.dir/ar.cpp.o.requires
-	$(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ar.cpp.o.provides.build
-.PHONY : ecs/CMakeFiles/ecs.dir/ar.cpp.o.provides
+ecs/CMakeFiles/ecs.dir/AR.cpp.o.provides: ecs/CMakeFiles/ecs.dir/AR.cpp.o.requires
+	$(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/AR.cpp.o.provides.build
+.PHONY : ecs/CMakeFiles/ecs.dir/AR.cpp.o.provides
 
-ecs/CMakeFiles/ecs.dir/ar.cpp.o.provides.build: ecs/CMakeFiles/ecs.dir/ar.cpp.o
+ecs/CMakeFiles/ecs.dir/AR.cpp.o.provides.build: ecs/CMakeFiles/ecs.dir/AR.cpp.o
 
 
 ecs/CMakeFiles/ecs.dir/date_utils.cpp.o: ecs/CMakeFiles/ecs.dir/flags.make
@@ -203,7 +203,7 @@ ecs/CMakeFiles/ecs.dir/predict.cpp.o.provides.build: ecs/CMakeFiles/ecs.dir/pred
 
 # Object files for target ecs
 ecs_OBJECTS = \
-"CMakeFiles/ecs.dir/ar.cpp.o" \
+"CMakeFiles/ecs.dir/AR.cpp.o" \
 "CMakeFiles/ecs.dir/date_utils.cpp.o" \
 "CMakeFiles/ecs.dir/ecs.cpp.o" \
 "CMakeFiles/ecs.dir/io.cpp.o" \
@@ -213,7 +213,7 @@ ecs_OBJECTS = \
 # External object files for target ecs
 ecs_EXTERNAL_OBJECTS =
 
-bin/ecs: ecs/CMakeFiles/ecs.dir/ar.cpp.o
+bin/ecs: ecs/CMakeFiles/ecs.dir/AR.cpp.o
 bin/ecs: ecs/CMakeFiles/ecs.dir/date_utils.cpp.o
 bin/ecs: ecs/CMakeFiles/ecs.dir/ecs.cpp.o
 bin/ecs: ecs/CMakeFiles/ecs.dir/io.cpp.o
@@ -229,7 +229,7 @@ ecs/CMakeFiles/ecs.dir/build: bin/ecs
 
 .PHONY : ecs/CMakeFiles/ecs.dir/build
 
-ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/ar.cpp.o.requires
+ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/AR.cpp.o.requires
 ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/date_utils.cpp.o.requires
 ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/ecs.cpp.o.requires
 ecs/CMakeFiles/ecs.dir/requires: ecs/CMakeFiles/ecs.dir/io.cpp.o.requires

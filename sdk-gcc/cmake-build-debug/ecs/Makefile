@@ -125,32 +125,32 @@ ecs/fast:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/build
 .PHONY : ecs/fast
 
-ar.o: ar.cpp.o
+AR.o: AR.cpp.o
 
-.PHONY : ar.o
+.PHONY : AR.o
 
 # target to build an object file
-ar.cpp.o:
-	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ar.cpp.o
-.PHONY : ar.cpp.o
+AR.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/AR.cpp.o
+.PHONY : AR.cpp.o
 
-ar.i: ar.cpp.i
+AR.i: AR.cpp.i
 
-.PHONY : ar.i
+.PHONY : AR.i
 
 # target to preprocess a source file
-ar.cpp.i:
-	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ar.cpp.i
-.PHONY : ar.cpp.i
+AR.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/AR.cpp.i
+.PHONY : AR.cpp.i
 
-ar.s: ar.cpp.s
+AR.s: AR.cpp.s
 
-.PHONY : ar.s
+.PHONY : AR.s
 
 # target to generate assembly for a file
-ar.cpp.s:
-	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ar.cpp.s
-.PHONY : ar.cpp.s
+AR.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/AR.cpp.s
+.PHONY : AR.cpp.s
 
 date_utils.o: date_utils.cpp.o
 
@@ -296,9 +296,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... ecs"
-	@echo "... ar.o"
-	@echo "... ar.i"
-	@echo "... ar.s"
+	@echo "... AR.o"
+	@echo "... AR.i"
+	@echo "... AR.s"
 	@echo "... date_utils.o"
 	@echo "... date_utils.i"
 	@echo "... date_utils.s"
