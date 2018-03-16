@@ -6,6 +6,7 @@
 #include "math_utils.h"
 #include <cfloat>
 #include <cmath>
+#include <cstdio>
 
 /**
  *依据已知样本值 x 1 , x 2 , L , x n 对 AR ( p ) 模型作出估计 称为自回归模型拟合自回归
@@ -252,3 +253,26 @@ double AR::get_bias(){
     return sum / (data.size()-best_p);
 }
 
+void AR::print_model_info() {
+    printf("最佳滞后阶：best_p = %d", best_p);
+    printf("\n\nauto_cov size：size = %d\n", auto_cov.size());
+    for (auto t: auto_cov) {
+        printf("%f ", t);
+    }
+    printf("\n\nauto_cor size：size = %d\n", auto_cor.size());
+    for (auto t: auto_cor) {
+        printf("%f ", t);
+    }
+    printf("\n\nbias_cor size：size = %d\n", bias_cor.size());
+    for (auto t: bias_cor) {
+        printf("%f ", t);
+    }
+    printf("\n\naic size：size = %d\n", aic.size());
+    for (auto t: aic) {
+        printf("%f ", t);
+    }
+    printf("\n\nnoise_var size：size = %d\n", noise_var.size());
+    for (auto t: noise_var) {
+        printf("%f ", t);
+    }
+}

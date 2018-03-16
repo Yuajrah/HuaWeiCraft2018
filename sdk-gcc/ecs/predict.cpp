@@ -37,23 +37,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     ar_model.fit();
     std::vector<double> res = ar_model.predict(4);
 
-    printf("最佳滞后阶：best_p = %d", ar_model.best_p);
-    printf("\n\nauto_cov size：size = %d\n", ar_model.auto_cov.size());
-    for (auto a: ar_model.auto_cov) {
-        printf("%f ", a);
-    }
-    printf("\n\nauto_cor size：size = %d\n", ar_model.auto_cor.size());
-    for (auto a: ar_model.auto_cor) {
-        printf("%f ", a);
-    }
-    printf("\n\nbias_cor size：size = %d\n", ar_model.bias_cor.size());
-    for (auto a: ar_model.bias_cor) {
-        printf("%f ", a);
-    }
-    printf("\n\naic size：size = %d\n", ar_model.aic.size());
-    for (auto a: ar_model.aic) {
-        printf("%f ", a);
-    }
+    ar_model.print_model_info();
 
 	// 需要输出的内容
 	char * result_file = (char *)"17\n\n0 8 0 20";

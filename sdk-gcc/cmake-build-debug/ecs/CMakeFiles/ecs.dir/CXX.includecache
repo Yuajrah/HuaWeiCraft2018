@@ -19,6 +19,8 @@ cfloat
 -
 cmath
 -
+cstdio
+-
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.h
 vector
