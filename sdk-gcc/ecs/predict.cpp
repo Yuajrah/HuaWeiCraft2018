@@ -77,14 +77,14 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-    std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, "2015-04-25", vm_info, data_num);
-    std::map<int, int> actual_data = get_sum_data(data, "2015-04-25", "2015-05-02", vm_info, data_num);
+    std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, "2016-01-21", vm_info, data_num);
+    std::map<int, int> actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", vm_info, data_num);
 
 
     std::map<int, int> predict_data;
     for (auto &t: vm_info) {
         AR ar_model(train_data[t.first]);
-        ar_model.fit("none", -1, -1, true);
+        ar_model.fit("aic");
         // ar_model.fit("aic");
         ar_model.predict(7);
         ar_model.print_model_info();

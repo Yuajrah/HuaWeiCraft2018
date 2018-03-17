@@ -23,100 +23,39 @@ AR::AR(std::vector<Double> data):data(data){};
 /**
  * 拟合数据
  * ic代表不同的定阶方式：
- *      1. none，佛性定阶，直接根据数据长度计算出某一位置
- *      2. aic，根据aic定阶
- *      3. bic，根据bic定阶
- *      5. manual，表示手动传入滞后阶p
- * p, 手动传入（即ic=="manual"）时才有效
- * p_max，aic和bic方式时才有效
- * least_square为真时，用最小二乘法计算自回归系数a，否则，用levison计算自回归系数（无常数项）
+ *      1. 若ic为none,则max_lag即为lag,若max_log为-1，则 max_lag为int(round(12 * pow((data.size() / 100.0), 1.0/4)))
+ *      2. 若
+ *
  */
-void AR::fit(std::string ic, int p, int p_max, bool is_least_square) {
+void AR::fit(std::string ic, int max_lag) {
 
-
-
-    std::vector<Double> auto_cov = get_auto_cov(); // 得到自协方差
-    std::vector<Double> auto_cor = get_auto_cor(auto_cov); // 得到自协方差
-    this->auto_cov = auto_cov;
-    this->auto_cor = auto_cor;
-    // 迭代得到矩阵a
-    std::vector<std::vector<Double>> aa;
-    aa.push_back(std::vector<Double>{auto_cov[1] / auto_cov[0]});
-    for (int k=1;k<auto_cov.size()-1;k++) {
-        Double t1 = 0;
-        Double t2 = 0;
-        for (int j=1;j<=k;j++) {
-            t1 += auto_cov[k+1-j]*aa[k-1][j-1];
-            t2 += auto_cov[j]*aa[k-1][j-1];
-        }
-        aa.push_back(std::vector<Double>(k+1, -1));
-        aa[k][k] = (auto_cov[k+1] - t1) / (auto_cov[0] - t2);
-        for (int j=1;j<=k;j++) {
-            aa[k][j-1] = (aa[k-1][j-1] - aa[k][k] * aa[k-1][k-j]);
-        }
+    if (max_lag == -1) {
+        max_lag = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
     }
 
-    // 偏自相关系数,暂时用不到，以后可能有用
-    std::vector<Double> bias_cor;
-    for (int k=0;k<auto_cov.size()-1;k++) {
-        bias_cor.push_back(aa[k][k]);
-    }
-    this->bias_cor = bias_cor;
-
-    // auto_cov的长度，就是输入数据的长度len
-    // 白噪声的方差，从0开始计数，一直到len-1
-    std::vector<Double> noise_var;
-    noise_var.push_back(auto_cov[0]);
-    for (int k = 1; k < auto_cov.size(); k++) {
-        noise_var.push_back(noise_var[k-1] * (1 - aa[k-1][k-1]));
-    }
-    this->noise_var = noise_var;
-
-    // 找出滞后[1..p_max]中aic最小的p_max
-    Double min_aic = DBL_MAX;
-    if (ic=="none") { // 如果传入none，则根据数据长度瞎jb定
-        this->best_p = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
-    } else if (ic=="aic") { // 如果不传入p，则默认值为-1，这是使用aic定阶，这时p_max才有用
-        if (p_max == -1) {
-            p_max = data.size()-1;
-        }
-        p_max = p_max % data.size();
-        int best_p = -1;
-        for (int k=1;k<=p_max;k++) {
-            ic_vals.push_back(log(noise_var[k]) + 2 * k / Double(data.size()));
-            if (ic_vals.back() < min_aic) { // aic的计算公式
-                best_p = k;
-                min_aic = ic_vals.back();
+    if (ic=="none") {
+        this->best_p = max_lag;
+        std::pair<std::vector<Double>, Double> a_ssr = least_squares(this->data, max_lag);
+        this->a = a_ssr.first;
+        return;
+    } else if (ic=="aic") {
+        int len = this->data.size();
+        Double min_aic = DBL_MAX;
+        for (int lag=1;lag<=max_lag;lag++) {
+            std::pair<std::vector<Double>, Double> a_ssr = least_squares(std::vector<double>(this->data.begin()+max_lag-lag, this->data.end()), lag);
+            Double sigma2 = a_ssr.second / (len - max_lag);
+            Double aic = log(sigma2) + 2 * (2.0 + lag) / (len - max_lag);
+            // printf("%f %f %f\n",  a_ssr.second, sigma2, aic);
+            ic_vals.push_back(aic);
+            if (aic < min_aic) {
+                min_aic = aic;
+                this->best_p = lag;
             }
         }
-        this->best_p = best_p;
-    } else if (ic=="bic") {
-        if (p_max == -1) {
-            p_max = data.size()-1;
-        }
-        p_max = p_max % data.size();
-        int best_p = -1;
-        for (int k=1;k<=p_max;k++) {
-            ic_vals.push_back(log(noise_var[k]) + k * log(data.size()) / Double(data.size()));
-            if (ic_vals.back() < min_aic) { // aic的计算公式
-                best_p = k;
-                min_aic = ic_vals.back();
-            }
-        }
-        this->best_p = best_p;
-    } else if (ic=="manual") { // 手动赋值
-        if (p == -1) {
-            this->best_p = 1;
-        }
-        this->best_p = p;
-    }
-
-    if (is_least_square) {
-        std::vector<Double> a = least_squares();
-        this->a.assign(a.begin(), a.end());
+        std::pair<std::vector<Double>, Double> a_ssr = least_squares(this->data, this->best_p);
+        this->a = a_ssr.first;
         return;
     }
-    this->a.assign(aa[this->best_p - 1].begin(), aa[this->best_p - 1].end());
 }
 
 /**
@@ -170,21 +109,14 @@ std::vector<Double> AR::get_auto_cor(std::vector<Double> auto_cov){
  * a = inv(t(x) _*_ x) _*_ t(x) _*_ Y
  * e = sum(a) / (n-p)
  */
-std::vector<Double> AR::least_squares(){
-    std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> form_data = format_data();
+std::pair<std::vector<Double>, Double> AR::least_squares(std::vector<double> data, int lag){
+    std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> form_data = format_data(data, lag);
     std::vector<std::vector<Double>> x = form_data.first;
     std::vector<std::vector<Double>> y = form_data.second;
 
     std::vector<std::vector<Double> > a, tx,invx,tmp;
     tx = t(x);
     invx = inv(mulMat(tx, x));
-/*    for (auto t: inv(mulMat(tx, x))) {
-        printf("\n");
-        for (auto tt: t) {
-            printf("%Lf ", tt);
-        }
-    }*/
-    //std::cout<<invx.size()<<std::endl;
 
     /**
     std::cout<<"invx:"<<std::endl;
@@ -206,11 +138,18 @@ std::vector<Double> AR::least_squares(){
     }
     **/
     a = mulMat(mulMat(invx,tx), y);
-    a = t(a);
-    return a[0];
+    std::vector<std::vector<Double>> ta = t(a);
+
+    std::vector<std::vector<Double>> y_estimate = mulMat(x, a);
+    Double ssr = 0;
+    for (int i=0;i<y_estimate.size();i++) {
+        ssr += pow(y_estimate[i][0] - y[i][0], 2);
+    }
+
+    return {ta[0], ssr};
 }
 
-std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR::format_data(){
+std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR::format_data(std::vector<double> data, int lag){
 
     /**
 *统计后可以明显看到在k=16之后，|BiasCor[k]| < 5,因此选择p = 16之后的数都可以
@@ -237,33 +176,16 @@ std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR
   [ data[n-1, ..., n-p] ]
  */
     std::vector<Double> tmpy;
-    for(int i=best_p;i<data.size();i++){
+    for(int i=lag;i<data.size();i++){
         tmpy.push_back(data[i]);
         std::vector<Double> tmp{1};
-        for(int j=i-1;j>=i-best_p;j--){
+        for(int j=i-1;j>=i-lag;j--){
             tmp.push_back(data[j]);
         }
         x.push_back(tmp);
     }
     y.push_back(tmpy);
     y = t(y);
-
-    /**
-    std::cout<<"X:"<<std::endl;
-    for(int i=0;i<x.size();i++){
-        for(int j=0;j<x[0].size();j++){
-            std::cout<<x[i][j]<<" ";
-        }
-        std::cout<<std::endl;
-    }
-
-    std::cout<<"y:"<<std::endl;
-    for(int i=0;i<y.size();i++){
-        for(int j=0;j<y[0].size();j++){
-            std::cout<<y[i][j]<<" ";
-        }
-        std::cout<<std::endl;
-    }**/
     return {x, y};
 }
 
@@ -327,26 +249,26 @@ Double AR::get_bias(){
  */
 void AR::print_model_info() {
     printf("最佳滞后阶：best_p = %d", best_p);
-/*    printf("\n\nauto_cov size：size = %d\n", auto_cov.size());
-    for (auto t: auto_cov) {
-        printf("%f ", t);
-    }
-    printf("\n\nauto_cor size：size = %d\n", auto_cor.size());
-    for (auto t: auto_cor) {
-        printf("%f ", t);
-    }
-    printf("\n\nbias_cor size：size = %d\n", bias_cor.size());
-    for (auto t: bias_cor) {
-        printf("%f ", t);
-    }
+//    printf("\n\nauto_cov size：size = %d\n", auto_cov.size());
+//    for (auto t: auto_cov) {
+//        printf("%f ", t);
+//    }
+//    printf("\n\nauto_cor size：size = %d\n", auto_cor.size());
+//    for (auto t: auto_cor) {
+//        printf("%f ", t);
+//    }
+//    printf("\n\nbias_cor size：size = %d\n", bias_cor.size());
+//    for (auto t: bias_cor) {
+//        printf("%f ", t);
+//    }
     printf("\n\nic_vals size：size = %d\n", ic_vals.size());
     for (auto t: ic_vals) {
         printf("%f ", t);
-    }*/
-    printf("\n\nnoise_var size：size = %d\n", noise_var.size());
-    for (auto t: noise_var) {
-        printf("%f ", t);
     }
+//    printf("\n\nnoise_var size：size = %d\n", noise_var.size());
+//    for (auto t: noise_var) {
+//        printf("%f ", t);
+//    }
     printf("\n\npredict res size：size = %d\n", res.size());
     for (auto t: res) {
         printf("%f ", t);

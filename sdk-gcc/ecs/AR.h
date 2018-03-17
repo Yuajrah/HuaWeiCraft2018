@@ -28,13 +28,13 @@ private:
 
 public:
     AR(std::vector<Double>);
-    void fit(std::string ic="none", int p=-1, int p_max=-1, bool is_least_square=false);
+    void fit(std::string ic="none", int max_lag=-1);
     std::vector<Double> predict(int k);
     void print_model_info();
 
     Double get_bias();
-    std::vector<Double> least_squares();
-    std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> format_data();
+    std::pair<std::vector<Double>, Double> least_squares(std::vector<double> data, int lag);
+    std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> format_data(std::vector<double> data, int lag);
 
     inline int get_sum () {return sum;}
     inline int get_p () {return best_p;}
