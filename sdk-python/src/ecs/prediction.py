@@ -26,7 +26,7 @@ def dataframe_to_dict(dataframe):
 def get_score(predict, actual):
     predict_sum = sum([x**2 for x in predict])/(len(predict))
     actual_sum = sum([x**2 for x in actual])/(len(actual)+0.0)
-    score = 1-mean_squared_error(actual, predict)/(predict_sum + actual_sum)
+    score = 1-mean_squared_error(actual, predict)**0.5/(predict_sum**0.5 + actual_sum**0.5)
     print "predict scrore: %f" % (score)
     
 def ar(train_series, predict_dates):
