@@ -84,7 +84,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::map<int, int> predict_data;
     for (auto &t: vm_info) {
         AR ar_model(train_data[t.first]);
-        ar_model.fit("aic");
+        ar_model.fit("bic");
         // ar_model.fit("aic");
         ar_model.predict(7);
         ar_model.print_model_info();

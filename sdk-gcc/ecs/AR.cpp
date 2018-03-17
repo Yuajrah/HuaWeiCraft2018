@@ -38,17 +38,22 @@ void AR::fit(std::string ic, int max_lag) {
         std::pair<std::vector<Double>, Double> a_ssr = least_squares(this->data, max_lag);
         this->a = a_ssr.first;
         return;
-    } else if (ic=="aic") {
+    } else if (ic=="aic" || ic=="bic") {
         int len = this->data.size();
-        Double min_aic = DBL_MAX;
+        Double min_ic = DBL_MAX;
         for (int lag=1;lag<=max_lag;lag++) {
             std::pair<std::vector<Double>, Double> a_ssr = least_squares(std::vector<double>(this->data.begin()+max_lag-lag, this->data.end()), lag);
             Double sigma2 = a_ssr.second / (len - max_lag);
-            Double aic = log(sigma2) + 2 * (2.0 + lag) / (len - max_lag);
+
+            Double ic_val;
+            if (ic == "aic") {
+                ic_val = log(sigma2) + 2 * (2.0 + lag) / (len - max_lag);
+            } else if (ic == "bic") {
+                ic_val = log(sigma2) + log(len - max_lag) * (2.0 + lag) / (len - max_lag);
+            }
             // printf("%f %f %f\n",  a_ssr.second, sigma2, aic);
-            ic_vals.push_back(aic);
-            if (aic < min_aic) {
-                min_aic = aic;
+            if (ic_val < min_ic) {
+                min_ic = ic_val;
                 this->best_p = lag;
             }
         }
@@ -261,10 +266,10 @@ void AR::print_model_info() {
 //    for (auto t: bias_cor) {
 //        printf("%f ", t);
 //    }
-    printf("\n\nic_vals size：size = %d\n", ic_vals.size());
-    for (auto t: ic_vals) {
-        printf("%f ", t);
-    }
+//    printf("\n\nic_vals size：size = %d\n", ic_vals.size());
+//    for (auto t: ic_vals) {
+//        printf("%f ", t);
+//    }
 //    printf("\n\nnoise_var size：size = %d\n", noise_var.size());
 //    for (auto t: noise_var) {
 //        printf("%f ", t);
