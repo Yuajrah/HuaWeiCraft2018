@@ -20,6 +20,18 @@
 
 AR::AR(std::vector<Double> data):data(data){};
 
+/**
+ * 拟合数据
+ * ic代表不同的定阶方式：
+ *      1. none，佛性定阶，直接根据数据长度计算出某一位置
+ *      2. aic，根据aic定阶
+ *      3. bic，根据bic定阶
+ *      4. none_and_least_square，定阶方式同none，但是计算自回归系数a，用的是最小二乘法
+ *      5. manual，表示手动传入滞后阶p
+ * p, 手动传入（即ic=="manual"）时才有效
+ * p_max，aic和bic方式时才有效
+ *
+ */
 void AR::fit(std::string ic, int p, int p_max) {
 
 
@@ -165,12 +177,12 @@ std::vector<Double> AR::least_squares(){
     std::vector<std::vector<Double> > a, tx,invx,tmp;
     tx = t(x);
     invx = inv(mulMat(tx, x));
-    for (auto t: inv(mulMat(tx, x))) {
+/*    for (auto t: inv(mulMat(tx, x))) {
         printf("\n");
         for (auto tt: t) {
             printf("%Lf ", tt);
         }
-    }
+    }*/
     //std::cout<<invx.size()<<std::endl;
 
     /**
@@ -192,16 +204,8 @@ std::vector<Double> AR::least_squares(){
         std::cout<<std::endl;
     }
     **/
-    printf("\nDebug begin\n");
     a = mulMat(mulMat(invx,tx), y);
-/*    printf("\nsize: %d %d \n", a.size(), a[0].size());
-    for (auto t: a) {
-        printf("%f ", t[0]);
-    }*/
-
     a = t(a);
-    // printf("%d size = %d", a.size());
-    printf("\nDebug end\n");
     return a[0];
 }
 
@@ -253,12 +257,13 @@ std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR
 }
 
 /**
- *根据模型预测以后的数据，k表示第k个数据，这里k大于n,注意时间序列，必须先预测得到n，才能得到n+1，
- *如果给出的k>n，会预测[n,k]的所有位置，并添加大原数据上。
+ *
+ * 根据模型预测以后的数据，k表示要预测接下来的k个数据
+ *
  */
 
 std::vector<Double> AR::predict(int k){ // 预测接下来k天的数据
-    std::vector<Double> data_copy(data); // 拷贝构造
+    std::vector<Double> data_copy(data);
     for(int i=0;i<k;i++){
         Double s = 0;
         int t = data_copy.size();
@@ -306,6 +311,9 @@ Double AR::get_bias(){
     return sum / (data.size()-best_p);
 }
 
+/**
+ * 打印模型的相关信息
+ */
 void AR::print_model_info() {
     printf("最佳滞后阶：best_p = %d", best_p);
     printf("\n\nauto_cov size：size = %d\n", auto_cov.size());

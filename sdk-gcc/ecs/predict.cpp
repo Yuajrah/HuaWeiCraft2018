@@ -18,48 +18,69 @@
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
-
-    /*
+    /**
      * 先处理input_file中的数据
+     *
+     * type_num为vm的类型数目
+     *
+     * vm_info 格式为map，key为vm类型的编号（比如flavor1编号即为1），value为Vm类，其包含核心数以及内存大小
+     *
+     * server为Server类的对象，保存服务器的核心数和内存大小
+     *
+     * opt_object，优化的目标，CPU或者MEM
+     *
+     * forecast_start_date，实际预测开始日期为该天，实际历史数据结束日期为该天的前一天
+     * forecast_end_date， 实际预测结束日期为该日期前一天
+     *
      */
-    std::map<int, Vm> vm_info; // key为type的编号,value为对应的信息
-    Server server;
-    int type_num; // vm的类型
+    std::map<int, Vm> vm_info;
 
-    sscanf(info[0],"%d %d %d",&server.core, &server.storage, &server.disk);
-    sscanf(info[2],"%d",&type_num);
+    Server server;
+    sscanf(info[0],"%d %d %d",&server.core, &server.storage, &server.disk); // 获取server的基本信息
+
+    int type_num;
+    sscanf(info[2],"%d",&type_num); // 获取共有type_num种类型的vm
+
 	for (int i=3;i<3+type_num;i++) {
         int type, cores, storage;
 		sscanf(info[i],"flavor%d %d %d",&type,&cores,&storage);
-        vm_info[type] = {cores, storage};
+        vm_info[type] = {cores, storage}; // 获取各种vm的基本信息（包括 核心数和内存大小）
 	}
 
-/*    for (auto info: vm_info) {
-        printf("flavor%d %d %d\n", info.first, info.second.core, info.second.storage);
-    }*/
+    char *opt_object = info[4+type_num]; // 获取优化目标
 
-    char *opt_object = info[4+type_num]; // 所要优化的目标，CPU或者MEM
-
-    char forecast_start_date[10]; // 实际预测开始日期为该天，实际历史数据结束日期为该天的前一天
+    char forecast_start_date[10]; // 预测起始日期
     sscanf(info[6+type_num], "%s", forecast_start_date);
-    char forecast_end_date[10]; // 实际预测结束日期为该日期前一天
+    char forecast_end_date[10]; // 预测结束日期（不包含）
     sscanf(info[7+type_num], "%s", forecast_end_date);
 
+    /**
+     *
+     * data_start，esc文本数据的开始日期
+     * ar_model的使用：
+     *      1. 传入序列, 构造对象
+     *      2. 拟合, 定阶
+     *      3. 预测
+     *      [4]. 打印信息
+     *
+     *  比如： train_data[8], 表示获取flavor8的序列
+     *      AR ar_model(train_data[8]);
+     *      ar_model.fit("none_and_least_square");
+     *      ar_model.predict(get_days(forecast_start_date, forecast_end_date));
+     *      ar_model.print_model_info();
+     *
+     */
+
     char date_start[11];
-    sscanf(data[0], "%*s %*s %s", &date_start);
+    sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
+
     std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num);
 
-    AR ar_model(train_data[13]);
+    AR ar_model(train_data[8]);
     ar_model.fit("none_and_least_square");
     ar_model.predict(get_days(forecast_start_date, forecast_end_date));
     ar_model.print_model_info();
 
-/*    for (int i=0;i<train_data.size();i++) {
-        printf("\n");
-        for (int j=0;j<train_data[i].size();j++) {
-            printf("%f ", train_data[i][j]);
-        }
-    }*/
 
 	// 需要输出的内容
 	char * result_file = (char *)"17\n\n0 8 0 20";
