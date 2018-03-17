@@ -325,3 +325,19 @@ int main()
     return 0;
 }
 **/
+
+/**
+ * 打印预测结果和结果之间的差异，以及预测部分的得分情况
+ */
+void print_predict_score (std::map<int, int> actual_data, std::map<int, int> predict_data) {
+    float t1, t2, t3;
+    for (auto &t: actual_data) {
+        printf("flavor%2d %4d %4d\n", t.first, t.second, predict_data[t.first]);
+        t1 += pow(t.second - predict_data[t.first], 2);
+        t2 += pow(t.second, 2);
+        t3 += pow(predict_data[t.first], 2);
+    }
+    int len = actual_data.size();
+    float score = 1 - sqrt(t1 / len) / ( sqrt(t2 / len) + sqrt(t3 / len) );
+    printf("predict score = %f\n", score);
+}

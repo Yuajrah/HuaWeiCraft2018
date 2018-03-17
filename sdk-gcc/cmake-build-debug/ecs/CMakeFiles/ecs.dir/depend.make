@@ -29,6 +29,7 @@ ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/lib/lib_io.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/AR.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/date_utils.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/get_data.h
+ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/math_utils.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/predict.cpp
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/predict.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/test.h

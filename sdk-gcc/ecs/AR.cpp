@@ -26,13 +26,12 @@ AR::AR(std::vector<Double> data):data(data){};
  *      1. none，佛性定阶，直接根据数据长度计算出某一位置
  *      2. aic，根据aic定阶
  *      3. bic，根据bic定阶
- *      4. none_and_least_square，定阶方式同none，但是计算自回归系数a，用的是最小二乘法
  *      5. manual，表示手动传入滞后阶p
  * p, 手动传入（即ic=="manual"）时才有效
  * p_max，aic和bic方式时才有效
- *
+ * least_square为真时，用最小二乘法计算自回归系数a，否则，用levison计算自回归系数（无常数项）
  */
-void AR::fit(std::string ic, int p, int p_max) {
+void AR::fit(std::string ic, int p, int p_max, bool is_least_square) {
 
 
 
@@ -76,7 +75,7 @@ void AR::fit(std::string ic, int p, int p_max) {
     // 找出滞后[1..p_max]中aic最小的p_max
     Double min_aic = DBL_MAX;
     if (ic=="none") { // 如果传入none，则根据数据长度瞎jb定
-        this->best_p = int(round(12 * pow((data.size() / 100), 1/4)));
+        this->best_p = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
     } else if (ic=="aic") { // 如果不传入p，则默认值为-1，这是使用aic定阶，这时p_max才有用
         if (p_max == -1) {
             p_max = data.size()-1;
@@ -110,8 +109,9 @@ void AR::fit(std::string ic, int p, int p_max) {
             this->best_p = 1;
         }
         this->best_p = p;
-    } else if (ic=="none_and_least_square") { // 佛性定阶并使用最小二乘法计算自回归系数a[1..p]
-        this->best_p = int(round(12 * pow((data.size() / 100), 1/4)));
+    }
+
+    if (is_least_square) {
         std::vector<Double> a = least_squares();
         this->a.assign(a.begin(), a.end());
         return;
@@ -163,6 +163,7 @@ std::vector<Double> AR::get_auto_cor(std::vector<Double> auto_cov){
 
     return auto_cor;
 }
+
 
 /**
  *最小二乘法求参数
@@ -222,13 +223,23 @@ std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR
 * -*- : 矩阵乘法
 * inv(x): 矩阵的逆
 */
+
+
     std::vector<std::vector<Double> > y; //y = [data[p+1, ..., n]]
     std::vector<std::vector<Double> > x;
-
+    /**
+  [ data[p, ..., 1] ]
+  [ data[p+1, ..., 2] ]
+  [ data[p+2, ..., 3] ]
+  .
+  .
+  .
+  [ data[n-1, ..., n-p] ]
+ */
     std::vector<Double> tmpy;
     for(int i=best_p;i<data.size();i++){
         tmpy.push_back(data[i]);
-        std::vector<Double> tmp;
+        std::vector<Double> tmp{1};
         for(int j=i-1;j>=i-best_p;j--){
             tmp.push_back(data[j]);
         }
@@ -265,10 +276,10 @@ std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR
 std::vector<Double> AR::predict(int k){ // 预测接下来k天的数据
     std::vector<Double> data_copy(data);
     for(int i=0;i<k;i++){
-        Double s = 0;
+        Double s = a[0];
         int t = data_copy.size();
         for(int j=0;j<best_p;j++){
-            s += a[j] * data_copy[t-j-1];
+            s += a[j+1] * data_copy[t-j-1];
         }
         data_copy.push_back(s);
     }
@@ -316,7 +327,7 @@ Double AR::get_bias(){
  */
 void AR::print_model_info() {
     printf("最佳滞后阶：best_p = %d", best_p);
-    printf("\n\nauto_cov size：size = %d\n", auto_cov.size());
+/*    printf("\n\nauto_cov size：size = %d\n", auto_cov.size());
     for (auto t: auto_cov) {
         printf("%f ", t);
     }
@@ -331,14 +342,18 @@ void AR::print_model_info() {
     printf("\n\nic_vals size：size = %d\n", ic_vals.size());
     for (auto t: ic_vals) {
         printf("%f ", t);
-    }
+    }*/
     printf("\n\nnoise_var size：size = %d\n", noise_var.size());
     for (auto t: noise_var) {
         printf("%f ", t);
     }
-    printf("\n\nres size：size = %d\n", res.size());
+    printf("\n\npredict res size：size = %d\n", res.size());
     for (auto t: res) {
         printf("%f ", t);
     }
-    printf("\n\nsum = %d", sum);
+    printf("\n\na size：size = %d\n", a.size());
+    for (auto t: a) {
+        printf("%f ", t);
+    }
+    printf("\n\nsum = %d\n", sum);
 }

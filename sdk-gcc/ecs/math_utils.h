@@ -6,6 +6,7 @@
 #define SDK_GCC_MATH_UTILS_H
 
 #include <vector>
+#include <map>
 #include "math_utils.h"
 #include "type_def.h"
 /**
@@ -78,8 +79,10 @@ std::vector<std::vector<Double> > ConRows(std::vector<std::vector<Double> > x, s
 std::vector<std::vector<Double> > ConCols(std::vector<std::vector<Double> > x, std::vector<std::vector<Double> > y);
 
 
-
-
+/**
+ * 打印预测的得分
+ */
+void print_predict_score(std::map<int, int> actual_data, std::map<int, int> predict_data);
 
 
 /**

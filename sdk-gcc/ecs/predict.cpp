@@ -1,6 +1,7 @@
 #include "date_utils.h"
 #include "predict.h"
 #include "AR.h"
+#include "math_utils.h"
 #include "test.h"
 #include <cstdio>
 #include "get_data.h"
@@ -12,6 +13,8 @@
  *   inputFilePath = "../../../data/exercise/input_file.txt"
  *   resultFilePath = "../../../data/exercise/output_file.txt"
  *   项目可执行文件的参数： "../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../data/exercise/input_file.txt" resultFilePath = "../../../data/exercise/output_file.txt"
+ *   项目可执行文件的参数： "../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../data/exercise/input_file.txt" resultFilePath = "../../../data/exercise/output_file.txt"
+ *
  * */
 //你要完成的功能总入口
 // info 是inputFile的数据，data是历史数据
@@ -74,14 +77,21 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-    std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num);
-
-    AR ar_model(train_data[8]);
-    ar_model.fit("none_and_least_square");
-    ar_model.predict(get_days(forecast_start_date, forecast_end_date));
-    ar_model.print_model_info();
+    std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, "2015-04-25", vm_info, data_num);
+    std::map<int, int> actual_data = get_sum_data(data, "2015-04-25", "2015-05-02", vm_info, data_num);
 
 
+    std::map<int, int> predict_data;
+    for (auto &t: vm_info) {
+        AR ar_model(train_data[t.first]);
+        ar_model.fit("none", -1, -1, true);
+        // ar_model.fit("aic");
+        ar_model.predict(7);
+        ar_model.print_model_info();
+        predict_data[t.first] = ar_model.get_sum();
+    }
+
+    print_predict_score(actual_data, predict_data);
 	// 需要输出的内容
 	char * result_file = (char *)"17\n\n0 8 0 20";
 

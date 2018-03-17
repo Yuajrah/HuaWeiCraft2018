@@ -6,6 +6,7 @@
 #define SDK_GCC_AR_H
 
 #include <vector>
+#include <cmath>
 #include <string>
 #include "type_def.h"
 class AR {
@@ -27,7 +28,7 @@ private:
 
 public:
     AR(std::vector<Double>);
-    void fit(std::string ic="none", int p=-1, int p_max=-1);
+    void fit(std::string ic="none", int p=-1, int p_max=-1, bool is_least_square=false);
     std::vector<Double> predict(int k);
     void print_model_info();
 
@@ -36,6 +37,7 @@ public:
     std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> format_data();
 
     inline int get_sum () {return sum;}
+    inline int get_p () {return best_p;}
 };
 
 
