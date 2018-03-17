@@ -8,7 +8,7 @@
 #include <map>
 #include "type_def.h"
 
-std::map<int, std::vector<double>> get_esc_data(char ** data,
+std::map<int, std::vector<Double>> get_esc_data(char ** data,
                                                 char *start_date,
                                                 char *end_date /*不包含该天*/,
                                                 std::map<int, Vm> vm_info,

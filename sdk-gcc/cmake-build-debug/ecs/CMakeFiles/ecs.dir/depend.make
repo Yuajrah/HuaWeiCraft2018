@@ -4,6 +4,7 @@
 ecs/CMakeFiles/ecs.dir/AR.cpp.o: ../ecs/AR.cpp
 ecs/CMakeFiles/ecs.dir/AR.cpp.o: ../ecs/AR.h
 ecs/CMakeFiles/ecs.dir/AR.cpp.o: ../ecs/math_utils.h
+ecs/CMakeFiles/ecs.dir/AR.cpp.o: ../ecs/type_def.h
 
 ecs/CMakeFiles/ecs.dir/date_utils.cpp.o: ../ecs/date_utils.cpp
 ecs/CMakeFiles/ecs.dir/date_utils.cpp.o: ../ecs/date_utils.h
@@ -22,6 +23,7 @@ ecs/CMakeFiles/ecs.dir/io.cpp.o: ../ecs/io.cpp
 
 ecs/CMakeFiles/ecs.dir/math_utils.cpp.o: ../ecs/math_utils.cpp
 ecs/CMakeFiles/ecs.dir/math_utils.cpp.o: ../ecs/math_utils.h
+ecs/CMakeFiles/ecs.dir/math_utils.cpp.o: ../ecs/type_def.h
 
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/lib/lib_io.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/AR.h
@@ -35,4 +37,5 @@ ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/type_def.h
 ecs/CMakeFiles/ecs.dir/test.cpp.o: ../ecs/AR.h
 ecs/CMakeFiles/ecs.dir/test.cpp.o: ../ecs/test.cpp
 ecs/CMakeFiles/ecs.dir/test.cpp.o: ../ecs/test.h
+ecs/CMakeFiles/ecs.dir/test.cpp.o: ../ecs/type_def.h
 

@@ -47,8 +47,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start);
-    std::map<int, std::vector<double>> train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num);
+    std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num);
 
+    AR ar_model(train_data[13]);
+    ar_model.fit("none_and_least_square");
+    ar_model.predict(get_days(forecast_start_date, forecast_end_date));
+    ar_model.print_model_info();
 
 /*    for (int i=0;i<train_data.size();i++) {
         printf("\n");

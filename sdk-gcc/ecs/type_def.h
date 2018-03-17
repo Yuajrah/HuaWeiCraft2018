@@ -16,4 +16,6 @@ struct Vm {
     int storage; // 所需内存大小
 };
 
+typedef double Double;
+
 #endif //SDK_GCC_TYPE_DEF_H

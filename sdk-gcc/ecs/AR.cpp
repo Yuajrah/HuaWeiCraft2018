@@ -4,6 +4,7 @@
 
 #include "AR.h"
 #include "math_utils.h"
+#include "type_def.h"
 #include <cfloat>
 #include <cmath>
 #include <cstdio>
@@ -17,27 +18,27 @@
  *
  */
 
-AR::AR(std::vector<double> data):data(data){};
+AR::AR(std::vector<Double> data):data(data){};
 
 void AR::fit(std::string ic, int p, int p_max) {
 
 
 
-    std::vector<double> auto_cov = get_auto_cov(); // 得到自协方差
-    std::vector<double> auto_cor = get_auto_cor(auto_cov); // 得到自协方差
+    std::vector<Double> auto_cov = get_auto_cov(); // 得到自协方差
+    std::vector<Double> auto_cor = get_auto_cor(auto_cov); // 得到自协方差
     this->auto_cov = auto_cov;
     this->auto_cor = auto_cor;
     // 迭代得到矩阵a
-    std::vector<std::vector<double>> aa;
-    aa.push_back(std::vector<double>{auto_cov[1] / auto_cov[0]});
+    std::vector<std::vector<Double>> aa;
+    aa.push_back(std::vector<Double>{auto_cov[1] / auto_cov[0]});
     for (int k=1;k<auto_cov.size()-1;k++) {
-        double t1 = 0;
-        double t2 = 0;
+        Double t1 = 0;
+        Double t2 = 0;
         for (int j=1;j<=k;j++) {
             t1 += auto_cov[k+1-j]*aa[k-1][j-1];
             t2 += auto_cov[j]*aa[k-1][j-1];
         }
-        aa.push_back(std::vector<double>(k+1, -1));
+        aa.push_back(std::vector<Double>(k+1, -1));
         aa[k][k] = (auto_cov[k+1] - t1) / (auto_cov[0] - t2);
         for (int j=1;j<=k;j++) {
             aa[k][j-1] = (aa[k-1][j-1] - aa[k][k] * aa[k-1][k-j]);
@@ -45,7 +46,7 @@ void AR::fit(std::string ic, int p, int p_max) {
     }
 
     // 偏自相关系数,暂时用不到，以后可能有用
-    std::vector<double> bias_cor;
+    std::vector<Double> bias_cor;
     for (int k=0;k<auto_cov.size()-1;k++) {
         bias_cor.push_back(aa[k][k]);
     }
@@ -53,7 +54,7 @@ void AR::fit(std::string ic, int p, int p_max) {
 
     // auto_cov的长度，就是输入数据的长度len
     // 白噪声的方差，从0开始计数，一直到len-1
-    std::vector<double> noise_var;
+    std::vector<Double> noise_var;
     noise_var.push_back(auto_cov[0]);
     for (int k = 1; k < auto_cov.size(); k++) {
         noise_var.push_back(noise_var[k-1] * (1 - aa[k-1][k-1]));
@@ -61,7 +62,7 @@ void AR::fit(std::string ic, int p, int p_max) {
     this->noise_var = noise_var;
 
     // 找出滞后[1..p_max]中aic最小的p_max
-    double min_aic = DBL_MAX;
+    Double min_aic = DBL_MAX;
     if (ic=="none") { // 如果传入none，则根据数据长度瞎jb定
         this->best_p = int(round(12 * pow((data.size() / 100), 1/4)));
     } else if (ic=="aic") { // 如果不传入p，则默认值为-1，这是使用aic定阶，这时p_max才有用
@@ -71,7 +72,7 @@ void AR::fit(std::string ic, int p, int p_max) {
         p_max = p_max % data.size();
         int best_p = -1;
         for (int k=1;k<=p_max;k++) {
-            ic_vals.push_back(log(noise_var[k]) + 2 * k / double(data.size()));
+            ic_vals.push_back(log(noise_var[k]) + 2 * k / Double(data.size()));
             if (ic_vals.back() < min_aic) { // aic的计算公式
                 best_p = k;
                 min_aic = ic_vals.back();
@@ -85,7 +86,7 @@ void AR::fit(std::string ic, int p, int p_max) {
         p_max = p_max % data.size();
         int best_p = -1;
         for (int k=1;k<=p_max;k++) {
-            ic_vals.push_back(log(noise_var[k]) + k * log(data.size()) / double(data.size()));
+            ic_vals.push_back(log(noise_var[k]) + k * log(data.size()) / Double(data.size()));
             if (ic_vals.back() < min_aic) { // aic的计算公式
                 best_p = k;
                 min_aic = ic_vals.back();
@@ -97,9 +98,9 @@ void AR::fit(std::string ic, int p, int p_max) {
             this->best_p = 1;
         }
         this->best_p = p;
-    } else if (ic=="none_and_least_square") { // 使用最小二乘法计算自回归系数a[1..p]
+    } else if (ic=="none_and_least_square") { // 佛性定阶并使用最小二乘法计算自回归系数a[1..p]
         this->best_p = int(round(12 * pow((data.size() / 100), 1/4)));
-        std::vector<double> a = least_squares();
+        std::vector<Double> a = least_squares();
         this->a.assign(a.begin(), a.end());
         return;
     }
@@ -111,25 +112,25 @@ void AR::fit(std::string ic, int p, int p_max) {
  *自相关系数 AutoCov[k] = AutoCov[k] / AutoCov[0]
  */
 
-std::vector<double> AR::get_auto_cov(){
+std::vector<Double> AR::get_auto_cov(){
     //计算自相关系数矩阵
     int n = data.size();
 
-    double mean = 0; //数据的均值
+    Double mean = 0; //数据的均值
     for(int i=0;i<n;i++){
         mean += data[i];
     }
     mean /= n;
     //std::cout<<"mean::"<<mean<<std::endl;
     //将每个数据都减去均值得到新的数据
-    std::vector<double> prodata;
+    std::vector<Double> prodata;
 
     for(int i=0;i<n;i++){
         prodata.push_back(data[i] - mean);
         //std::cout<<"prodata[i] "<<prodata[i]<<std::endl;
     }
 
-    std::vector<double> AutoCov(n,0);//自协方差AutoCovariance
+    std::vector<Double> AutoCov(n,0);//自协方差AutoCovariance
     for(int k=0;k<n;k++){
         for(int i=0;i<n-k;i++){
             AutoCov[k] += prodata[i] * prodata[i+k];
@@ -140,9 +141,9 @@ std::vector<double> AR::get_auto_cov(){
     return AutoCov;
 }
 
-std::vector<double> AR::get_auto_cor(std::vector<double> auto_cov){
+std::vector<Double> AR::get_auto_cor(std::vector<Double> auto_cov){
 
-    std::vector<double> auto_cor;
+    std::vector<Double> auto_cor;
 
     for(int k=0;k<auto_cov.size();k++){
         auto_cor.push_back(auto_cov[k] / auto_cov[0]);
@@ -156,17 +157,20 @@ std::vector<double> AR::get_auto_cor(std::vector<double> auto_cov){
  * a = inv(t(x) _*_ x) _*_ t(x) _*_ Y
  * e = sum(a) / (n-p)
  */
-std::vector<double> AR::least_squares(){
-    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> form_data = format_data();
-    std::vector<std::vector<double>> x = form_data.first;
-    std::vector<std::vector<double>> y = form_data.second;
+std::vector<Double> AR::least_squares(){
+    std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> form_data = format_data();
+    std::vector<std::vector<Double>> x = form_data.first;
+    std::vector<std::vector<Double>> y = form_data.second;
 
-    printf("x.size = %d", x.size());
-    printf("y.size = %d", y.size());
-
-    std::vector<std::vector<double> > a, tx,invx,tmp;
+    std::vector<std::vector<Double> > a, tx,invx,tmp;
     tx = t(x);
     invx = inv(mulMat(tx, x));
+    for (auto t: inv(mulMat(tx, x))) {
+        printf("\n");
+        for (auto tt: t) {
+            printf("%Lf ", tt);
+        }
+    }
     //std::cout<<invx.size()<<std::endl;
 
     /**
@@ -188,12 +192,20 @@ std::vector<double> AR::least_squares(){
         std::cout<<std::endl;
     }
     **/
+    printf("\nDebug begin\n");
     a = mulMat(mulMat(invx,tx), y);
+/*    printf("\nsize: %d %d \n", a.size(), a[0].size());
+    for (auto t: a) {
+        printf("%f ", t[0]);
+    }*/
+
     a = t(a);
+    // printf("%d size = %d", a.size());
+    printf("\nDebug end\n");
     return a[0];
 }
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AR::format_data(){
+std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR::format_data(){
 
     /**
 *统计后可以明显看到在k=16之后，|BiasCor[k]| < 5,因此选择p = 16之后的数都可以
@@ -206,13 +218,13 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AR
 * -*- : 矩阵乘法
 * inv(x): 矩阵的逆
 */
-    std::vector<std::vector<double> > y; //y = [data[p+1, ..., n]]
-    std::vector<std::vector<double> > x;
+    std::vector<std::vector<Double> > y; //y = [data[p+1, ..., n]]
+    std::vector<std::vector<Double> > x;
 
-    std::vector<double> tmpy;
+    std::vector<Double> tmpy;
     for(int i=best_p;i<data.size();i++){
         tmpy.push_back(data[i]);
-        std::vector<double> tmp;
+        std::vector<Double> tmp;
         for(int j=i-1;j>=i-best_p;j--){
             tmp.push_back(data[j]);
         }
@@ -245,32 +257,39 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AR
  *如果给出的k>n，会预测[n,k]的所有位置，并添加大原数据上。
  */
 
-std::vector<double> AR::predict(int k){
-    std::vector<double> data_copy(data); // 拷贝构造
-    for(int i=data_copy.size();i<k;i++){
-        double s = 0;
+std::vector<Double> AR::predict(int k){ // 预测接下来k天的数据
+    std::vector<Double> data_copy(data); // 拷贝构造
+    for(int i=0;i<k;i++){
+        Double s = 0;
         int t = data_copy.size();
         for(int j=0;j<best_p;j++){
             s += a[j] * data_copy[t-j-1];
         }
         data_copy.push_back(s);
     }
-    std::vector<double> predict_res(data_copy.begin() + data.size(), data_copy.end());
+    std::vector<Double> predict_res(data_copy.begin() + data.size(), data_copy.end());
     this->res.assign(predict_res.begin(), predict_res.end());
+
+    // 对预测结果求和并四舍五入
+    Double sum = 0;
+    for (auto t: res) {
+        sum += t;
+    }
+    this->sum = round(sum<0?0:sum);
+
     return predict_res;
 }
-
 
 /**
  *得到e
  */
-double AR::get_bias(){
-    double sum = 0;
-    std::vector<double> cal_pn(data.begin(),data.begin()+best_p); // 获取数据前p个值
+Double AR::get_bias(){
+    Double sum = 0;
+    std::vector<Double> cal_pn(data.begin(),data.begin()+best_p); // 获取数据前p个值
 
 
     for(int i=best_p;i<data.size();i++){
-        double s = 0;
+        Double s = 0;
         int t = cal_pn.size();
         for(int j=0;j<best_p;j++){
             s += a[j] * cal_pn[t-j-1];
@@ -313,4 +332,5 @@ void AR::print_model_info() {
     for (auto t: res) {
         printf("%f ", t);
     }
+    printf("\n\nsum = %d", sum);
 }
