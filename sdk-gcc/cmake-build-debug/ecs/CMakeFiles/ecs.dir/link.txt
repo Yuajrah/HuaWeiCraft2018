@@ -1,1 +1,1 @@
-/usr/bin/c++   -O3 -Wall -std=c++11  -rdynamic CMakeFiles/ecs.dir/AR.cpp.o CMakeFiles/ecs.dir/date_utils.cpp.o CMakeFiles/ecs.dir/ecs.cpp.o CMakeFiles/ecs.dir/io.cpp.o CMakeFiles/ecs.dir/math_utils.cpp.o CMakeFiles/ecs.dir/predict.cpp.o  -o ../bin/ecs 
+/usr/bin/c++   -O3 -Wall -std=c++11  -rdynamic CMakeFiles/ecs.dir/AR.cpp.o CMakeFiles/ecs.dir/date_utils.cpp.o CMakeFiles/ecs.dir/ecs.cpp.o CMakeFiles/ecs.dir/get_data.cpp.o CMakeFiles/ecs.dir/io.cpp.o CMakeFiles/ecs.dir/math_utils.cpp.o CMakeFiles/ecs.dir/predict.cpp.o CMakeFiles/ecs.dir/test.cpp.o  -o ../bin/ecs 

@@ -206,6 +206,33 @@ ecs.cpp.s:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ecs.cpp.s
 .PHONY : ecs.cpp.s
 
+get_data.o: get_data.cpp.o
+
+.PHONY : get_data.o
+
+# target to build an object file
+get_data.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/get_data.cpp.o
+.PHONY : get_data.cpp.o
+
+get_data.i: get_data.cpp.i
+
+.PHONY : get_data.i
+
+# target to preprocess a source file
+get_data.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/get_data.cpp.i
+.PHONY : get_data.cpp.i
+
+get_data.s: get_data.cpp.s
+
+.PHONY : get_data.s
+
+# target to generate assembly for a file
+get_data.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/get_data.cpp.s
+.PHONY : get_data.cpp.s
+
 io.o: io.cpp.o
 
 .PHONY : io.o
@@ -287,6 +314,33 @@ predict.cpp.s:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/predict.cpp.s
 .PHONY : predict.cpp.s
 
+test.o: test.cpp.o
+
+.PHONY : test.o
+
+# target to build an object file
+test.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/test.cpp.o
+.PHONY : test.cpp.o
+
+test.i: test.cpp.i
+
+.PHONY : test.i
+
+# target to preprocess a source file
+test.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/test.cpp.i
+.PHONY : test.cpp.i
+
+test.s: test.cpp.s
+
+.PHONY : test.s
+
+# target to generate assembly for a file
+test.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/test.cpp.s
+.PHONY : test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -305,6 +359,9 @@ help:
 	@echo "... ecs.o"
 	@echo "... ecs.i"
 	@echo "... ecs.s"
+	@echo "... get_data.o"
+	@echo "... get_data.i"
+	@echo "... get_data.s"
 	@echo "... io.o"
 	@echo "... io.i"
 	@echo "... io.s"
@@ -314,6 +371,9 @@ help:
 	@echo "... predict.o"
 	@echo "... predict.i"
 	@echo "... predict.s"
+	@echo "... test.o"
+	@echo "... test.i"
+	@echo "... test.s"
 .PHONY : help
 
 
