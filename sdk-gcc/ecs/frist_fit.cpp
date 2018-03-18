@@ -1,4 +1,5 @@
 #include "frist_fit.h"
+#include <cstring>
 
 std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object)
 {
@@ -13,9 +14,9 @@ std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server
     {
         target = 1;
     }
-    //保存最终结果的，vector中的ID对应编号为多少的分配结果
+    // 保存最终结果的，vector中的ID对应编号为多少的分配结果
     std::vector<std::vector<int>> result_record;
-    //初始化服务器节点
+    // 初始化服务器节点
     int server_number = 0;
     std::priority_queue<Allocat_server> allocate_result;
 

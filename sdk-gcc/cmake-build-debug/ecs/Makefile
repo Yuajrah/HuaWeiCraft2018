@@ -206,6 +206,33 @@ ecs.cpp.s:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ecs.cpp.s
 .PHONY : ecs.cpp.s
 
+frist_fit.o: frist_fit.cpp.o
+
+.PHONY : frist_fit.o
+
+# target to build an object file
+frist_fit.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/frist_fit.cpp.o
+.PHONY : frist_fit.cpp.o
+
+frist_fit.i: frist_fit.cpp.i
+
+.PHONY : frist_fit.i
+
+# target to preprocess a source file
+frist_fit.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/frist_fit.cpp.i
+.PHONY : frist_fit.cpp.i
+
+frist_fit.s: frist_fit.cpp.s
+
+.PHONY : frist_fit.s
+
+# target to generate assembly for a file
+frist_fit.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/frist_fit.cpp.s
+.PHONY : frist_fit.cpp.s
+
 get_data.o: get_data.cpp.o
 
 .PHONY : get_data.o
@@ -368,6 +395,33 @@ test.cpp.s:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/test.cpp.s
 .PHONY : test.cpp.s
 
+type_def.o: type_def.cpp.o
+
+.PHONY : type_def.o
+
+# target to build an object file
+type_def.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/type_def.cpp.o
+.PHONY : type_def.cpp.o
+
+type_def.i: type_def.cpp.i
+
+.PHONY : type_def.i
+
+# target to preprocess a source file
+type_def.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/type_def.cpp.i
+.PHONY : type_def.cpp.i
+
+type_def.s: type_def.cpp.s
+
+.PHONY : type_def.s
+
+# target to generate assembly for a file
+type_def.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/type_def.cpp.s
+.PHONY : type_def.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -386,6 +440,9 @@ help:
 	@echo "... ecs.o"
 	@echo "... ecs.i"
 	@echo "... ecs.s"
+	@echo "... frist_fit.o"
+	@echo "... frist_fit.i"
+	@echo "... frist_fit.s"
 	@echo "... get_data.o"
 	@echo "... get_data.i"
 	@echo "... get_data.s"
@@ -404,6 +461,9 @@ help:
 	@echo "... test.o"
 	@echo "... test.i"
 	@echo "... test.s"
+	@echo "... type_def.o"
+	@echo "... type_def.i"
+	@echo "... type_def.s"
 .PHONY : help
 
 

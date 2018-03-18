@@ -26,16 +26,6 @@ struct Allocat_server
 
 typedef double Double;
 
-bool operator< (const Allocat_server &server1, const Allocat_server &server2)
-{
-    if (server1.target == 0)
-    {
-        return server1.core < server2.core;
-    }
-    else
-    {
-        return server1.storage < server2.storage;
-    }
-}
+bool operator< (const Allocat_server &server1, const Allocat_server &server2);
 
 #endif //SDK_GCC_TYPE_DEF_H

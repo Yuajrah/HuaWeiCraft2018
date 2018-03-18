@@ -101,6 +101,12 @@
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ecs.cpp">
 			<Option target="ecs"/>
 		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.h">
+			<Option target="ecs"/>
+		</Unit>
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.cpp">
 			<Option target="ecs"/>
 		</Unit>
@@ -132,6 +138,12 @@
 			<Option target="ecs"/>
 		</Unit>
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.h">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h">
 			<Option target="ecs"/>
 		</Unit>
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/CMakeLists.txt">

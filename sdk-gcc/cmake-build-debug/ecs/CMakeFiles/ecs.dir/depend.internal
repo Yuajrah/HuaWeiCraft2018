@@ -14,6 +14,10 @@ ecs/CMakeFiles/ecs.dir/ecs.cpp.o
  ../ecs/lib/lib_time.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ecs.cpp
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
+ecs/CMakeFiles/ecs.dir/frist_fit.cpp.o
+ /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.cpp
+ /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h
 ecs/CMakeFiles/ecs.dir/get_data.cpp.o
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.cpp
@@ -33,6 +37,7 @@ ecs/CMakeFiles/ecs.dir/predict.cpp.o
  ../ecs/lib/lib_io.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h
@@ -44,4 +49,7 @@ ecs/CMakeFiles/ecs.dir/test.cpp.o
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.cpp
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h
+ecs/CMakeFiles/ecs.dir/type_def.cpp.o
+ /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.cpp
  /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h

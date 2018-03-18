@@ -54,6 +54,24 @@ lib_time.h
 stdio.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/stdio.h
 
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.cpp
+frist_fit.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.h
+cstring
+-
+
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.h
+type_def.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h
+iostream
+-
+vector
+-
+map
+-
+queue
+-
+
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.cpp
 get_data.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.h
@@ -143,6 +161,8 @@ ma.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.h
 map
 -
+frist_fit.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.h
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h
 lib_io.h
@@ -157,6 +177,10 @@ type_def.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.h
+
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.cpp
+type_def.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h
 
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h
 
