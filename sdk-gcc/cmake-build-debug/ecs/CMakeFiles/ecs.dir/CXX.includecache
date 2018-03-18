@@ -88,6 +88,18 @@ unistd.h
 signal.h
 -
 
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.cpp
+ma.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.h
+cstdio
+-
+
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.h
+type_def.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h
+vector
+-
+
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.cpp
 math_utils.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h
@@ -125,6 +137,10 @@ get_data.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.h
 type_def.h
 /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h
+ar.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ar.h
+ma.h
+/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.h
 map
 -
 

@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ecs.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/CMakeFiles/ecs.dir/ecs.cpp.o"
   "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/CMakeFiles/ecs.dir/get_data.cpp.o"
   "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/io.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/CMakeFiles/ecs.dir/io.cpp.o"
+  "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/CMakeFiles/ecs.dir/ma.cpp.o"
   "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/CMakeFiles/ecs.dir/math_utils.cpp.o"
   "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/CMakeFiles/ecs.dir/predict.cpp.o"
   "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/CMakeFiles/ecs.dir/test.cpp.o"

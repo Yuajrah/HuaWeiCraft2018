@@ -84,7 +84,7 @@ ecs/preinstall:
 ecs/CMakeFiles/ecs.dir/all:
 	$(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/depend
 	$(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target ecs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target ecs"
 .PHONY : ecs/CMakeFiles/ecs.dir/all
 
 # Include target in all.
@@ -94,7 +94,7 @@ all: ecs/CMakeFiles/ecs.dir/all
 
 # Build rule for subdir invocation for target.
 ecs/CMakeFiles/ecs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles 10
 	$(MAKE) -f CMakeFiles/Makefile2 ecs/CMakeFiles/ecs.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/CMakeFiles 0
 .PHONY : ecs/CMakeFiles/ecs.dir/rule

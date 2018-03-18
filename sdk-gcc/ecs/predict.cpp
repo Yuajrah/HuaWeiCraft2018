@@ -6,6 +6,8 @@
 #include <cstdio>
 #include "get_data.h"
 #include "type_def.h"
+#include "ar.h"
+#include "ma.h"
 #include <map>
 
 /*
@@ -80,11 +82,11 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, "2016-01-21", vm_info, data_num);
     std::map<int, int> actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", vm_info, data_num);
 
-
     std::map<int, int> predict_data;
     for (auto &t: vm_info) {
-        AR ar_model(train_data[t.first]);
-        ar_model.fit("bic");
+        std::vector<Double> after_ma_data = ma(train_data[t.first], 7);
+        AR ar_model(after_ma_data);
+        ar_model.fit("aic");
         // ar_model.fit("aic");
         ar_model.predict(7);
         ar_model.print_model_info();
@@ -92,6 +94,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     }
 
     print_predict_score(actual_data, predict_data);
+
 	// 需要输出的内容
 	char * result_file = (char *)"17\n\n0 8 0 20";
 

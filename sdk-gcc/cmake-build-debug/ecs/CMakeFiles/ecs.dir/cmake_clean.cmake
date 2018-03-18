@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/ecs.dir/ecs.cpp.o"
   "CMakeFiles/ecs.dir/get_data.cpp.o"
   "CMakeFiles/ecs.dir/io.cpp.o"
+  "CMakeFiles/ecs.dir/ma.cpp.o"
   "CMakeFiles/ecs.dir/math_utils.cpp.o"
   "CMakeFiles/ecs.dir/predict.cpp.o"
   "CMakeFiles/ecs.dir/test.cpp.o"

@@ -260,6 +260,33 @@ io.cpp.s:
 	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/io.cpp.s
 .PHONY : io.cpp.s
 
+ma.o: ma.cpp.o
+
+.PHONY : ma.o
+
+# target to build an object file
+ma.cpp.o:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ma.cpp.o
+.PHONY : ma.cpp.o
+
+ma.i: ma.cpp.i
+
+.PHONY : ma.i
+
+# target to preprocess a source file
+ma.cpp.i:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ma.cpp.i
+.PHONY : ma.cpp.i
+
+ma.s: ma.cpp.s
+
+.PHONY : ma.s
+
+# target to generate assembly for a file
+ma.cpp.s:
+	cd /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug && $(MAKE) -f ecs/CMakeFiles/ecs.dir/build.make ecs/CMakeFiles/ecs.dir/ma.cpp.s
+.PHONY : ma.cpp.s
+
 math_utils.o: math_utils.cpp.o
 
 .PHONY : math_utils.o
@@ -365,6 +392,9 @@ help:
 	@echo "... io.o"
 	@echo "... io.i"
 	@echo "... io.s"
+	@echo "... ma.o"
+	@echo "... ma.i"
+	@echo "... ma.s"
 	@echo "... math_utils.o"
 	@echo "... math_utils.i"
 	@echo "... math_utils.s"
