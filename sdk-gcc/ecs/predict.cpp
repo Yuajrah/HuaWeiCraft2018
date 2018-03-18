@@ -9,6 +9,7 @@
 #include "ar.h"
 #include "ma.h"
 #include <map>
+#include "frist_fit.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -94,6 +95,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     }
 
     print_predict_score(actual_data, predict_data);
+    std::vector<std::vector<int>> allocate_result;
+    allocate_result = frist_fit(vm_info, server, predict_data,  char *opt_object);
 
 	// 需要输出的内容
 	char * result_file = (char *)"17\n\n0 8 0 20";

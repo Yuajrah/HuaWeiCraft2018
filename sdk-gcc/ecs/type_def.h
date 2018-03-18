@@ -16,6 +16,26 @@ struct Vm {
     int storage; // 所需内存大小
 };
 
+struct Allocat_server
+{
+    int id; //标号
+    int core;
+    int storage;
+    int target; //需要比较的东西，1为核，2为内存
+};
+
 typedef double Double;
+
+bool operator< (const Allocat_server &server1, const Allocat_server &server2)
+{
+    if (server1.target == 0)
+    {
+        return server1.core < server2.core;
+    }
+    else
+    {
+        return server1.storage < server2.storage;
+    }
+}
 
 #endif //SDK_GCC_TYPE_DEF_H
