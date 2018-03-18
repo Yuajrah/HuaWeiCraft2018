@@ -44,6 +44,7 @@ std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server
             {
                 if (iter->second == 0)
                 {
+                    predict_data.erase(iter);
                     continue;
                 }
                 else
