@@ -38,7 +38,7 @@ void AR::fit(std::string ic, int max_lag) {
         std::pair<std::vector<Double>, Double> a_ssr = least_squares(this->data, max_lag);
         this->a = a_ssr.first;
         return;
-    } else if (ic=="aic" || ic=="bic") {
+    } else if (ic=="aic" || ic=="bic" || ic=="hqic") {
         int len = this->data.size();
         Double min_ic = DBL_MAX;
         for (int lag=1;lag<=max_lag;lag++) {
@@ -50,6 +50,8 @@ void AR::fit(std::string ic, int max_lag) {
                 ic_val = log(sigma2) + 2 * (2.0 + lag) / (len - max_lag);
             } else if (ic == "bic") {
                 ic_val = log(sigma2) + log(len - max_lag) * (2.0 + lag) / (len - max_lag);
+            } else if (ic == "hqic") {
+                ic_val = log(sigma2) + 2 * log(log(len - max_lag)) * (2.0 + lag) / (len - max_lag);
             }
             // printf("%f %f %f\n",  a_ssr.second, sigma2, aic);
             if (ic_val < min_ic) {
