@@ -22,7 +22,7 @@ std::string change_map_char(std::map<int, int>data)
     }
     tmp_string += "\n";
     std::string head = std::to_string(sum);
-    head += "\n\n";
+    head += "\n";
     std::string result = head+tmp_string;
     return result;
 }
