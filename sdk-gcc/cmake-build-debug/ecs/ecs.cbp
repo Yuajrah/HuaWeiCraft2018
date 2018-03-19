@@ -8,131 +8,137 @@
 		<Option virtualFolders="CMake Files\;CMake Files\ecs\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs"/>
+				<Option working_dir="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="ecs">
-				<Option output="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/bin/ecs" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/../bin"/>
+				<Option output="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/bin/ecs" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/../bin"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/lib"/>
-					<Add directory="/usr/include/c++/5"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
-					<Add directory="/usr/include/c++/5/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/lib"/>
+					<Add directory="/usr/include/c++/4.8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/4.8"/>
+					<Add directory="/usr/include/c++/4.8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 ecs"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 ecs"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="ecs/fast">
-				<Option output="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/bin/ecs" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/../bin"/>
+				<Option output="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/bin/ecs" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/../bin"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/lib"/>
-					<Add directory="/usr/include/c++/5"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
-					<Add directory="/usr/include/c++/5/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/lib"/>
+					<Add directory="/usr/include/c++/4.8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/4.8"/>
+					<Add directory="/usr/include/c++/4.8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 ecs/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 ecs/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/caocongcong/HuaWeiCraft2018/sdk-gcc/cmake-build-debug/ecs/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/AR.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/AR.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/AR.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/data_format_change.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/data_format_change.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ecs.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/date_utils.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/ecs.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/get_data.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/frist_fit.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/io.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/get_data.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/get_data.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/ma.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/io.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/ma.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/ma.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/predict.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/math_utils.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/predict.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/test.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/predict.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.cpp">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/test.cpp">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/test.h">
 			<Option target="ecs"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/CMakeLists.txt">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/type_def.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/type_def.h">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/CMakeLists.txt">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ecs\"/>
 		</Unit>
-		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/CMakeLists.txt">
+		<Unit filename="/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ecs\"/>
 		</Unit>
 	</Project>

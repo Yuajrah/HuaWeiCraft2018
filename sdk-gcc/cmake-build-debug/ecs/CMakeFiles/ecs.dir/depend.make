@@ -6,6 +6,9 @@ ecs/CMakeFiles/ecs.dir/AR.cpp.o: ../ecs/AR.h
 ecs/CMakeFiles/ecs.dir/AR.cpp.o: ../ecs/math_utils.h
 ecs/CMakeFiles/ecs.dir/AR.cpp.o: ../ecs/type_def.h
 
+ecs/CMakeFiles/ecs.dir/data_format_change.cpp.o: ../ecs/data_format_change.cpp
+ecs/CMakeFiles/ecs.dir/data_format_change.cpp.o: ../ecs/data_format_change.h
+
 ecs/CMakeFiles/ecs.dir/date_utils.cpp.o: ../ecs/date_utils.cpp
 ecs/CMakeFiles/ecs.dir/date_utils.cpp.o: ../ecs/date_utils.h
 
@@ -35,6 +38,7 @@ ecs/CMakeFiles/ecs.dir/math_utils.cpp.o: ../ecs/type_def.h
 
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/lib/lib_io.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/AR.h
+ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/data_format_change.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/date_utils.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/frist_fit.h
 ecs/CMakeFiles/ecs.dir/predict.cpp.o: ../ecs/get_data.h

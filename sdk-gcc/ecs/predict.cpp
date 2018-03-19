@@ -10,13 +10,15 @@
 #include "ma.h"
 #include <map>
 #include "frist_fit.h"
+#include "lib_io.h"
+#include "data_format_change.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
  *   inputFilePath = "../../../data/exercise/input_file.txt"
  *   resultFilePath = "../../../data/exercise/output_file.txt"
- *   项目可执行文件的参数： "../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../data/exercise/input_file.txt" resultFilePath = "../../../data/exercise/output_file.txt"
- *   项目可执行文件的参数： "../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../data/exercise/input_file.txt" resultFilePath = "../../../data/exercise/output_file.txt"
+ *   项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
+ *   项目可执行文件的参数： "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
  *
  * */
 //你要完成的功能总入口
@@ -90,17 +92,20 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         ar_model.fit("aic");
         // ar_model.fit("aic");
         ar_model.predict(7);
-        ar_model.print_model_info();
+        // ar_model.print_model_info();
         predict_data[t.first] = ar_model.get_sum();
     }
 
     print_predict_score(actual_data, predict_data);
-    std::vector<std::vector<int>> allocate_result;
+    std::vector<std::map<int,int>> allocate_result;
     allocate_result = frist_fit(vm_info, server, predict_data, opt_object);
 
+
+    std::string result1 = change_map_char(predict_data);
+    std::string result2 = change_format(allocate_result);
+    std::string result = result1+result2;
 	// 需要输出的内容
 	char * result_file = (char *)"17\n\n0 8 0 20";
-
 	// 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
-	write_result(result_file, filename);
+	write_result(result.c_str(), filename);
 }

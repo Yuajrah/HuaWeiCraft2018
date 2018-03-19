@@ -1,1 +1,38 @@
-NA
+225
+
+flavor1 28
+flavor2 33
+flavor3 1
+flavor4 10
+flavor5 28
+flavor6 8
+flavor7 4
+flavor8 56
+flavor9 15
+flavor10 1
+flavor11 15
+flavor12 13
+flavor13 7
+flavor14 4
+flavor15 2
+
+18
+1 flavor15 2
+2 flavor12 1 flavor14 3
+3 flavor12 1 flavor13 2 flavor14 1
+4 flavor12 1 flavor13 3
+5 flavor12 3 flavor13 2
+6 flavor12 4
+7 flavor11 2 flavor12 3
+8 flavor11 7
+9 flavor10 1 flavor11 6
+10 flavor9 8
+11 flavor8 2 flavor9 7
+12 flavor8 14
+13 flavor8 14
+14 flavor8 14
+15 flavor7 2 flavor8 12
+16 flavor5 14 flavor6 8 flavor7 2
+17 flavor2 7 flavor3 1 flavor4 10 flavor5 14
+18 flavor1 28 flavor2 26
+

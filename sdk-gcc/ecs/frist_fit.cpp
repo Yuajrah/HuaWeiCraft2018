@@ -1,12 +1,13 @@
 #include "frist_fit.h"
 #include <cstring>
 
-std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object)
+std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object)
 {
+    std::map<int, int> predict_data_tmp = predict_data;
     //首先确定优化目标
     int target;
-    const char * target_string  = "CPU";
-    if (strcmp(target_string, opt_object))
+    const char * target_string  = "CPU\n";
+    if (strcmp(target_string, opt_object) == 0)
     {
         target = 0;
     }
@@ -15,7 +16,7 @@ std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server
         target = 1;
     }
     // 保存最终结果的，vector中的ID对应编号为多少的分配结果
-    std::vector<std::vector<int>> result_record;
+    std::vector<std::map<int,int>>result_record;
     // 初始化服务器节点
     int server_number = 0;
     std::priority_queue<Allocat_server> allocate_result;
@@ -23,7 +24,7 @@ std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server
     //首先初始化一个节点
     Allocat_server new_server = allocate_one(server_number, server.core, server.storage, target);
     allocate_result.push(new_server);
-    std::vector<int> new_record;
+    std::map<int,int> new_record;
     result_record.push_back(new_record);
 
     //对于预测文档的数据逐个进行分配
@@ -31,36 +32,32 @@ std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server
     {
         //首先选择id最大的虚拟服务器作为当前需要处理的节点
         //frist为id,second为数量
-        std::map<int ,int >::iterator current_flavor;
-        for(int i = 15; i>0; i++ )
-        {
-            std::map<int ,int >::iterator iter;
+        std::map<int ,int >::iterator current_flavor = predict_data.end();
+        for(int i = 15; i>0; i-- ) {
+            std::map<int, int>::iterator iter;
             iter = predict_data.find(i);
-            if (iter == predict_data.end())
-            {
+            if (iter == predict_data.end()) {
                 continue;
-            }
-            else
-            {
-                if (iter->second == 0)
-                {
+            } else {
+                if (iter->second == 0) {
                     predict_data.erase(iter);
                     continue;
-                }
-                else
-                {
+                } else {
                     current_flavor = iter;
                     break;
                 }
             }
         }
+
+        if(current_flavor == predict_data.end()) break;
+
         //获取当前目标flavor的一些参数
         int core_need;
         int storage_need;
         std::map<int, Vm>::iterator current_flavor_info;
         current_flavor_info =  vm_info.find(current_flavor->first);
         core_need = current_flavor_info->second.core;
-        storage_need = current_flavor_info->second.storage;
+        storage_need = current_flavor_info->second.storage/1024;
         
         //对当前的的虚拟服务器进行处理
         //首先判断是否需要开辟新的服务器
@@ -79,7 +76,14 @@ std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server
                 current_server_data.storage -= storage_need;
                 tmp_allocate_result.push(current_server_data);
                 //把当前的处理加到记录里面去
-                result_record[current_server_data.id].push_back(current_flavor->first);
+                if( result_record[current_server_data.id].find(current_flavor->first) == result_record[current_server_data.id].end())
+                {
+                    result_record[current_server_data.id][current_flavor->first] = 1;
+                }
+                else
+                {
+                    ++result_record[current_server_data.id][current_flavor->first];
+                }
                 need_allocate_new_server = false;
                 break;
             }
@@ -98,17 +102,32 @@ std::vector<std::vector<int>> frist_fit(std::map<int, Vm> vm_info, Server server
             server_number++;
             Allocat_server new_server = allocate_one(server_number, server.core - core_need, server.storage-storage_need, target);
             allocate_result.push(new_server);
-            std::vector<int> new_record;
+            std::map<int,int> new_record;
             result_record.push_back(new_record);
             //保存记录
-            result_record[new_server.id].push_back(current_flavor->first);
+            if( result_record[new_server.id].find(current_flavor->first) == result_record[new_server.id].end())
+            {
+                result_record[new_server.id][current_flavor->first] = 1;
+            }
+            else
+            {
+                ++result_record[new_server.id][current_flavor->first];
+            }
 
         }
 
         //当前处理的虚拟机的数量减一
         current_flavor->second--;
     }
-    get_scores(predict_data, server, server_number+1, target, vm_info);
+    //get_scores(predict_data_tmp, server, server_number+1, target, vm_info);
+    /**
+     * [
+     *      0: {flavor1: xx, flavor2: xx...}
+     *      1: {flavor1: xx, flavor2: xx...}
+     *      ...
+     *
+     * ]
+     */
     return result_record;
 }
 
@@ -131,6 +150,7 @@ Allocat_server allocate_one(int id, int core, int storage, int target)
     new_allocate.core = core;
     new_allocate.storage = storage;
     new_allocate.target = target;
+    return new_allocate;
 }
 
 void get_scores(std::map<int, int>predict_data, Server server, int number, int target, std::map<int, Vm> vm_info)
@@ -165,7 +185,7 @@ void get_scores(std::map<int, int>predict_data, Server server, int number, int t
                 {
                     target_need = current_flavor_info->second.storage;
                 }
-                total_need = iter->second * target_need;
+                total_need += iter->second * target_need;
             }
     }
     double percent = (total_need+0.0)/total_allocate;

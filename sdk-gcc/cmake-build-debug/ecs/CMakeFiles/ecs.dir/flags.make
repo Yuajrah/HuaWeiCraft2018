@@ -6,5 +6,5 @@ CXX_FLAGS =  -O3 -Wall -std=c++11   -std=gnu++11
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs/lib 
+CXX_INCLUDES = -I/home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs/lib 
 

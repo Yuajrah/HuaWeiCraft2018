@@ -1,4 +1,4 @@
-# Install script for directory: /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/ecs
+# Install script for directory: /home/caocongcong/HuaWeiCraft2018/sdk-gcc/ecs
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
