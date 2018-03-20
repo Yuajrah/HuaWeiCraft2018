@@ -7,7 +7,7 @@ from plot_data import plot_set_data, plot_set_cumsum_data, plot_set_single_vm_da
 from test_stationarity import draw_trend, test_stationarity, draw_acf_pacf
 import statsmodels as sm
 from prediction import ar, print_ar_res, mv_and_ar, predict_by_train_mean, arima, arma
-from allocate import frist_fit
+from allocate import frist_fit, weight_frist_fit
 
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
@@ -61,6 +61,7 @@ def predict_vm(ecs_lines, input_lines):
     print "############################################################################"
     print "allocate begin:"
     frist_fit(server_data, flavor_data, target_resource, need_allocate = ar_predict)
+    weight_frist_fit(server_data, flavor_data, target_resource, need_allocate = ar_predict)
     result = []
     if ecs_lines is None:
         print 'ecs information is none'
