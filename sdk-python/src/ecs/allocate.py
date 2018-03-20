@@ -35,6 +35,10 @@ def frist_fit(server_data, flavor_data, target_resource, need_allocate, allocate
         for flavor_type, need_number in need_allocate.iteritems():
             tmp_order = change_base - int(flavor_type[6:])
             heapq.heappush(need_data,(tmp_order, [flavor_type, need_number]))
+    else:
+        for flavor_type, need_number in need_allocate.iteritems():
+            tmp_order = order[flavor_type]
+            heapq.heappush(need_data,(tmp_order, [flavor_type, need_number]))
     
     #数据格式 
     #{
@@ -114,7 +118,21 @@ def weight_frist_fit(server_data, flavor_data, target_resource, need_allocate, a
     get_scores(len(result_record), server_data, flavor_data, need_allocate, target_resource)
 
 def ordered_frist_fit(server_data, flavor_data, target_resource, need_allocate):
-    pass
+    need_order = {}
+    if target_resource == "CPU":
+        for i in range(1,16):
+            current_flavor = "flavor"+str(i)
+            if i%3==0:
+                need_order[current_flavor] = i-2
+            elif i%3 == 1:
+                need_order[current_flavor] = i+2
+            else:
+                need_order[current_flavor] = [i]
+    else:
+        for i in range(1,16):
+            current_flavor = "flavor"+str(i)
+            need_order[current_flavor] = i
+    frist_fit(server_data, flavor_data, target_resource, need_allocate, allocate_result=[], result_record=[], order= need_order)
             
         
         
@@ -131,3 +149,8 @@ def get_scores(allocate_server_number, server_data, flavor_data, need_allocate, 
         need_allocate_resource += flavor_data[flavor_type][target_resource] * need_number
     print target_resource+"资源利用率："
     print need_allocate_resource/all_allocate_resource
+
+#观察每个服务器的资源使用情况
+def show_data(allocate_server_number, server_data, flavor_data, need_allocate, target_resource):
+    pass
+    
