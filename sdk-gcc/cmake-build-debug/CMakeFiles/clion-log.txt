@@ -1,4 +1,0 @@
-/home/ruiy/clion-2017.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/ruiy/store/HuaWeiCraft2018/sdk-gcc
--- Configuring done
--- Generating done
--- Build files have been written to: /home/ruiy/store/HuaWeiCraft2018/sdk-gcc/cmake-build-debug
