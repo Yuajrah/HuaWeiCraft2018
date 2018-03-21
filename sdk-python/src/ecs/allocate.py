@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import heapq
+import matplotlib.pyplot as plt
 
 #根据需要优化的资源，将所有的服务器分成两类，一种是大于等于服务器的
 def spilt_data(server_data, flavor_data, target_resource, need_allocate):
@@ -99,6 +100,7 @@ def frist_fit(server_data, flavor_data, target_resource, need_allocate, allocate
     print len(result_record)
     allocate_server_number = len(result_record)
     get_scores(allocate_server_number, server_data, flavor_data, need_allocate, target_resource)
+    print (result_record)
     return allocate_result,result_record
  
 #合并两个data           
@@ -127,11 +129,14 @@ def ordered_frist_fit(server_data, flavor_data, target_resource, need_allocate):
             elif i%3 == 1:
                 need_order[current_flavor] = i+2
             else:
-                need_order[current_flavor] = [i]
+                need_order[current_flavor] = i
     else:
         for i in range(1,16):
             current_flavor = "flavor"+str(i)
             need_order[current_flavor] = i
+    for i in range(1,16):
+        current_flavor = "flavor"+str(i)
+        need_order[current_flavor] = 16 - need_order[current_flavor]
     frist_fit(server_data, flavor_data, target_resource, need_allocate, allocate_result=[], result_record=[], order= need_order)
             
         
@@ -151,6 +156,9 @@ def get_scores(allocate_server_number, server_data, flavor_data, need_allocate, 
     print need_allocate_resource/all_allocate_resource
 
 #观察每个服务器的资源使用情况
-def show_data(allocate_server_number, server_data, flavor_data, need_allocate, target_resource):
-    pass
+def show_data(allocate_result, server_data):
+    cpu= []
+    mem = []
+    for i in range(len(allocate_result)):
+        pass
     

@@ -12,11 +12,11 @@ from allocate import frist_fit, weight_frist_fit,ordered_frist_fit
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
     
-    train_dates = ["2015-12-01", "2016-01-20"]
+    train_dates = ["2015-12-01", "2016-01-21"]
     #获取需要优化的信息
     server_data, flavor_types, flavor_data, target_resource, predict_dates = get_flavor_data(input_lines)
     #测试方便，直接覆盖掉
-    predict_dates = ["2016-01-21", "2016-01-27"]
+    predict_dates = ["2016-01-22", "2016-01-28"]
     # 所需要预测的虚拟机类型
     target_types = ["flavor1", "flavor2", "flavor3", "flavor4", "flavor5",
                   "flavor6", "flavor7", "flavor8", "flavor9", "flavor10",
