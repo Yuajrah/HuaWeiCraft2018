@@ -84,7 +84,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-    int debug = 1;
+    int debug = 0;
     std::map<int, std::vector<Double>> train_data;
     std::map<int, int> actual_data;
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
@@ -123,10 +123,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
 //    std::map<int, int> predict_data;
 //    for (auto &t: vm_info) {
-//        ARIMAModel* arima = new ARIMAModel(ma(train_data[t.first], 7));
+//        ARIMAModel* arima = new ARIMAModel(ma(train_data[t.first], 5));
 //
 //        int period = 1;
-//        int modelCnt=5;
+//        int modelCnt=50;
 //        int cnt=0;
 //        std::vector<std::vector<int>> list;
 //        std::vector<int> tmpPredict(modelCnt);

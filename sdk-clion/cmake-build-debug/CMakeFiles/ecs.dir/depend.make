@@ -6,6 +6,13 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o: ../sdk-gcc/ecs/AR.h
 CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o: ../sdk-gcc/ecs/math_utils.h
 CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o: ../sdk-gcc/ecs/type_def.h
 
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o: ../sdk-gcc/ecs/ARMAMath.cpp
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o: ../sdk-gcc/ecs/ARMAMath.h
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o: ../sdk-gcc/ecs/ARMAMath.h
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o: ../sdk-gcc/ecs/MAModel.cpp
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o: ../sdk-gcc/ecs/MAModel.h
+
 CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o: ../sdk-gcc/ecs/data_format_change.cpp
 CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o: ../sdk-gcc/ecs/data_format_change.h
 
@@ -38,6 +45,11 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o: ../sdk-gcc/ecs/type_def.h
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/lib/lib_io.h
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/AR.h
+CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/ARIMAModel.h
+CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/ARMAMath.h
+CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/ARMAModel.h
+CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/ARModel.h
+CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/MAModel.h
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/data_format_change.h
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/date_utils.h
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/frist_fit.h

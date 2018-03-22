@@ -81,9 +81,57 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o.provides: CMakeFiles/ecs.dir/sdk-gcc/ecs
 CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o.provides.build: CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o
 
 
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o: CMakeFiles/ecs.dir/flags.make
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o: ../sdk-gcc/ecs/ARMAMath.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp > CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.i
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp -o CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.s
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o.requires:
+
+.PHONY : CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o.requires
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o.provides: CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o.requires
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o.provides.build
+.PHONY : CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o.provides
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o.provides.build: CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o
+
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o: CMakeFiles/ecs.dir/flags.make
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o: ../sdk-gcc/ecs/MAModel.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp > CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.i
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp -o CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.s
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o.requires:
+
+.PHONY : CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o.requires
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o.provides: CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o.requires
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o.provides.build
+.PHONY : CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o.provides
+
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o.provides.build: CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o
+
+
 CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o: ../sdk-gcc/ecs/data_format_change.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.i: cmake_force
@@ -107,7 +155,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o.provides.build: CMakeFil
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o: ../sdk-gcc/ecs/date_utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.i: cmake_force
@@ -131,7 +179,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o.provides.build: CMakeFiles/ecs.d
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o: ../sdk-gcc/ecs/ecs.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ecs.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.i: cmake_force
@@ -155,7 +203,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o.provides.build: CMakeFiles/ecs.dir/sdk-
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.o: ../sdk-gcc/ecs/frist_fit.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.i: cmake_force
@@ -179,7 +227,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.o.provides.build: CMakeFiles/ecs.di
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.o: ../sdk-gcc/ecs/get_data.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.i: cmake_force
@@ -203,7 +251,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.o.provides.build: CMakeFiles/ecs.dir
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o: ../sdk-gcc/ecs/io.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/io.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.i: cmake_force
@@ -227,7 +275,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o.provides.build: CMakeFiles/ecs.dir/sdk-g
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o: ../sdk-gcc/ecs/ma.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.i: cmake_force
@@ -251,7 +299,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o.provides.build: CMakeFiles/ecs.dir/sdk-g
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o: ../sdk-gcc/ecs/math_utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.i: cmake_force
@@ -275,7 +323,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o.provides.build: CMakeFiles/ecs.d
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o: ../sdk-gcc/ecs/predict.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.i: cmake_force
@@ -299,7 +347,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o.provides.build: CMakeFiles/ecs.dir/
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o: ../sdk-gcc/ecs/test.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.i: cmake_force
@@ -323,7 +371,7 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o.provides.build: CMakeFiles/ecs.dir/sdk
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o: CMakeFiles/ecs.dir/flags.make
 CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o: ../sdk-gcc/ecs/type_def.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o -c /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.cpp
 
 CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.i: cmake_force
@@ -348,6 +396,8 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o.provides.build: CMakeFiles/ecs.dir
 # Object files for target ecs
 ecs_OBJECTS = \
 "CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o" \
+"CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o" \
+"CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o" \
 "CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o" \
 "CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o" \
 "CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o" \
@@ -364,6 +414,8 @@ ecs_OBJECTS = \
 ecs_EXTERNAL_OBJECTS =
 
 sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o
+sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o
+sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o
 sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o
 sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o
 sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o
@@ -377,7 +429,7 @@ sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o
 sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o
 sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/build.make
 sdk-gcc/bin/ecs: CMakeFiles/ecs.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable sdk-gcc/bin/ecs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable sdk-gcc/bin/ecs"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ecs.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -386,6 +438,8 @@ CMakeFiles/ecs.dir/build: sdk-gcc/bin/ecs
 .PHONY : CMakeFiles/ecs.dir/build
 
 CMakeFiles/ecs.dir/requires: CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o.requires
+CMakeFiles/ecs.dir/requires: CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o.requires
+CMakeFiles/ecs.dir/requires: CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o.requires
 CMakeFiles/ecs.dir/requires: CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o.requires
 CMakeFiles/ecs.dir/requires: CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o.requires
 CMakeFiles/ecs.dir/requires: CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o.requires

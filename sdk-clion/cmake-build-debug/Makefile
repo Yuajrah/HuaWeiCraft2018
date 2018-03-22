@@ -150,6 +150,60 @@ sdk-gcc/ecs/AR.cpp.s:
 	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.s
 .PHONY : sdk-gcc/ecs/AR.cpp.s
 
+sdk-gcc/ecs/ARMAMath.o: sdk-gcc/ecs/ARMAMath.cpp.o
+
+.PHONY : sdk-gcc/ecs/ARMAMath.o
+
+# target to build an object file
+sdk-gcc/ecs/ARMAMath.cpp.o:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o
+.PHONY : sdk-gcc/ecs/ARMAMath.cpp.o
+
+sdk-gcc/ecs/ARMAMath.i: sdk-gcc/ecs/ARMAMath.cpp.i
+
+.PHONY : sdk-gcc/ecs/ARMAMath.i
+
+# target to preprocess a source file
+sdk-gcc/ecs/ARMAMath.cpp.i:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.i
+.PHONY : sdk-gcc/ecs/ARMAMath.cpp.i
+
+sdk-gcc/ecs/ARMAMath.s: sdk-gcc/ecs/ARMAMath.cpp.s
+
+.PHONY : sdk-gcc/ecs/ARMAMath.s
+
+# target to generate assembly for a file
+sdk-gcc/ecs/ARMAMath.cpp.s:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.s
+.PHONY : sdk-gcc/ecs/ARMAMath.cpp.s
+
+sdk-gcc/ecs/MAModel.o: sdk-gcc/ecs/MAModel.cpp.o
+
+.PHONY : sdk-gcc/ecs/MAModel.o
+
+# target to build an object file
+sdk-gcc/ecs/MAModel.cpp.o:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o
+.PHONY : sdk-gcc/ecs/MAModel.cpp.o
+
+sdk-gcc/ecs/MAModel.i: sdk-gcc/ecs/MAModel.cpp.i
+
+.PHONY : sdk-gcc/ecs/MAModel.i
+
+# target to preprocess a source file
+sdk-gcc/ecs/MAModel.cpp.i:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.i
+.PHONY : sdk-gcc/ecs/MAModel.cpp.i
+
+sdk-gcc/ecs/MAModel.s: sdk-gcc/ecs/MAModel.cpp.s
+
+.PHONY : sdk-gcc/ecs/MAModel.s
+
+# target to generate assembly for a file
+sdk-gcc/ecs/MAModel.cpp.s:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.s
+.PHONY : sdk-gcc/ecs/MAModel.cpp.s
+
 sdk-gcc/ecs/data_format_change.o: sdk-gcc/ecs/data_format_change.cpp.o
 
 .PHONY : sdk-gcc/ecs/data_format_change.o
@@ -459,6 +513,12 @@ help:
 	@echo "... sdk-gcc/ecs/AR.o"
 	@echo "... sdk-gcc/ecs/AR.i"
 	@echo "... sdk-gcc/ecs/AR.s"
+	@echo "... sdk-gcc/ecs/ARMAMath.o"
+	@echo "... sdk-gcc/ecs/ARMAMath.i"
+	@echo "... sdk-gcc/ecs/ARMAMath.s"
+	@echo "... sdk-gcc/ecs/MAModel.o"
+	@echo "... sdk-gcc/ecs/MAModel.i"
+	@echo "... sdk-gcc/ecs/MAModel.s"
 	@echo "... sdk-gcc/ecs/data_format_change.o"
 	@echo "... sdk-gcc/ecs/data_format_change.i"
 	@echo "... sdk-gcc/ecs/data_format_change.s"

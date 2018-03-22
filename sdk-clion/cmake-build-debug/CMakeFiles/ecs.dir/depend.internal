@@ -6,6 +6,13 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
+CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h
 CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.cpp
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.h
@@ -39,6 +46,11 @@ CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o
 CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o
  ../sdk-gcc/ecs/lib/lib_io.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARIMAModel.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAModel.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARModel.h
+ /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
  /home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.h

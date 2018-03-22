@@ -94,6 +94,18 @@
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h">
 			<Option target="ecs"/>
 		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp">
+			<Option target="ecs"/>
+		</Unit>
+		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h">
+			<Option target="ecs"/>
+		</Unit>
 		<Unit filename="/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.cpp">
 			<Option target="ecs"/>
 		</Unit>

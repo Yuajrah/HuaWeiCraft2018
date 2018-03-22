@@ -5,6 +5,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o"
+  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o"
+  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o"
   "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o"
   "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o"
   "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ecs.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o"

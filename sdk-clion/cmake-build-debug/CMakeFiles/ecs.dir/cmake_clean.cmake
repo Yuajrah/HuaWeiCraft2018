@@ -1,5 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o"
+  "CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o"
+  "CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o"
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o"
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o"
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o"
