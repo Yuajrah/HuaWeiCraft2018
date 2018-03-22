@@ -123,48 +123,60 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
 //    std::map<int, int> predict_data;
 //    for (auto &t: vm_info) {
-//        ARIMAModel* arima = new ARIMAModel(ma(train_data[t.first], 5));
 //
-//        int period = 1;
-//        int modelCnt=50;
-//        int cnt=0;
-//        std::vector<std::vector<int>> list;
-//        std::vector<int> tmpPredict(modelCnt);
 //
-//        for (int k = 0; k < modelCnt; ++k)			//控制通过多少组参数进行计算最终的结果
-//        {
-//            std::vector<int> bestModel = arima->getARIMAModel(period, list, (k == 0) ? false : true);
-//            //std::cout<<bestModel.size()<<std::endl;
 //
-//            if (bestModel.size() == 0)
+//
+//
+//
+//        int tmp_sum = 0;
+//        for (int jj=0;jj<7;jj++) {
+//            ARIMAModel* arima = new ARIMAModel(train_data[t.first]);
+//
+//            int period = 7;
+//            int modelCnt=1;
+//            std::vector<int> tmpPredict(modelCnt);
+//            std::vector<std::vector<int>> list;
+//            int cnt=0;
+//
+//            for (int k = 0; k < modelCnt; ++k)			//控制通过多少组参数进行计算最终的结果
 //            {
-//                tmpPredict[k] = (int)train_data[t.first][train_data[t.first].size() - period];
-//                cnt++;
-//                break;
-//            }
-//            else
-//            {
-//                //std::cout<<bestModel[0]<<bestModel[1]<<std::endl;
-//                for (int jj=0;jj<7;jj++) {
+//                std::vector<int> bestModel = arima->getARIMAModel(period, list, (k == 0) ? false : true);
+//                //std::cout<<bestModel.size()<<std::endl;
+//
+//                if (bestModel.size() == 0)
+//                {
+//                    tmpPredict[k] = (int)train_data[t.first][train_data[t.first].size() - period];
+//                    cnt++;
+//                    break;
+//                }
+//                else
+//                {
+//                    //std::cout<<bestModel[0]<<bestModel[1]<<std::endl;
+//
 //                    int predictDiff = arima->predictValue(bestModel[0], bestModel[1], period);
 //                    //std::cout<<"fuck"<<std::endl;
-//                    tmpPredict[k] += arima->aftDeal(predictDiff, period);
+//                    tmpPredict[k] = arima->aftDeal(predictDiff, period);
+//                    cnt++;
 //                }
-//                cnt++;
+//                std::cout<<bestModel[0]<<" "<<bestModel[1]<<std::endl;
+//                list.push_back(bestModel);
 //            }
-//            std::cout<<bestModel[0]<<" "<<bestModel[1]<<std::endl;
-//            list.push_back(bestModel);
-//        }
+//            double sumPredict = 0.0;
 //
-//        double sumPredict = 0.0;
-//        for (int k = 0; k < cnt; ++k)
-//        {
-//            sumPredict += ((double)tmpPredict[k])/(double)cnt;
+//            for (int k = 0; k < cnt; ++k)
+//            {
+//                sumPredict += ((double)tmpPredict[k])/(double)cnt;
 ////        printf("%f ", sumPredict);
-//        }
-//        int predict = (int)std::round(sumPredict);
+//            }
 //
-//        predict_data[t.first] = std::max(predict, 0);
+//            int predict = (int)std::round(sumPredict);
+//            tmp_sum += predict;
+//            printf("predict = %d ", predict);
+//            train_data[t.first].push_back(predict);
+//        }
+//
+//        predict_data[t.first] = tmp_sum;
 //    }
 
 
@@ -172,20 +184,22 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第三版预测方案
      */
 
-    int diff_day = 1;
+//    int diff_day = 1;
+//
+//
+//    std::map<int, int> predict_data;
+//    for (auto &t: vm_info) {
+//        std::vector<Double> after_ma_data = ma(ma(train_data[t.first], 6), 5);
+////        std::vector<double> after_diff_data = preDealDiff(after_ma_data, 1);
+//        AR ar_model(after_ma_data);
+//        ar_model.fit("none");
+//        // ar_model.fit("aic");
+//        ar_model.predict(7);
+//        // ar_model.print_model_info();
+//        predict_data[t.first] = ar_model.get_sum();
+//    }
 
 
-    std::map<int, int> predict_data;
-    for (auto &t: vm_info) {
-        std::vector<Double> after_ma_data = ma(train_data[t.first], 6);
-        std::vector<double> after_diff_data = preDealDiff(after_ma_data, 1);
-        AR ar_model(after_ma_data);
-        ar_model.fit("none");
-        // ar_model.fit("aic");
-        ar_model.predict(7);
-        // ar_model.print_model_info();
-        predict_data[t.first] = ar_model.get_sum();
-    }
     print_predict_score(actual_data, predict_data);
     std::vector<std::map<int,int>> allocate_result;
     allocate_result = frist_fit(vm_info, server, predict_data, opt_object);

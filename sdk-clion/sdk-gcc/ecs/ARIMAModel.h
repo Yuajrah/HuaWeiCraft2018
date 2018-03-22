@@ -76,9 +76,9 @@ public:
         int len = data.size();
         // len = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
 
-        if (len > 100)
+        if (len > 14)
         {
-            len = 100;
+            len = 14;
         }
 
 
