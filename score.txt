@@ -6,3 +6,5 @@ MA(7) + AR(hqic)+ First Fit(凑合版)    初中    79.696
         AR(aic) + First Fit(凑合版)    初中    73.28
         AR(bic) + First Fit(凑合版)    初中    63.329
         AR(hqic)+ First Fit(凑合版)    初中    65.862
+
+MA(6) + AR(none)+ First Fit(凑合版)    初中    87.859

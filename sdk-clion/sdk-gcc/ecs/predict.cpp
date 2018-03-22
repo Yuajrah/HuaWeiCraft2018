@@ -172,9 +172,20 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第三版预测方案
      */
 
-//    int diff_day = 1;
-//    preDealDiff(train_data[1], 1);
+    int diff_day = 1;
 
+
+    std::map<int, int> predict_data;
+    for (auto &t: vm_info) {
+        std::vector<Double> after_ma_data = ma(train_data[t.first], 6);
+        std::vector<double> after_diff_data = preDealDiff(after_ma_data, 1);
+        AR ar_model(after_ma_data);
+        ar_model.fit("none");
+        // ar_model.fit("aic");
+        ar_model.predict(7);
+        // ar_model.print_model_info();
+        predict_data[t.first] = ar_model.get_sum();
+    }
     print_predict_score(actual_data, predict_data);
     std::vector<std::map<int,int>> allocate_result;
     allocate_result = frist_fit(vm_info, server, predict_data, opt_object);
