@@ -341,3 +341,50 @@ void print_predict_score (std::map<int, int> actual_data, std::map<int, int> pre
     float score = 1 - sqrt(t1 / len) / ( sqrt(t2 / len) + sqrt(t3 / len) );
     printf("predict score = %f\n", score);
 }
+
+/**
+ * 差分函数
+ * @param period
+ * @return
+ */
+std::vector<double> preDealDiff(std::vector<double> data, int period){
+    if(period>=data.size()-1){
+        period=0;
+    }
+
+    switch (period){
+        case 0: {
+            return data;
+        }
+            break;
+        case 1: {
+            return preFirDiff(data);
+        }
+            break;
+        default: {
+            return preSeasonDiff(data);
+        }
+            break;
+    }
+}
+
+
+std::vector<double> preFirDiff(std::vector<double> preData){
+    std::vector<double> res;
+    for(int i=0;i<preData.size()-1;i++){
+        double tmpData =preData[i+1]-preData[i];
+        res.push_back(tmpData);
+    }
+    return res;
+}
+
+std::vector<double> preSeasonDiff(std::vector<double> preData){
+    std::vector<double> res;
+
+    for(int i=0;i<preData.size()-7;i++){
+
+        double tmpData=preData[i+7]-preData[i];
+        res.push_back(tmpData);
+    }
+    return res;
+}

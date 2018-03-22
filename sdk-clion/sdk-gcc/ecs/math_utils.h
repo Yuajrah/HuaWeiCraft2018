@@ -90,4 +90,10 @@ void print_predict_score(std::map<int, int> actual_data, std::map<int, int> pred
  */
 void test_Mat();
 
+std::vector<double> preDealDiff(std::vector<double> data, int period);
+std::vector<double> preFirDiff(std::vector<double> preData);
+std::vector<double> preSeasonDiff(std::vector<double> preData);
+
 #endif //SDK_GCC_MATH_UTILS_H
+
+

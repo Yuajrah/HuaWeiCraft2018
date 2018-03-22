@@ -167,11 +167,13 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //        predict_data[t.first] = std::max(predict, 0);
 //    }
 
+
     /**
      * 第三版预测方案
      */
 
-    
+//    int diff_day = 1;
+//    preDealDiff(train_data[1], 1);
 
     print_predict_score(actual_data, predict_data);
     std::vector<std::map<int,int>> allocate_result;

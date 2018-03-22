@@ -74,13 +74,14 @@ public:
 
         // model产生, 即产生相应的p, q参数
         int len = data.size();
-
+        // len = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
+        
         if (len > 100)
         {
             len = 100;
         }
 
-         // len = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
+
 
 
         int size = ((len + 2) * (len + 1)) / 2 - 1;
