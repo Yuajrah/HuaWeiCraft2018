@@ -84,7 +84,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-    int debug = 1;
+    int debug = 0;
     std::map<int, std::vector<Double>> train_data;
     std::map<int, int> actual_data;
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
@@ -121,57 +121,58 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第二版预测方法
      */
 
-//    std::map<int, int> predict_data;
-//    for (auto &t: vm_info) {
-//        ARIMAModel* arima = new ARIMAModel(ma(train_data[t.first], 7));
-//
-//        int period = 1;
-//        int modelCnt=5;
-//        int cnt=0;
-//        std::vector<std::vector<int>> list;
-//        std::vector<int> tmpPredict(modelCnt);
-//
-//        for (int k = 0; k < modelCnt; ++k)			//控制通过多少组参数进行计算最终的结果
-//        {
-//            std::vector<int> bestModel = arima->getARIMAModel(period, list, (k == 0) ? false : true);
-//            //std::cout<<bestModel.size()<<std::endl;
-//
-//            if (bestModel.size() == 0)
-//            {
-//                tmpPredict[k] = (int)train_data[t.first][train_data[t.first].size() - period];
-//                cnt++;
-//                break;
-//            }
-//            else
-//            {
-//                //std::cout<<bestModel[0]<<bestModel[1]<<std::endl;
-//                for (int jj=0;jj<7;jj++) {
-//                    int predictDiff = arima->predictValue(bestModel[0], bestModel[1], period);
-//                    //std::cout<<"fuck"<<std::endl;
-//                    tmpPredict[k] += arima->aftDeal(predictDiff, period);
-//                }
-//                cnt++;
-//            }
-//            std::cout<<bestModel[0]<<" "<<bestModel[1]<<std::endl;
-//            list.push_back(bestModel);
-//        }
-//
-//        double sumPredict = 0.0;
-//        for (int k = 0; k < cnt; ++k)
-//        {
-//            sumPredict += ((double)tmpPredict[k])/(double)cnt;
-////        printf("%f ", sumPredict);
-//        }
-//        int predict = (int)std::round(sumPredict);
-//
-//        predict_data[t.first] = std::max(predict, 0);
-//    }
+    std::map<int, int> predict_data;
+    for (auto &t: vm_info) {
+        ARIMAModel* arima = new ARIMAModel(ma(train_data[t.first], 5));
+
+        int period = 1;
+        int modelCnt=50;
+        int cnt=0;
+        std::vector<std::vector<int>> list;
+        std::vector<int> tmpPredict(modelCnt);
+
+        for (int k = 0; k < modelCnt; ++k)			//控制通过多少组参数进行计算最终的结果
+        {
+            std::vector<int> bestModel = arima->getARIMAModel(period, list, (k == 0) ? false : true);
+            //std::cout<<bestModel.size()<<std::endl;
+
+            if (bestModel.size() == 0)
+            {
+                tmpPredict[k] = (int)train_data[t.first][train_data[t.first].size() - period];
+                cnt++;
+                break;
+            }
+            else
+            {
+                //std::cout<<bestModel[0]<<bestModel[1]<<std::endl;
+                for (int jj=0;jj<7;jj++) {
+                    int predictDiff = arima->predictValue(bestModel[0], bestModel[1], period);
+                    //std::cout<<"fuck"<<std::endl;
+                    tmpPredict[k] += arima->aftDeal(predictDiff, period);
+                }
+                cnt++;
+            }
+            std::cout<<bestModel[0]<<" "<<bestModel[1]<<std::endl;
+            list.push_back(bestModel);
+        }
+
+        double sumPredict = 0.0;
+        for (int k = 0; k < cnt; ++k)
+        {
+            sumPredict += ((double)tmpPredict[k])/(double)cnt;
+//        printf("%f ", sumPredict);
+        }
+        int predict = (int)std::round(sumPredict);
+
+        predict_data[t.first] = std::max(predict, 0);
+    }
 
     /**
      * 第三版预测方案
      */
 
-    
+//    int diff_day = 1;
+//    preDealDiff(train_data[1], 1);
 
     print_predict_score(actual_data, predict_data);
     std::vector<std::map<int,int>> allocate_result;
