@@ -12,6 +12,8 @@
 #include "frist_fit.h"
 #include "lib_io.h"
 #include "data_format_change.h"
+#include "ARIMAModel.h"
+
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -82,23 +84,94 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-//    std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, "2016-01-21", vm_info, data_num);
-//    std::map<int, int> actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", vm_info, data_num);
-
-    std::map<int, std::vector<Double>> train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num);
-    std::map<int, int> actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, vm_info, data_num);
-
-
-    std::map<int, int> predict_data;
-    for (auto &t: vm_info) {
-        std::vector<Double> after_ma_data = ma(train_data[t.first], 7);
-        AR ar_model(after_ma_data);
-        ar_model.fit("aic");
-        // ar_model.fit("aic");
-        ar_model.predict(7);
-        // ar_model.print_model_info();
-        predict_data[t.first] = ar_model.get_sum();
+    int debug = 1;
+    std::map<int, std::vector<Double>> train_data;
+    std::map<int, int> actual_data;
+    // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
+    // 项目可执行文件的参数： "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
+    if (debug == 0) { // 上传所用
+        train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num);
+        actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, vm_info, data_num);
+    } else if (debug == 1) {
+        train_data = get_esc_data(data, date_start, "2015-05-24", vm_info, data_num);
+        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", vm_info, data_num);
+    } else if (debug == 2) { // 16年的数据集
+        train_data = get_esc_data(data, date_start, "2016-01-21", vm_info, data_num);
+        actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", vm_info, data_num);
     }
+
+
+
+
+    /**
+     * 第一版预测方案
+     */
+//    std::map<int, int> predict_data;
+//    for (auto &t: vm_info) {
+//        std::vector<Double> after_ma_data = ma(train_data[t.first], 7);
+//        AR ar_model(after_ma_data);
+//        ar_model.fit("aic");
+//        // ar_model.fit("aic");
+//        ar_model.predict(7);
+//        // ar_model.print_model_info();
+//        predict_data[t.first] = ar_model.get_sum();
+//    }
+
+    /**
+     * 第二版预测方法
+     */
+
+//    std::map<int, int> predict_data;
+//    for (auto &t: vm_info) {
+//        ARIMAModel* arima = new ARIMAModel(ma(train_data[t.first], 7));
+//
+//        int period = 1;
+//        int modelCnt=5;
+//        int cnt=0;
+//        std::vector<std::vector<int>> list;
+//        std::vector<int> tmpPredict(modelCnt);
+//
+//        for (int k = 0; k < modelCnt; ++k)			//控制通过多少组参数进行计算最终的结果
+//        {
+//            std::vector<int> bestModel = arima->getARIMAModel(period, list, (k == 0) ? false : true);
+//            //std::cout<<bestModel.size()<<std::endl;
+//
+//            if (bestModel.size() == 0)
+//            {
+//                tmpPredict[k] = (int)train_data[t.first][train_data[t.first].size() - period];
+//                cnt++;
+//                break;
+//            }
+//            else
+//            {
+//                //std::cout<<bestModel[0]<<bestModel[1]<<std::endl;
+//                for (int jj=0;jj<7;jj++) {
+//                    int predictDiff = arima->predictValue(bestModel[0], bestModel[1], period);
+//                    //std::cout<<"fuck"<<std::endl;
+//                    tmpPredict[k] += arima->aftDeal(predictDiff, period);
+//                }
+//                cnt++;
+//            }
+//            std::cout<<bestModel[0]<<" "<<bestModel[1]<<std::endl;
+//            list.push_back(bestModel);
+//        }
+//
+//        double sumPredict = 0.0;
+//        for (int k = 0; k < cnt; ++k)
+//        {
+//            sumPredict += ((double)tmpPredict[k])/(double)cnt;
+////        printf("%f ", sumPredict);
+//        }
+//        int predict = (int)std::round(sumPredict);
+//
+//        predict_data[t.first] = std::max(predict, 0);
+//    }
+
+    /**
+     * 第三版预测方案
+     */
+
+    
 
     print_predict_score(actual_data, predict_data);
     std::vector<std::map<int,int>> allocate_result;
