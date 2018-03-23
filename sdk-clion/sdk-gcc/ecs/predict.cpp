@@ -84,7 +84,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-    int debug = 0;
+    int debug = 1;
     std::map<int, std::vector<Double>> train_data;
     std::map<int, int> actual_data;
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
@@ -106,16 +106,17 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /**
      * 第一版预测方案
      */
-//    std::map<int, int> predict_data;
-//    for (auto &t: vm_info) {
-//        std::vector<Double> after_ma_data = ma(train_data[t.first], 7);
-//        AR ar_model(after_ma_data);
-//        ar_model.fit("aic");
-//        // ar_model.fit("aic");
-//        ar_model.predict(7);
-//        // ar_model.print_model_info();
-//        predict_data[t.first] = ar_model.get_sum();
-//    }
+    std::map<int, int> predict_data;
+    for (auto &t: vm_info) {
+        std::vector<Double> after_ma_data = ma(train_data[t.first], 6);
+        AR ar_model(after_ma_data);
+        ar_model.fit("none");
+        // ar_model.fit("aic");
+        ar_model.predict(get_days(forecast_start_date, forecast_end_date));
+        // ar_model.print_model_info();
+        auto predict_res = ar_model.get_res();
+        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 0.0));
+    }
 
     /**
      * 第二版预测方法
@@ -179,22 +180,22 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第三版预测方案
      */
 
-    int diff_day = 10;
-
-
-    std::map<int, int> predict_data;
-    for (auto &t: vm_info) {
-        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
-        std::vector<double> after_diff_data = do_diff(after_ma_data, diff_day);
-        AR ar_model(after_diff_data);
-        ar_model.fit("none");
-        // ar_model.fit("aic");
-        ar_model.predict(7, diff_day);
-        // ar_model.print_model_info();
-        std::vector<double> ar_res = ar_model.get_res();
-        std::vector<double> predict_res = reset_diff(after_ma_data, diff_day, ar_res);
-        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 0.0));
-    }
+//    int diff_day = 10;
+//
+//
+//    std::map<int, int> predict_data;
+//    for (auto &t: vm_info) {
+//        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
+//        std::vector<double> after_diff_data = do_diff(after_ma_data, diff_day);
+//        AR ar_model(after_diff_data);
+//        ar_model.fit("none");
+//        // ar_model.fit("aic");
+//        ar_model.predict(get_days(forecast_start_date, forecast_end_date), diff_day);
+//        // ar_model.print_model_info();
+//        std::vector<double> ar_res = ar_model.get_res();
+//        std::vector<double> predict_res = reset_diff(after_ma_data, diff_day, ar_res);
+//        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 0.0));
+//    }
 
 
     print_predict_score(actual_data, predict_data);
