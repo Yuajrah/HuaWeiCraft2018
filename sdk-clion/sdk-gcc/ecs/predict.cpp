@@ -84,7 +84,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-    int debug = 2;
+    int debug = 0;
     std::map<int, std::vector<Double>> train_data;
     std::map<int, int> actual_data;
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
@@ -202,7 +202,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::vector<std::map<int,int>> allocate_result;
     bool weight_flag = true;
     //if(server.storage > 2*server.core) weight_flag = true;
-    allocate_result = frist_fit(vm_info, server, predict_data, opt_object, weight_flag);
+    std::vector<int> order;
+    order = get_order(vm_info, server, opt_object);
+    allocate_result = frist_fit(vm_info, server, predict_data, opt_object,order );
 
 
     std::string result1 = change_map_char(predict_data);
