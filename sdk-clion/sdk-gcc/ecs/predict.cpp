@@ -93,6 +93,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     std::map<int, std::vector<double>> fit_train_data; // 拟合阶段所用的训练集合
     std::map<int, int> fit_test_data;  // 拟合阶段的测试集合
+
     std::map<int, int> actual_data;
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
     // 项目可执行文件的参数： "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
@@ -124,17 +125,17 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /**
      * 第一版预测方案
      */
-//    std::map<int, int> predict_data;
-//    for (auto &t: vm_info) {
-//        std::vector<Double> after_ma_data = ma(train_data[t.first], 6);
-//        AR ar_model(after_ma_data);
-//        ar_model.fit("none");
-//        // ar_model.fit("aic");
-//        ar_model.predict(get_days(forecast_start_date, forecast_end_date));
-//        // ar_model.print_model_info();
-//        auto predict_res = ar_model.get_res();
-//        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 0.0));
-//    }
+    std::map<int, int> predict_data;
+    for (auto &t: vm_info) {
+        std::vector<Double> after_ma_data = ma(train_data[t.first], 6);
+        AR ar_model(after_ma_data);
+        ar_model.fit("none");
+        // ar_model.fit("aic");
+        ar_model.predict(get_days(forecast_start_date, forecast_end_date));
+        // ar_model.print_model_info();
+        auto predict_res = ar_model.get_res();
+        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 0.0));
+    }
 
     /**
      * 第二版预测方法
@@ -247,9 +248,13 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //        predict_data[t.first] = round(accumulate(tmp_predict_res.begin(), tmp_predict_res.end(), 0.0));
 //    }
 
-    // print_predict_score(actual_data, predict_data);
+     print_predict_score(actual_data, predict_data);
     std::vector<std::map<int,int>> allocate_result;
-    allocate_result = frist_fit(vm_info, server, predict_data, opt_object);
+    bool weight_flag = true;
+    //if(server.storage > 2*server.core) weight_flag = true;
+    std::vector<int> order;
+    order = get_order(vm_info, server, opt_object);
+    allocate_result = frist_fit(vm_info, server, predict_data, opt_object,order );
 
 
     std::string result1 = change_map_char(predict_data);
@@ -259,4 +264,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 	char * result_file = (char *)"17\n\n0 8 0 20";
 	// 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
 	write_result(result.c_str(), filename);
+    //0分答案
+    //write_result(result_file, filename);
 }
