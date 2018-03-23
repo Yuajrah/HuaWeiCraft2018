@@ -202,7 +202,7 @@ std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR
  *
  */
 
-std::vector<Double> AR::predict(int k){ // 预测接下来k天的数据
+std::vector<Double> AR::predict(int k, int diff_day){ // 预测接下来k天的数据
     std::vector<Double> data_copy(data);
     for(int i=0;i<k;i++){
         Double s = a[0];
@@ -210,17 +210,16 @@ std::vector<Double> AR::predict(int k){ // 预测接下来k天的数据
         for(int j=0;j<best_p;j++){
             s += a[j+1] * data_copy[t-j-1];
         }
-        data_copy.push_back(s);
+        if (diff_day > 0) { // 如果做了差分, 则负值不归0
+            data_copy.push_back(s);
+        } else {
+            data_copy.push_back(s < 0? 0: s);
+        }
     }
+
+
     std::vector<Double> predict_res(data_copy.begin() + data.size(), data_copy.end());
     this->res.assign(predict_res.begin(), predict_res.end());
-
-    // 对预测结果求和并四舍五入
-    Double sum = 0;
-    for (auto t: res) {
-        sum += t;
-    }
-    this->sum = round(sum<0?0:sum);
 
     return predict_res;
 }
@@ -284,5 +283,4 @@ void AR::print_model_info() {
     for (auto t: a) {
         printf("%f ", t);
     }
-    printf("\n\nsum = %d\n", sum);
 }

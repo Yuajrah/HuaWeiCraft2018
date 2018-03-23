@@ -347,44 +347,37 @@ void print_predict_score (std::map<int, int> actual_data, std::map<int, int> pre
  * @param period
  * @return
  */
-std::vector<double> preDealDiff(std::vector<double> data, int period){
-    if(period>=data.size()-1){
-        period=0;
+std::vector<double> do_diff(std::vector<double> data, int diff_day){
+    if(diff_day>=data.size()-1){
+        diff_day=0;
     }
-
-    switch (period){
-        case 0: {
-            return data;
-        }
-            break;
-        case 1: {
-            return preFirDiff(data);
-        }
-            break;
-        default: {
-            return preSeasonDiff(data);
-        }
-            break;
+    if(diff_day == 0){
+        return data;
     }
-}
-
-
-std::vector<double> preFirDiff(std::vector<double> preData){
     std::vector<double> res;
-    for(int i=0;i<preData.size()-1;i++){
-        double tmpData =preData[i+1]-preData[i];
+    for(int i=0;i<data.size()-diff_day;i++){
+        double tmpData =data[i+diff_day]-data[i];
         res.push_back(tmpData);
     }
     return res;
 }
 
-std::vector<double> preSeasonDiff(std::vector<double> preData){
-    std::vector<double> res;
+/**
+ *
+ * @param before_diff_data 差分前的数据
+ * @param after_diff_day 差分后的数据
+ * @param diff_day 差分的天数
+ * @param predict_data 根据差分结果预测出来的数据
+ * @return
+ */
+std::vector<double> reset_diff(std::vector<double> before_diff_data, int diff_day, std::vector<double> predict_data){
 
-    for(int i=0;i<preData.size()-7;i++){
+    if (diff_day == 0) return predict_data;
 
-        double tmpData=preData[i+7]-preData[i];
-        res.push_back(tmpData);
+    int before_diff_day =  before_diff_data.size();
+    std::copy(predict_data.begin(), predict_data.end(), std::back_inserter(before_diff_data));
+    for (int i=before_diff_day;i<before_diff_data.size();i++) {
+        before_diff_data[i] += before_diff_data[i - diff_day];
     }
-    return res;
+    return std::vector<double>(before_diff_data.begin() + before_diff_day, before_diff_data.end());
 }

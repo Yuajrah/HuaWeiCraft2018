@@ -13,7 +13,7 @@
 #include "lib_io.h"
 #include "data_format_change.h"
 #include "ARIMAModel.h"
-
+#include <numeric>
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -124,17 +124,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    std::map<int, int> predict_data;
 //    for (auto &t: vm_info) {
 //
-//
-//
-//
-//
-//
 //        int tmp_sum = 0;
 //        for (int jj=0;jj<7;jj++) {
-//            ARIMAModel* arima = new ARIMAModel(train_data[t.first]);
+//            ARIMAModel* arima = new ARIMAModel(ma(train_data[t.first], 5));
 //
-//            int period = 7;
-//            int modelCnt=1;
+//            int period = 1;
+//            int modelCnt = 5;
 //            std::vector<int> tmpPredict(modelCnt);
 //            std::vector<std::vector<int>> list;
 //            int cnt=0;
@@ -184,20 +179,22 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第三版预测方案
      */
 
-//    int diff_day = 1;
-//
-//
-//    std::map<int, int> predict_data;
-//    for (auto &t: vm_info) {
-//        std::vector<Double> after_ma_data = ma(ma(train_data[t.first], 6), 5);
-////        std::vector<double> after_diff_data = preDealDiff(after_ma_data, 1);
-//        AR ar_model(after_ma_data);
-//        ar_model.fit("none");
-//        // ar_model.fit("aic");
-//        ar_model.predict(7);
-//        // ar_model.print_model_info();
-//        predict_data[t.first] = ar_model.get_sum();
-//    }
+    int diff_day = 10;
+
+
+    std::map<int, int> predict_data;
+    for (auto &t: vm_info) {
+        std::vector<Double> after_ma_data = ma(train_data[t.first], 6);
+        std::vector<double> after_diff_data = do_diff(after_ma_data, diff_day);
+        AR ar_model(after_diff_data);
+        ar_model.fit("none");
+        // ar_model.fit("aic");
+        ar_model.predict(7, diff_day);
+        // ar_model.print_model_info();
+        std::vector<double> ar_res = ar_model.get_res();
+        std::vector<double> predict_res = reset_diff(after_ma_data, diff_day, ar_res);
+        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 1.0));
+    }
 
 
     print_predict_score(actual_data, predict_data);
