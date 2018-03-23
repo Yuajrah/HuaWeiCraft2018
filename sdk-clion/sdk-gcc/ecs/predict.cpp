@@ -184,7 +184,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     std::map<int, int> predict_data;
     for (auto &t: vm_info) {
-        std::vector<Double> after_ma_data = ma(train_data[t.first], 6);
+        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
         std::vector<double> after_diff_data = do_diff(after_ma_data, diff_day);
         AR ar_model(after_diff_data);
         ar_model.fit("none");
@@ -193,7 +193,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         // ar_model.print_model_info();
         std::vector<double> ar_res = ar_model.get_res();
         std::vector<double> predict_res = reset_diff(after_ma_data, diff_day, ar_res);
-        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 1.0));
+        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 0.0));
     }
 
 

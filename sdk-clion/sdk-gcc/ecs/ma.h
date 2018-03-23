@@ -8,6 +8,6 @@
 #include "type_def.h"
 #include <vector>
 
-std::vector<Double> ma(std::vector<Double> data, int window_size);
+std::vector<Double> ma(std::vector<Double> data, int window_size, int move_size=1);
 
 #endif //SDK_GCC_MA_H
