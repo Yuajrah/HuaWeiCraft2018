@@ -9,7 +9,7 @@
 #include <string>
 
 //进行分配函数
-std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object);
+std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object, bool weight_flag = true);
 
 //分配一个新的服务器
 Allocat_server allocate_one(int id, int core, int storage, int target);

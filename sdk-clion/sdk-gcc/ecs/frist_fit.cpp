@@ -1,7 +1,7 @@
 #include "frist_fit.h"
 #include <cstring>
 
-std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object)
+std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object, bool weight_flag)
 {
     std::map<int, int> predict_data_tmp = predict_data;
     //首先确定优化目标
@@ -32,24 +32,56 @@ std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server serve
     {
         //首先选择id最大的虚拟服务器作为当前需要处理的节点
         //frist为id,second为数量
-        std::map<int ,int >::iterator current_flavor = predict_data.end();
-        for(int i = 15; i>0; i-- ) {
-            std::map<int, int>::iterator iter;
-            iter = predict_data.find(i);
-            if (iter == predict_data.end()) {
-                continue;
-            } else {
-                if (iter->second == 0) {
-                    predict_data.erase(iter);
+        std::map<int, int>::iterator current_flavor = predict_data.end();
+        if (weight_flag) {
+            for (int i = 15; i > 0; i--) {
+                std::map<int, int>::iterator iter;
+                iter = predict_data.find(i);
+                if (iter == predict_data.end()) {
                     continue;
                 } else {
-                    current_flavor = iter;
-                    break;
+                    if (iter->second == 0) {
+                        predict_data.erase(iter);
+                        continue;
+                    } else {
+                        current_flavor = iter;
+                        break;
+                    }
                 }
             }
         }
-
-        if(current_flavor == predict_data.end()) break;
+        else
+        {
+            for (int i = 15; i > 0; i--) {
+                int index = i;
+                if (index%3 == 0)
+                {
+                    index -= 1;
+                }
+                else if (i%3==2)
+                {
+                    index -= 1;
+                }
+                else
+                {
+                    index += 2;
+                }
+                std::map<int, int>::iterator iter;
+                iter = predict_data.find(index);
+                if (iter == predict_data.end()) {
+                    continue;
+                } else {
+                    if (iter->second == 0) {
+                        predict_data.erase(iter);
+                        continue;
+                    } else {
+                        current_flavor = iter;
+                        break;
+                    }
+                }
+            }
+        }
+        if (current_flavor == predict_data.end()) break;
 
         //获取当前目标flavor的一些参数
         int core_need;
@@ -119,7 +151,7 @@ std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server serve
         //当前处理的虚拟机的数量减一
         current_flavor->second--;
     }
-    //get_scores(predict_data_tmp, server, server_number+1, target, vm_info);
+    get_scores(predict_data_tmp, server, server_number+1, target, vm_info);
     /**
      * [
      *      0: {flavor1: xx, flavor2: xx...}

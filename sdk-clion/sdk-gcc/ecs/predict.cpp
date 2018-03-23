@@ -84,7 +84,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-    int debug = 1;
+    int debug = 2;
     std::map<int, std::vector<Double>> train_data;
     std::map<int, int> actual_data;
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
@@ -200,7 +200,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     print_predict_score(actual_data, predict_data);
     std::vector<std::map<int,int>> allocate_result;
-    allocate_result = frist_fit(vm_info, server, predict_data, opt_object);
+    bool weight_flag = true;
+    //if(server.storage > 2*server.core) weight_flag = true;
+    allocate_result = frist_fit(vm_info, server, predict_data, opt_object, weight_flag);
 
 
     std::string result1 = change_map_char(predict_data);
@@ -210,4 +212,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 	char * result_file = (char *)"17\n\n0 8 0 20";
 	// 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
 	write_result(result.c_str(), filename);
+    //0分答案
+    //write_result(result_file, filename);
 }
