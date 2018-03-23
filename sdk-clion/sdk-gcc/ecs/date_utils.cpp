@@ -35,3 +35,15 @@ int get_days(const char *from, const char *to)
     int toSecond=(int)convert(year,month,day);
     return (toSecond-fromSecond)/24/3600;
 }
+
+char* add_days(const char *from, int add_day)
+{
+    int year, month, day;
+    sscanf(from,"%d-%d-%d",&year,&month,&day);
+    time_t fromSecond = convert(year,month,day);
+    time_t toSecond = fromSecond + add_day * 24 * 3600;
+    tm *tm = localtime(&toSecond);
+    char *s = new char[11];
+    sprintf(s, "%d-%.2d-%.2d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
+    return s;
+}
