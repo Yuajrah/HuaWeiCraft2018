@@ -10,6 +10,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o"
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o"
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o"
+  "CMakeFiles/ecs.dir/sdk-gcc/ecs/packing.cpp.o"
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o"
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o"
   "CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o"

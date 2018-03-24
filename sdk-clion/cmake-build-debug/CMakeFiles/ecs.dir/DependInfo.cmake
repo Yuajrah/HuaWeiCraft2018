@@ -4,20 +4,21 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ecs.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/io.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o"
-  "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.cpp" "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/AR.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/ARMAMath.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/MAModel.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/data_format_change.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/date_utils.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ecs.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/ecs.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/frist_fit.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/get_data.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/io.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/io.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/ma.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/packing.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/packing.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/predict.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/test.cpp.o"
+  "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.cpp" "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir/sdk-gcc/ecs/type_def.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

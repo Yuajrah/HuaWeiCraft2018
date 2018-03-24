@@ -26,4 +26,4 @@ SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall -std=c++11")
 aux_source_directory(${PROJECT_SOURCE_DIR}/. DIR_SRCS)
 
 # 指定生成目标
-add_executable(ecs ${DIR_SRCS})
+add_executable(ecs ${DIR_SRCS} sdk-gcc/ecs/packing.cpp sdk-gcc/ecs/packing.h)

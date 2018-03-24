@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /home/ruiy/clion-2017.3/bin/cmake/bin/cmake
+CMAKE_COMMAND = /home/txink/桌面/clion-2017.3.4/bin/cmake/bin/cmake
 
 # The command to remove a file.
-RM = /home/ruiy/clion-2017.3/bin/cmake/bin/cmake -E remove -f
+RM = /home/txink/桌面/clion-2017.3.4/bin/cmake/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ruiy/store/HuaWeiCraft2018/sdk-clion
+CMAKE_SOURCE_DIR = /home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug
+CMAKE_BINARY_DIR = /home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/home/ruiy/clion-2017.3/bin/cmake/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/home/txink/桌面/clion-2017.3.4/bin/cmake/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/home/ruiy/clion-2017.3/bin/cmake/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	/home/txink/桌面/clion-2017.3.4/bin/cmake/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles /home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles /home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -420,6 +420,33 @@ sdk-gcc/ecs/math_utils.cpp.s:
 	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/math_utils.cpp.s
 .PHONY : sdk-gcc/ecs/math_utils.cpp.s
 
+sdk-gcc/ecs/packing.o: sdk-gcc/ecs/packing.cpp.o
+
+.PHONY : sdk-gcc/ecs/packing.o
+
+# target to build an object file
+sdk-gcc/ecs/packing.cpp.o:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/packing.cpp.o
+.PHONY : sdk-gcc/ecs/packing.cpp.o
+
+sdk-gcc/ecs/packing.i: sdk-gcc/ecs/packing.cpp.i
+
+.PHONY : sdk-gcc/ecs/packing.i
+
+# target to preprocess a source file
+sdk-gcc/ecs/packing.cpp.i:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/packing.cpp.i
+.PHONY : sdk-gcc/ecs/packing.cpp.i
+
+sdk-gcc/ecs/packing.s: sdk-gcc/ecs/packing.cpp.s
+
+.PHONY : sdk-gcc/ecs/packing.s
+
+# target to generate assembly for a file
+sdk-gcc/ecs/packing.cpp.s:
+	$(MAKE) -f CMakeFiles/ecs.dir/build.make CMakeFiles/ecs.dir/sdk-gcc/ecs/packing.cpp.s
+.PHONY : sdk-gcc/ecs/packing.cpp.s
+
 sdk-gcc/ecs/predict.o: sdk-gcc/ecs/predict.cpp.o
 
 .PHONY : sdk-gcc/ecs/predict.o
@@ -543,6 +570,9 @@ help:
 	@echo "... sdk-gcc/ecs/math_utils.o"
 	@echo "... sdk-gcc/ecs/math_utils.i"
 	@echo "... sdk-gcc/ecs/math_utils.s"
+	@echo "... sdk-gcc/ecs/packing.o"
+	@echo "... sdk-gcc/ecs/packing.i"
+	@echo "... sdk-gcc/ecs/packing.s"
 	@echo "... sdk-gcc/ecs/predict.o"
 	@echo "... sdk-gcc/ecs/predict.i"
 	@echo "... sdk-gcc/ecs/predict.s"

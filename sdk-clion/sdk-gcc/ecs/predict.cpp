@@ -10,6 +10,7 @@
 #include "ma.h"
 #include <map>
 #include "frist_fit.h"
+#include "packing.h"
 #include "lib_io.h"
 #include "data_format_change.h"
 #include "ARIMAModel.h"
@@ -202,8 +203,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::vector<std::map<int,int>> allocate_result;
     bool weight_flag = true;
     //if(server.storage > 2*server.core) weight_flag = true;
-    allocate_result = frist_fit(vm_info, server, predict_data, opt_object, weight_flag);
-
+   // allocate_result = frist_fit(vm_info, server, predict_data, opt_object, weight_flag);
+    allocate_result = packing(vm_info, server, predict_data, opt_object);
 
     std::string result1 = change_map_char(predict_data);
     std::string result2 = change_format(allocate_result);

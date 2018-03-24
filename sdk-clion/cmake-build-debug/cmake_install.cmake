@@ -1,4 +1,4 @@
-# Install script for directory: /home/ruiy/store/HuaWeiCraft2018/sdk-clion
+# Install script for directory: /home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/ruiy/store/HuaWeiCraft2018/sdk-clion/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

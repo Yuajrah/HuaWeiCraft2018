@@ -10,13 +10,13 @@
 
 ../sdk-gcc/ecs/lib/lib_time.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.cpp
 AR.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
 math_utils.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
 cfloat
 -
 cmath
@@ -24,7 +24,7 @@ cmath
 cstdio
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
 vector
 -
 cmath
@@ -32,21 +32,21 @@ cmath
 string
 -
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARIMAModel.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARIMAModel.h
 vector
 -
 cmath
 -
 ARModel.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARModel.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARModel.h
 MAModel.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h
 ARMAModel.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAModel.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAModel.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.cpp
 cstring
 -
 cmath
@@ -54,39 +54,39 @@ cmath
 cstdlib
 -
 ARMAMath.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
 vector
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAModel.h
-vector
--
-ARMAMath.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
-
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARModel.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAModel.h
 vector
 -
 ARMAMath.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARModel.h
+vector
+-
+ARMAMath.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
+
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.cpp
 MAModel.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/MAModel.h
 vector
 -
 ARMAMath.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARMAMath.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.cpp
 data_format_change.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.h
 map
 -
 vector
@@ -94,35 +94,35 @@ vector
 string
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.cpp
 stdio.h
 -
 date_utils.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
 ctime
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ecs.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ecs.cpp
 predict.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.h
 lib_io.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib_io.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib_io.h
 lib_time.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib_time.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib_time.h
 stdio.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/stdio.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/stdio.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.cpp
 frist_fit.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.h
 cstring
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.h
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
 iostream
 -
 vector
@@ -134,21 +134,21 @@ queue
 string
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.cpp
 get_data.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.h
 date_utils.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.h
 vector
 -
 map
 -
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/io.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/io.cpp
 stdio.h
 -
 stdlib.h
@@ -168,21 +168,21 @@ unistd.h
 signal.h
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.cpp
 ma.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.h
 cstdio
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.h
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
 vector
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.cpp
 math_utils.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
 iostream
 -
 cmath
@@ -190,67 +190,91 @@ cmath
 cstdio
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
 vector
 -
 map
 -
 math_utils.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.cpp
-date_utils.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
-predict.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.h
-AR.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
-math_utils.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
-test.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.h
-cstdio
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/packing.cpp
+packing.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/packing.h
+cstring
 -
-get_data.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.h
+
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/packing.h
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
-ar.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ar.h
-ma.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+iostream
+-
+vector
+-
 map
 -
-frist_fit.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.h
-lib_io.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib_io.h
-data_format_change.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.h
-ARIMAModel.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARIMAModel.h
-
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.h
-lib_io.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib_io.h
+queue
+-
 string
 -
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.cpp
-test.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.cpp
+date_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/date_utils.h
+predict.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.h
 AR.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
+math_utils.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/math_utils.h
+test.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.h
+cstdio
+-
+get_data.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/get_data.h
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+ar.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ar.h
+ma.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ma.h
+map
+-
+frist_fit.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/frist_fit.h
+packing.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/packing.h
+lib_io.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib_io.h
+data_format_change.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/data_format_change.h
+ARIMAModel.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/ARIMAModel.h
+numeric
+-
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/predict.h
+lib_io.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib_io.h
+string
+-
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.cpp
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.cpp
+test.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.h
+AR.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/AR.h
 type_def.h
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
 
-/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/test.h
+
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.cpp
+type_def.h
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
+
+/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/type_def.h
 

@@ -6,5 +6,5 @@ CXX_FLAGS =  -O0 -Wall -g -ggdb -std=c++11
 
 CXX_DEFINES = -D_DEBUG
 
-CXX_INCLUDES = -I/home/ruiy/store/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib 
+CXX_INCLUDES = -I/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/sdk-gcc/ecs/lib 
 
