@@ -100,7 +100,7 @@ def frist_fit(server_data, flavor_data, target_resource, need_allocate, allocate
     print len(result_record)
     allocate_server_number = len(result_record)
     get_scores(allocate_server_number, server_data, flavor_data, need_allocate, target_resource)
-    print (result_record)
+    #print (result_record)
     return allocate_result,result_record
  
 #合并两个data           
