@@ -15,6 +15,7 @@
 #include "data_format_change.h"
 #include "ARIMAModel.h"
 #include <numeric>
+#include <cfloat>
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -85,8 +86,15 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     char date_start[11];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
 
-    int debug = 2;
-    std::map<int, std::vector<Double>> train_data;
+    int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
+
+    int debug = 0;
+
+    std::map<int, std::vector<Double>> train_data; // 用于最终训练模型的训练数据
+
+    std::map<int, std::vector<double>> fit_train_data; // 拟合阶段所用的训练集合
+    std::map<int, int> fit_test_data;  // 拟合阶段的测试集合
+
     std::map<int, int> actual_data;
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
     // 项目可执行文件的参数： "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
@@ -99,9 +107,20 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     } else if (debug == 2) { // 16年的数据集
         train_data = get_esc_data(data, date_start, "2016-01-21", vm_info, data_num);
         actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", vm_info, data_num);
+    } else if (debug == 3) {
+        train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num); // 用于最终训练模型的训练数据
+
+        char *test_start_date = add_days(forecast_start_date, -need_predict_day); // 选取最后×天, x天为所需要预测的天数
+        fit_train_data = get_esc_data(data, date_start, test_start_date, vm_info, data_num);
+        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, vm_info, data_num);
+    } else if (debug == 4) {
+        train_data = get_esc_data(data, date_start, "2015-05-24", vm_info, data_num); // 用于最终训练模型的训练数据
+
+        char *test_start_date = add_days("2015-05-24", -7); // 选取最后×天, x天为所需要预测的天数
+        fit_train_data = get_esc_data(data, date_start, test_start_date, vm_info, data_num);
+        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, vm_info, data_num);
+        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", vm_info, data_num);
     }
-
-
 
 
     /**
@@ -199,12 +218,49 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    }
 
 
-    print_predict_score(actual_data, predict_data);
+    /**
+     * 第四版预测方案
+     */
+
+//    std::map<int, int> predict_data;
+//    for (auto &t: vm_info) {
+//        int best_sum = INT32_MAX;
+//        int best_window_size = 0;
+//        for (int window_size = 1;window_size<20;window_size++) {
+//            std::vector<Double> after_ma_data = ma(fit_train_data[t.first], window_size);
+//            AR ar_model(after_ma_data);
+//            ar_model.fit("aic");
+//            // ar_model.fit("aic");
+//            ar_model.predict(need_predict_day);
+//            // ar_model.print_model_info();
+//            std::vector<double> tmp_predict_res = ar_model.get_res();
+//            int tmp_predict_sum = round(accumulate(tmp_predict_res.begin(), tmp_predict_res.end(), 0.0));
+//            if (abs(best_sum - fit_test_data[t.first]) >  abs(tmp_predict_sum - fit_test_data[t.first])) {
+//                best_sum = tmp_predict_sum;
+//                best_window_size = window_size;
+//            }
+//        }
+//
+//        std::vector<Double> after_ma_data = ma(train_data[t.first], best_window_size);
+//        AR ar_model(after_ma_data);
+//        ar_model.fit("aic");
+//        ar_model.predict(need_predict_day);
+//        std::vector<double> tmp_predict_res = ar_model.get_res();
+//        predict_data[t.first] = round(accumulate(tmp_predict_res.begin(), tmp_predict_res.end(), 0.0));
+//    }
+
+     print_predict_score(actual_data, predict_data);
     std::vector<std::map<int,int>> allocate_result;
     bool weight_flag = true;
     //if(server.storage > 2*server.core) weight_flag = true;
-   // allocate_result = frist_fit(vm_info, server, predict_data, opt_object, weight_flag);
+
+
+
+    std::vector<int> order;
+    order = get_order(vm_info, server, opt_object);
+   // allocate_result = frist_fit(vm_info, server, predict_data, opt_object,order );
     allocate_result = packing(vm_info, server, predict_data, opt_object);
+
 
     std::string result1 = change_map_char(predict_data);
     std::string result2 = change_format(allocate_result);
