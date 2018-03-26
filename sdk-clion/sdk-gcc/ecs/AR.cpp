@@ -123,29 +123,12 @@ std::pair<std::vector<Double>, Double> AR::least_squares(std::vector<double> dat
 
     std::vector<std::vector<Double> > a, tx,invx,tmp;
     tx = t(x);
-    invx = inv(mulMat(tx, x));
+    invx = inv_lu(mulMat(tx, x));
 
-    /**
-    std::cout<<"invx:"<<std::endl;
-    std::cout<<invx.size()<<" "<<invx[0].size()<<std::endl;
-    for(int i=0;i<invx.size();i++){
-        for(int j=0;j<invx[0].size();j++){
-            std::cout<<invx[i][j]<<" ";
-        }
-        std::cout<<std::endl;
-    }
-
-    std::cout<<"tx:"<<std::endl;
-    std::cout<<tx.size()<<" "<<tx[0].size()<<std::endl;
-    for(int i=0;i<tx.size();i++){
-        for(int j=0;j<tx[0].size();j++){
-            std::cout<<tx[i][j]<<" ";
-        }
-        std::cout<<std::endl;
-    }
-    **/
     a = mulMat(mulMat(invx,tx), y);
     std::vector<std::vector<Double>> ta = t(a);
+
+
 
     std::vector<std::vector<Double>> y_estimate = mulMat(x, a);
     Double ssr = 0;

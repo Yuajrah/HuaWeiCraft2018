@@ -216,24 +216,153 @@ std::vector<std::vector<Double> > A(std::vector<std::vector<Double> > x){
 }
 
 
+std::vector<std::vector<double>> inv_lu(std::vector<std::vector<double>> a){
+    int N = a.size();
+    std::vector<std::vector<double>>  l(N, std::vector<double>(N, 0));
+    std::vector<std::vector<double>>  u(N, std::vector<double>(N, 0));
+    std::vector<std::vector<double>>  l_inv(N, std::vector<double>(N, 0));
+    std::vector<std::vector<double>>  u_inv(N, std::vector<double>(N, 0));
+    std::vector<std::vector<double>>  a_inv(N, std::vector<double>(N, 0));
+
+    float s,t;
+
+    for (int i=0;i<N;i++) {
+        l[i][i] = 1;
+    }
+
+    for (int i=0;i<N;i++) {
+        for (int j = i;j < N;j++)
+        {
+            s = 0;
+            for (int k = 0;k < i;k++)
+            {
+                s += l[i][k] * u[k][j];
+            }
+            u[i][j] = a[i][j] - s;      //按行计算u值
+        }
+
+        for (int j = i + 1;j < N;j++)
+        {
+            s = 0;
+            for (int k = 0; k < i; k++)
+            {
+                s += l[j][k] * u[k][i];
+            }
+            l[j][i] = (a[j][i] - s) / u[i][i];      //按列计算l值
+        }
+    }
+
+    for (int i = 0;i < N;i++)        //按行序，行内从高到低，计算l的逆矩阵
+    {
+        l_inv[i][i] = 1;
+    }
+
+    for (int i= 1;i < N;i++)
+    {
+        for (int j = 0;j < i;j++)
+        {
+            s = 0;
+            for (int k = 0;k < i;k++)
+            {
+                s += l[i][k] * l_inv[k][j];
+            }
+            l_inv[i][j] = -s;
+        }
+    }
+
+/*    printf("test l_inverse:\n");
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            s = 0;
+            for (int k = 0; k < N; k++)
+            {
+                s += l[i][k] * l_inv[k][j];
+            }
+
+            printf("%f ", s);
+        }
+        putchar('\n');
+    }*/
+
+    for (int i = 0;i < N;i++)                    //按列序，列内按照从下到上，计算u的逆矩阵
+    {
+        u_inv[i][i] = 1 / u[i][i];
+    }
+    for (int i = 1;i < N;i++)
+    {
+        for (int j = i - 1;j >=0;j--)
+        {
+            s = 0;
+            for (int k = j + 1;k <= i;k++)
+            {
+                s += u[j][k] * u_inv[k][i];
+            }
+            u_inv[j][i] = -s / u[j][j];
+        }
+    }
+
+/*    printf("test u_inverse:\n");
+    for (int i = 0;i < N;i++)
+    {
+        for (int j = 0;j < N;j++)
+        {
+            s = 0;
+            for (int k = 0;k < N;k++)
+            {
+                s += u[i][k] * u_inv[k][j];
+            }
+
+            printf("%f ",s);
+        }
+        putchar('\n');
+    }*/
+
+    for (int i = 0;i < N;i++)            //计算矩阵a的逆矩阵
+    {
+        for (int j = 0;j < N;j++)
+        {
+            for (int k = 0;k < N;k++)
+            {
+                a_inv[i][j] += u_inv[i][k] * l_inv[k][j];
+            }
+        }
+    }
+
+/*    printf("test a:\n");
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            s = 0;
+            for (int k = 0; k < N; k++)
+            {
+                s += a[i][k] * a_inv[k][j];
+            }
+
+            printf("%f ", s);
+        }
+        putchar('\n');
+    }*/
+
+    return a_inv;
+
+}
 /**
  *矩阵的逆
  */
 std::vector<std::vector<Double> > inv(std::vector<std::vector<Double> > x){
     std::vector<std::vector<Double> > res = A(x);
+
     Double dets = det(x);
-/*    for (auto t: res) {
-        printf("\n");
-        for (auto tt: t) {
-            printf("%f ", tt);
-        }
-    }*/
     // printf("\ndet(x) = %f\n", dets);
     for(int i=0;i<res.size();i++){
         for(int j=0;j<res[0].size();j++){
             res[i][j] /= dets;
         }
     }
+
     return res;
 }
 
