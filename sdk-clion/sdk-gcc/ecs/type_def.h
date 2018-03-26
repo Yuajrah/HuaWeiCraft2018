@@ -24,8 +24,6 @@ struct Allocat_server
     int target; //需要比较的东西，1为核，2为内存
 };
 
-typedef double Double;
-
 bool operator< (const Allocat_server &server1, const Allocat_server &server2);
 
 #endif //SDK_GCC_TYPE_DEF_H

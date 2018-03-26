@@ -90,7 +90,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int debug = 0;
 
-    std::map<int, std::vector<Double>> train_data; // 用于最终训练模型的训练数据
+    std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
     std::map<int, std::vector<double>> fit_train_data; // 拟合阶段所用的训练集合
     std::map<int, int> fit_test_data;  // 拟合阶段的测试集合
@@ -128,7 +128,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
     std::map<int, int> predict_data;
     for (auto &t: vm_info) {
-        std::vector<Double> after_ma_data = ma(train_data[t.first], 6);
+        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
         AR ar_model(after_ma_data);
         ar_model.fit("none");
         // ar_model.fit("aic");
@@ -227,7 +227,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //        int best_sum = INT32_MAX;
 //        int best_window_size = 0;
 //        for (int window_size = 1;window_size<20;window_size++) {
-//            std::vector<Double> after_ma_data = ma(fit_train_data[t.first], window_size);
+//            std::vector<double> after_ma_data = ma(fit_train_data[t.first], window_size);
 //            AR ar_model(after_ma_data);
 //            ar_model.fit("aic");
 //            // ar_model.fit("aic");
@@ -241,7 +241,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //            }
 //        }
 //
-//        std::vector<Double> after_ma_data = ma(train_data[t.first], best_window_size);
+//        std::vector<double> after_ma_data = ma(train_data[t.first], best_window_size);
 //        AR ar_model(after_ma_data);
 //        ar_model.fit("aic");
 //        ar_model.predict(need_predict_day);

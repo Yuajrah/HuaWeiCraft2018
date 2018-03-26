@@ -18,7 +18,7 @@
  *
  */
 
-AR::AR(std::vector<Double> data):data(data){};
+AR::AR(std::vector<double> data):data(data){};
 
 /**
  * 拟合数据
@@ -35,17 +35,17 @@ void AR::fit(std::string ic, int max_lag) {
 
     if (ic=="none") {
         this->best_p = max_lag;
-        std::pair<std::vector<Double>, Double> a_ssr = least_squares(this->data, max_lag);
+        std::pair<std::vector<double>, double> a_ssr = least_squares(this->data, max_lag);
         this->a = a_ssr.first;
         return;
     } else if (ic=="aic" || ic=="bic" || ic=="hqic") {
         int len = this->data.size();
-        Double min_ic = DBL_MAX;
+        double min_ic = DBL_MAX;
         for (int lag=1;lag<=max_lag;lag++) {
-            std::pair<std::vector<Double>, Double> a_ssr = least_squares(std::vector<double>(this->data.begin()+max_lag-lag, this->data.end()), lag);
-            Double sigma2 = a_ssr.second / (len - max_lag);
+            std::pair<std::vector<double>, double> a_ssr = least_squares(std::vector<double>(this->data.begin()+max_lag-lag, this->data.end()), lag);
+            double sigma2 = a_ssr.second / (len - max_lag);
 
-            Double ic_val;
+            double ic_val;
             if (ic == "aic") {
                 ic_val = log(sigma2) + 2 * (2.0 + lag) / (len - max_lag);
             } else if (ic == "bic") {
@@ -59,7 +59,7 @@ void AR::fit(std::string ic, int max_lag) {
                 this->best_p = lag;
             }
         }
-        std::pair<std::vector<Double>, Double> a_ssr = least_squares(this->data, this->best_p);
+        std::pair<std::vector<double>, double> a_ssr = least_squares(this->data, this->best_p);
         this->a = a_ssr.first;
         return;
     }
@@ -70,25 +70,25 @@ void AR::fit(std::string ic, int max_lag) {
  *自相关系数 AutoCov[k] = AutoCov[k] / AutoCov[0]
  */
 
-std::vector<Double> AR::get_auto_cov(){
+std::vector<double> AR::get_auto_cov(){
     //计算自相关系数矩阵
     int n = data.size();
 
-    Double mean = 0; //数据的均值
+    double mean = 0; //数据的均值
     for(int i=0;i<n;i++){
         mean += data[i];
     }
     mean /= n;
     //std::cout<<"mean::"<<mean<<std::endl;
     //将每个数据都减去均值得到新的数据
-    std::vector<Double> prodata;
+    std::vector<double> prodata;
 
     for(int i=0;i<n;i++){
         prodata.push_back(data[i] - mean);
         //std::cout<<"prodata[i] "<<prodata[i]<<std::endl;
     }
 
-    std::vector<Double> AutoCov(n,0);//自协方差AutoCovariance
+    std::vector<double> AutoCov(n,0);//自协方差AutoCovariance
     for(int k=0;k<n;k++){
         for(int i=0;i<n-k;i++){
             AutoCov[k] += prodata[i] * prodata[i+k];
@@ -99,9 +99,9 @@ std::vector<Double> AR::get_auto_cov(){
     return AutoCov;
 }
 
-std::vector<Double> AR::get_auto_cor(std::vector<Double> auto_cov){
+std::vector<double> AR::get_auto_cor(std::vector<double> auto_cov){
 
-    std::vector<Double> auto_cor;
+    std::vector<double> auto_cor;
 
     for(int k=0;k<auto_cov.size();k++){
         auto_cor.push_back(auto_cov[k] / auto_cov[0]);
@@ -116,22 +116,22 @@ std::vector<Double> AR::get_auto_cor(std::vector<Double> auto_cov){
  * a = inv(t(x) _*_ x) _*_ t(x) _*_ Y
  * e = sum(a) / (n-p)
  */
-std::pair<std::vector<Double>, Double> AR::least_squares(std::vector<double> data, int lag){
-    std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> form_data = format_data(data, lag);
-    std::vector<std::vector<Double>> x = form_data.first;
-    std::vector<std::vector<Double>> y = form_data.second;
+std::pair<std::vector<double>, double> AR::least_squares(std::vector<double> data, int lag){
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> form_data = format_data(data, lag);
+    std::vector<std::vector<double>> x = form_data.first;
+    std::vector<std::vector<double>> y = form_data.second;
 
-    std::vector<std::vector<Double> > a, tx,invx,tmp;
+    std::vector<std::vector<double> > a, tx,invx,tmp;
     tx = t(x);
     invx = inv_lu(mulMat(tx, x));
 
     a = mulMat(mulMat(invx,tx), y);
-    std::vector<std::vector<Double>> ta = t(a);
+    std::vector<std::vector<double>> ta = t(a);
 
 
 
-    std::vector<std::vector<Double>> y_estimate = mulMat(x, a);
-    Double ssr = 0;
+    std::vector<std::vector<double>> y_estimate = mulMat(x, a);
+    double ssr = 0;
     for (int i=0;i<y_estimate.size();i++) {
         ssr += pow(y_estimate[i][0] - y[i][0], 2);
     }
@@ -139,7 +139,7 @@ std::pair<std::vector<Double>, Double> AR::least_squares(std::vector<double> dat
     return {ta[0], ssr};
 }
 
-std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR::format_data(std::vector<double> data, int lag){
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AR::format_data(std::vector<double> data, int lag){
 
     /**
 *统计后可以明显看到在k=16之后，|BiasCor[k]| < 5,因此选择p = 16之后的数都可以
@@ -154,8 +154,8 @@ std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR
 */
 
 
-    std::vector<std::vector<Double> > y; //y = [data[p+1, ..., n]]
-    std::vector<std::vector<Double> > x;
+    std::vector<std::vector<double> > y; //y = [data[p+1, ..., n]]
+    std::vector<std::vector<double> > x;
     /**
   [ data[p, ..., 1] ]
   [ data[p+1, ..., 2] ]
@@ -165,10 +165,10 @@ std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR
   .
   [ data[n-1, ..., n-p] ]
  */
-    std::vector<Double> tmpy;
+    std::vector<double> tmpy;
     for(int i=lag;i<data.size();i++){
         tmpy.push_back(data[i]);
-        std::vector<Double> tmp{1};
+        std::vector<double> tmp{1};
         for(int j=i-1;j>=i-lag;j--){
             tmp.push_back(data[j]);
         }
@@ -185,10 +185,10 @@ std::pair<std::vector<std::vector<Double>>, std::vector<std::vector<Double>>> AR
  *
  */
 
-std::vector<Double> AR::predict(int k, int diff_day){ // 预测接下来k天的数据
-    std::vector<Double> data_copy(data);
+std::vector<double> AR::predict(int k, int diff_day){ // 预测接下来k天的数据
+    std::vector<double> data_copy(data);
     for(int i=0;i<k;i++){
-        Double s = a[0];
+        double s = a[0];
         int t = data_copy.size();
         for(int j=0;j<best_p;j++){
             s += a[j+1] * data_copy[t-j-1];
@@ -201,7 +201,7 @@ std::vector<Double> AR::predict(int k, int diff_day){ // 预测接下来k天的�
     }
 
 
-    std::vector<Double> predict_res(data_copy.begin() + data.size(), data_copy.end());
+    std::vector<double> predict_res(data_copy.begin() + data.size(), data_copy.end());
     this->res.assign(predict_res.begin(), predict_res.end());
 
     return predict_res;
@@ -210,13 +210,13 @@ std::vector<Double> AR::predict(int k, int diff_day){ // 预测接下来k天的�
 /**
  *得到e
  */
-Double AR::get_bias(){
-    Double sum = 0;
-    std::vector<Double> cal_pn(data.begin(),data.begin()+best_p); // 获取数据前p个值
+double AR::get_bias(){
+    double sum = 0;
+    std::vector<double> cal_pn(data.begin(),data.begin()+best_p); // 获取数据前p个值
 
 
     for(int i=best_p;i<data.size();i++){
-        Double s = 0;
+        double s = 0;
         int t = cal_pn.size();
         for(int j=0;j<best_p;j++){
             s += a[j] * cal_pn[t-j-1];
