@@ -163,3 +163,4 @@ ecs.tar.gz
 ######################
 
 .idea/
+sdk-clion/cmake-build-debug/*

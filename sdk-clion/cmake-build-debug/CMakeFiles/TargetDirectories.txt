@@ -1,3 +1,0 @@
-/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/txink/桌面/HuaWei/HuaWeiCraft2018/sdk-clion/cmake-build-debug/CMakeFiles/ecs.dir

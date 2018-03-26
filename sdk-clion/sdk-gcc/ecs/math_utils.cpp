@@ -24,18 +24,18 @@
  * 对角线元素，即为滞后的偏自相关系数
  * 输入 auto_cov，从滞后0开始，一直到滞后数据长度-1
  */
-std::vector<Double> get_bias_cor(std::vector<Double> auto_cov) {
+std::vector<double> get_bias_cor(std::vector<double> auto_cov) {
     // 迭代得到矩阵a
-    std::vector<std::vector<Double>> a;
-    a.push_back(std::vector<Double>{auto_cov[1] / auto_cov[0]}); // a[0][0], 即为a11
+    std::vector<std::vector<double>> a;
+    a.push_back(std::vector<double>{auto_cov[1] / auto_cov[0]}); // a[0][0], 即为a11
     for (int k=1;k<auto_cov.size()-1;k++) {
-        Double t1 = 0;
-        Double t2 = 0;
+        double t1 = 0;
+        double t2 = 0;
         for (int j=1;j<=k;j++) {
             t1 += auto_cov[k+1-j]*a[k-1][j-1];
             t2 += auto_cov[j]*a[k-1][j-1];
         }
-        a.push_back(std::vector<Double>(k+1, -1));
+        a.push_back(std::vector<double>(k+1, -1));
         a[k][k] = (auto_cov[k+1] - t1) / (auto_cov[0] - t2);
         for (int j=1;j<=k;j++) {
             a[k][j-1] = (a[k-1][j-1] - a[k][k] * a[k-1][k-j]);
@@ -51,14 +51,14 @@ std::vector<Double> get_bias_cor(std::vector<Double> auto_cov) {
     std::cout << std::endl;
 
     // 偏自相关系数
-    std::vector<Double> bias_cor;
+    std::vector<double> bias_cor;
     for (int k=0;k<auto_cov.size()-1;k++) {
         bias_cor.push_back(a[k][k]);
     }
 
     // auto_cov的长度，就是输入数据的长度len
     // 白噪声的方差，从0开始计数，一直到len-1
-    std::vector<Double> noise_var;
+    std::vector<double> noise_var;
     noise_var.push_back(auto_cov[0]);
     for (int k = 1; k < auto_cov.size(); k++) {
         noise_var.push_back(noise_var[k-1] * (1 - a[k-1][k-1]));
@@ -77,16 +77,16 @@ std::vector<Double> get_bias_cor(std::vector<Double> auto_cov) {
 /**
  *矩阵转置
  */
-std::vector<std::vector<Double> > t(std::vector<std::vector<Double> > x){
+std::vector<std::vector<double> > t(std::vector<std::vector<double> > x){
 /*    for (auto t: x) {
         printf("%f ", t[0]);
     }*/
     //printf(" size = %d ", x[0].size());
     //x的装置矩阵
-    std::vector<std::vector<Double> > tx;
+    std::vector<std::vector<double> > tx;
     //tx初始化便于直接访问下标,这是原矩阵的转置的形式
     for(int i=0;i<x[0].size();i++){
-        std::vector<Double> tmp(x.size(),0);
+        std::vector<double> tmp(x.size(),0);
         tx.push_back(tmp);
     }
     //printf(" size = %d ", tx[0].size());
@@ -105,11 +105,11 @@ std::vector<std::vector<Double> > t(std::vector<std::vector<Double> > x){
 /**
  *矩阵乘法
  */
-std::vector<std::vector<Double> > mulMat(std::vector<std::vector<Double> > tx, std::vector<std::vector<Double> > x){
-    std::vector<std::vector<Double> > res;
+std::vector<std::vector<double> > mulMat(std::vector<std::vector<double> > tx, std::vector<std::vector<double> > x){
+    std::vector<std::vector<double> > res;
     //初始化结果矩阵的格式row(tx) X col(x)
     for(int i=0;i<tx.size();i++){
-        std::vector<Double> tmp(x[0].size(),0);
+        std::vector<double> tmp(x[0].size(),0);
         res.push_back(tmp);
     }
 
@@ -128,11 +128,11 @@ std::vector<std::vector<Double> > mulMat(std::vector<std::vector<Double> > tx, s
  *矩阵的行列式，行列变化为上三角矩阵
  */
 
-Double det(std::vector<std::vector<Double> > x){
+double det(std::vector<std::vector<double> > x){
     //只有一个元素
     //if(x.size() == 1 && x[0].size() == 1) return x[0][0];
 
-    Double det = 1;
+    double det = 1;
     //交换数组指定的两行，即进行行变换（具体为行交换）
     int iter = 0;  //记录行变换的次数（交换）
     for(int i=0;i<x.size();i++){
@@ -145,8 +145,8 @@ Double det(std::vector<std::vector<Double> > x){
             }
         }
         for(int k=i+1;k<x.size();k++){
-            // Double yin = -1 * x[k][i] / x[i][i] ;
-            Double yin = x[i][i] == 0 ? 0: (-1 * x[k][i] / x[i][i]) ;
+            // double yin = -1 * x[k][i] / x[i][i] ;
+            double yin = x[i][i] == 0 ? 0: (-1 * x[k][i] / x[i][i]) ;
             for(int u=0; u<x[0].size(); u++){
                 x[k][u] = x[k][u] + x[i][u] * yin;
             }
@@ -173,10 +173,10 @@ Double det(std::vector<std::vector<Double> > x){
 /**
  *删除矩阵的第r行，第c列
  */
-std::vector<std::vector<Double> > delMat(std::vector<std::vector<Double> > x,int r,int c){
-    std::vector<std::vector<Double> > Ax;
+std::vector<std::vector<double> > delMat(std::vector<std::vector<double> > x,int r,int c){
+    std::vector<std::vector<double> > Ax;
     for(int i=0;i<x.size();i++){
-        std::vector<Double> tmp;
+        std::vector<double> tmp;
         for(int j=0;j<x[0].size();j++){
             if(i != r && j != c) tmp.push_back(x[i][j]);
         }
@@ -189,18 +189,18 @@ std::vector<std::vector<Double> > delMat(std::vector<std::vector<Double> > x,int
 /**
  *求矩阵的伴随矩阵
  */
-std::vector<std::vector<Double> > A(std::vector<std::vector<Double> > x){
-    std::vector<std::vector<Double> > res;
+std::vector<std::vector<double> > A(std::vector<std::vector<double> > x){
+    std::vector<std::vector<double> > res;
 
     //tx初始化便于直接访问下标,这是原矩阵的转置的形式
     for(int i=0;i<x.size();i++){
-        std::vector<Double> tp(x[0].size(),0);
+        std::vector<double> tp(x[0].size(),0);
         res.push_back(tp);
     }
 
     for(int i=0;i<x.size();i++){
         for(int j=0;j<x[0].size();j++){
-            std::vector<std::vector<Double>> tmp = delMat(x,i,j);
+            std::vector<std::vector<double>> tmp = delMat(x,i,j);
 
 /*            for (auto t: tmp) {
                 printf("\n");
@@ -216,24 +216,153 @@ std::vector<std::vector<Double> > A(std::vector<std::vector<Double> > x){
 }
 
 
+std::vector<std::vector<double>> inv_lu(std::vector<std::vector<double>> a){
+    int N = a.size();
+    std::vector<std::vector<double>>  l(N, std::vector<double>(N, 0));
+    std::vector<std::vector<double>>  u(N, std::vector<double>(N, 0));
+    std::vector<std::vector<double>>  l_inv(N, std::vector<double>(N, 0));
+    std::vector<std::vector<double>>  u_inv(N, std::vector<double>(N, 0));
+    std::vector<std::vector<double>>  a_inv(N, std::vector<double>(N, 0));
+
+    float s,t;
+
+    for (int i=0;i<N;i++) {
+        l[i][i] = 1;
+    }
+
+    for (int i=0;i<N;i++) {
+        for (int j = i;j < N;j++)
+        {
+            s = 0;
+            for (int k = 0;k < i;k++)
+            {
+                s += l[i][k] * u[k][j];
+            }
+            u[i][j] = a[i][j] - s;      //按行计算u值
+        }
+
+        for (int j = i + 1;j < N;j++)
+        {
+            s = 0;
+            for (int k = 0; k < i; k++)
+            {
+                s += l[j][k] * u[k][i];
+            }
+            l[j][i] = (a[j][i] - s) / u[i][i];      //按列计算l值
+        }
+    }
+
+    for (int i = 0;i < N;i++)        //按行序，行内从高到低，计算l的逆矩阵
+    {
+        l_inv[i][i] = 1;
+    }
+
+    for (int i= 1;i < N;i++)
+    {
+        for (int j = 0;j < i;j++)
+        {
+            s = 0;
+            for (int k = 0;k < i;k++)
+            {
+                s += l[i][k] * l_inv[k][j];
+            }
+            l_inv[i][j] = -s;
+        }
+    }
+
+/*    printf("test l_inverse:\n");
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            s = 0;
+            for (int k = 0; k < N; k++)
+            {
+                s += l[i][k] * l_inv[k][j];
+            }
+
+            printf("%f ", s);
+        }
+        putchar('\n');
+    }*/
+
+    for (int i = 0;i < N;i++)                    //按列序，列内按照从下到上，计算u的逆矩阵
+    {
+        u_inv[i][i] = 1 / u[i][i];
+    }
+    for (int i = 1;i < N;i++)
+    {
+        for (int j = i - 1;j >=0;j--)
+        {
+            s = 0;
+            for (int k = j + 1;k <= i;k++)
+            {
+                s += u[j][k] * u_inv[k][i];
+            }
+            u_inv[j][i] = -s / u[j][j];
+        }
+    }
+
+/*    printf("test u_inverse:\n");
+    for (int i = 0;i < N;i++)
+    {
+        for (int j = 0;j < N;j++)
+        {
+            s = 0;
+            for (int k = 0;k < N;k++)
+            {
+                s += u[i][k] * u_inv[k][j];
+            }
+
+            printf("%f ",s);
+        }
+        putchar('\n');
+    }*/
+
+    for (int i = 0;i < N;i++)            //计算矩阵a的逆矩阵
+    {
+        for (int j = 0;j < N;j++)
+        {
+            for (int k = 0;k < N;k++)
+            {
+                a_inv[i][j] += u_inv[i][k] * l_inv[k][j];
+            }
+        }
+    }
+
+/*    printf("test a:\n");
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            s = 0;
+            for (int k = 0; k < N; k++)
+            {
+                s += a[i][k] * a_inv[k][j];
+            }
+
+            printf("%f ", s);
+        }
+        putchar('\n');
+    }*/
+
+    return a_inv;
+
+}
 /**
  *矩阵的逆
  */
-std::vector<std::vector<Double> > inv(std::vector<std::vector<Double> > x){
-    std::vector<std::vector<Double> > res = A(x);
-    Double dets = det(x);
-/*    for (auto t: res) {
-        printf("\n");
-        for (auto tt: t) {
-            printf("%f ", tt);
-        }
-    }*/
+std::vector<std::vector<double> > inv(std::vector<std::vector<double> > x){
+    std::vector<std::vector<double> > res = A(x);
+
+    double dets = det(x);
     // printf("\ndet(x) = %f\n", dets);
     for(int i=0;i<res.size();i++){
         for(int j=0;j<res[0].size();j++){
             res[i][j] /= dets;
         }
     }
+
     return res;
 }
 
@@ -241,7 +370,7 @@ std::vector<std::vector<Double> > inv(std::vector<std::vector<Double> > x){
 /**
  *合并两个行相同的矩阵
  */
-std::vector<std::vector<Double> > ConRows(std::vector<std::vector<Double> > x, std::vector<std::vector<Double> > y){
+std::vector<std::vector<double> > ConRows(std::vector<std::vector<double> > x, std::vector<std::vector<double> > y){
     //行相同，添加列
     for(int i=0;i<y.size();i++){
         for(int j=0;j<y[0].size();j++){
@@ -254,10 +383,10 @@ std::vector<std::vector<Double> > ConRows(std::vector<std::vector<Double> > x, s
 /**
  *合并两个列相同的矩阵
  */
-std::vector<std::vector<Double> > ConCols(std::vector<std::vector<Double> > x, std::vector<std::vector<Double> > y){
+std::vector<std::vector<double> > ConCols(std::vector<std::vector<double> > x, std::vector<std::vector<double> > y){
     //列相同，添加行
     for(int i=0;i<y.size();i++){
-        std::vector<Double> row;
+        std::vector<double> row;
         for(int j=0;j<y[0].size();j++){
             row.push_back(y[i][j]);
         }
@@ -275,12 +404,12 @@ std::vector<std::vector<Double> > ConCols(std::vector<std::vector<Double> > x, s
  *测试矩阵运算成功
  */
 void test_Mat(){
-    std::vector<std::vector<Double> > data,tdata,res,Ax;
+    std::vector<std::vector<double> > data,tdata,res,Ax;
     //data = getdata();
-    Double x[] = {2,1,-1,2,1,0,1,-1,1};
+    double x[] = {2,1,-1,2,1,0,1,-1,1};
 
     for(int i=0;i<3;i++){
-        std::vector<Double> tmp;
+        std::vector<double> tmp;
         data.push_back(tmp);
         for(int j=0;j<3;j++){
             data[i].push_back(x[i*3+j]);
@@ -320,7 +449,7 @@ void test_Mat(){
 /**
 int main()
 {
-    std::vector<Double> data;
+    std::vector<double> data;
     test_Mat();
     return 0;
 }
