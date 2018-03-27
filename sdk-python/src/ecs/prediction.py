@@ -44,10 +44,11 @@ def ar(train_series, predict_dates):
 def print_ar_res(train_dataframe, predict_dates, actual_data, target_types):
     dataframe = pd.DataFrame(index=target_types, columns=['actual', 'predict'])
     for type in target_types:
+        if (type == "flavor13"):
+            print "观察flavor13"
+            print ar(train_dataframe[type], predict_dates)
         dataframe.loc[type].predict = round(max(round(sum(ar(train_dataframe[type], predict_dates))), 0))
         dataframe.loc[type].actual = actual_data.setdefault(type, 0)
-        
-    print dataframe
     get_score(dataframe.predict, dataframe.actual)
     print "train dates:  %s - %s" % (train_dataframe.index[0].strftime('%Y-%m-%d'), train_dataframe.index[-1].strftime('%Y-%m-%d'))
     print "predict dates:%s - %s" % (predict_dates[0], predict_dates[1])
@@ -88,7 +89,7 @@ def arma(train_series, watch_windows, predict_dates, target_types, actual_data, 
             
             
         
-    print dataframe
+    #print dataframe
     get_score(dataframe.predict, dataframe.actual)
     print "train dates:  %s - %s" % (train_dataframe.index[0].strftime('%Y-%m-%d'), train_dataframe.index[-1].strftime('%Y-%m-%d'))
     print "predict dates:%s - %s" % (predict_dates[0], predict_dates[1])

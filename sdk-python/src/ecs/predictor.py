@@ -12,11 +12,11 @@ from allocate import frist_fit, weight_frist_fit,ordered_frist_fit
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
     
-    train_dates = ["2015-12-01", "2016-01-21"]
+    train_dates = ["2015-12-01", "2016-01-20"]
     #获取需要优化的信息
     server_data, flavor_types, flavor_data, target_resource, predict_dates = get_flavor_data(input_lines)
     #测试方便，直接覆盖掉
-    predict_dates = ["2016-01-22", "2016-01-28"]
+    predict_dates = ["2016-01-21", "2016-01-27"]
     # 所需要预测的虚拟机类型
     target_types = ["flavor1", "flavor2", "flavor3", "flavor4", "flavor5",
                   "flavor6", "flavor7", "flavor8", "flavor9", "flavor10",
@@ -38,14 +38,14 @@ def predict_vm(ecs_lines, input_lines):
 #        plot_set_single_vm_cumsum_data(type, train_data, "../../../imgs/single_cumsum/train_" + type)  
     
     # ar部分的预测结果
-    print "result of ar:"
-    ar_predict = print_ar_res(train_dataframe, predict_dates, actual_data, target_types)
+    #print "result of ar:"
+    #ar_predict = print_ar_res(train_dataframe, predict_dates, actual_data, target_types)
     
     
     #使用移动平均和自回归进行预测
-    #print "result of mv_and_ar:"
-    #watch_windows = 7
-    #mv_and_ar_predict = mv_and_ar(train_dataframe, watch_windows, predict_dates, target_types, actual_data)
+    print "result of mv_and_ar:"
+    watch_windows = 6
+    mv_and_ar_predict = mv_and_ar(train_dataframe, watch_windows, predict_dates, target_types, actual_data)
 
     # 直接使用平均值来预测
     #print "result of mean:"
@@ -60,9 +60,9 @@ def predict_vm(ecs_lines, input_lines):
     #
     print "############################################################################"
     print "allocate begin:"
-    frist_fit(server_data, flavor_data, target_resource, need_allocate = ar_predict)
+    frist_fit(server_data, flavor_data, target_resource, need_allocate = mv_and_ar_predict)
     #weight_frist_fit(server_data, flavor_data, target_resource, need_allocate = ar_predict)
-    ordered_frist_fit(server_data, flavor_data, target_resource, need_allocate = ar_predict)
+    ordered_frist_fit(server_data, flavor_data, target_resource, need_allocate = mv_and_ar_predict)
     result = []
     if ecs_lines is None:
         print 'ecs information is none'
