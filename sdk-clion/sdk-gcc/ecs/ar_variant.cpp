@@ -149,7 +149,8 @@ std::map<int, int> predict_by_ar_5th(std::map<int, Vm> vm_info, std::map<int, st
     for (auto &t: vm_info) {
         std::vector<double> after_ma_data = ma(train_data[t.first], 6);
         std::vector<int> exist_p;
-        for (int i=0;i<3;i++) {
+        int mean_cnt = 20;
+        for (int i=0;i<mean_cnt;i++) {
             AR ar_model(after_ma_data);
             ar_model.fit("aic", -1, exist_p);
 
@@ -159,7 +160,7 @@ std::map<int, int> predict_by_ar_5th(std::map<int, Vm> vm_info, std::map<int, st
             auto predict_res = ar_model.get_res();
             predict_data[t.first] += accumulate(predict_res.begin(), predict_res.end(), 0.0);
         }
-        predict_data[t.first] = round(predict_data[t.first] / 5.0);
+        predict_data[t.first] = round(predict_data[t.first] / double(mean_cnt));
 
         // ar_model.fit("aic");
         // ar_model.print_model_info();
