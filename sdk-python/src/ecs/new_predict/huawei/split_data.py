@@ -37,8 +37,12 @@ def series_to_supervised(data, split_windows):
     trian_data = trian_data.rename(index=str, columns={"var(t-0)": "target"})
     target = trian_data["target"]
     trian_data.drop('target',axis=1, inplace=True)
-    return trian_data, target
+    index = [i for i in range(len(target)-split_windows, len(target))]
+    test_need = target[index].values
+    return trian_data, target, test_need
 
 def get_predict_score(data, split_windows, predict_mothod):
-    train , test = series_to_supervised(data , split_windows)
+    train , test, test_need = series_to_supervised(data , split_windows)
     predict_mothod.fit(train, test)
+    result = []
+    
