@@ -8,7 +8,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstdio>
-
+#include <algorithm>
 /**
  *依据已知样本值 x 1 , x 2 , L , x n 对 AR ( p ) 模型作出估计 称为自回归模型拟合自回归
  *模型拟合内容包括
@@ -27,7 +27,7 @@ AR::AR(std::vector<double> data):data(data){};
  *      2. 若
  *
  */
-void AR::fit(std::string ic, int max_lag) {
+void AR::fit(std::string ic, int max_lag, std::vector<int> lag_unequal) {
 
     if (max_lag == -1) {
         max_lag = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
@@ -54,7 +54,7 @@ void AR::fit(std::string ic, int max_lag) {
                 ic_val = log(sigma2) + 2 * log(log(len - max_lag)) * (2.0 + lag) / (len - max_lag);
             }
             // printf("%f %f %f\n",  a_ssr.second, sigma2, aic);
-            if (ic_val < min_ic) {
+            if (ic_val < min_ic &&  find(lag_unequal.begin(), lag_unequal.end(), lag) == lag_unequal.end()) {
                 min_ic = ic_val;
                 this->best_p = lag;
             }

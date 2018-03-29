@@ -27,7 +27,7 @@ private:
 
 public:
     AR(std::vector<double>);
-    void fit(std::string ic="none", int max_lag=-1);
+    void fit(std::string ic="none", int max_lag=-1, std::vector<int> lag_unequal={});
     std::vector<double> predict(int k, int diff_day=0);
     void print_model_info();
 
