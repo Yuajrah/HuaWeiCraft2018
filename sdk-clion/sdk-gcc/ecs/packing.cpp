@@ -47,7 +47,7 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
     while(!is_vm_empty)
     {
         //首先初始化一个节点
-        Allocat_server new_server = allocate_oneserver(server_number, server.core, server.storage, target);
+        Allocat_server new_server = allocate_oneserver(server_number, server.core, server.mem, target);
         allocate_result.push(new_server);
         server_number++;
 
@@ -65,8 +65,8 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
 
         std::map<int ,int >::iterator current_flavor = predict_data.begin();
         std::map<int,int> new_record;
-        std::vector<std::vector <int> > dp (server.core+1, std::vector<int>(server.storage+1,0));
-        std::vector<std::vector<std::vector<int> > > used(16, std::vector<std::vector<int> >(server.core+1, std::vector<int>(server.storage+1,0)));
+        std::vector<std::vector <int> > dp (server.core+1, std::vector<int>(server.mem+1,0));
+        std::vector<std::vector<std::vector<int> > > used(16, std::vector<std::vector<int> >(server.core+1, std::vector<int>(server.mem+1,0)));
        // std::vector<int> path_cpu(PACKING_N, 0);
        // std::vector<int> path_mem(PACKING_N, 0);
 
@@ -77,17 +77,17 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
             std::map<int, Vm>::iterator current_flavor_info;
             current_flavor_info =  vm_info.find(16-pos);
             int core_need = current_flavor_info->second.core;
-            int storage_need = current_flavor_info->second.storage/1024;
-            int item_value = core_need + storage_need;//物品价值
+            int mem_need = current_flavor_info->second.mem/1024;
+            int item_value = core_need + mem_need;//物品价值
             int item_num = tmp_vm_num[pos];//可用的物品数量
 
             //void MultiplePack(int C, int D, int U, int V, int W, int M);
             //C表示物品费用1，D物品费用2，U背包费用1容量，V背包费用2容量，W物品价值，M物品数量
-            MultiplePack(dp, used, core_need, storage_need, server.core, server.storage, item_value, item_num, pos);
+            MultiplePack(dp, used, core_need, mem_need, server.core, server.mem, item_value, item_num, pos);
 
         }
         std::vector<int> choose_vm_num;
-        choose_vm_num = get_path(used, vm_info, server.core, server.storage);
+        choose_vm_num = get_path(used, vm_info, server.core, server.mem);
         //处理数据，tmp_vm_num数据更新，同时对predict_data数据更新
         for(int i=1; i<=15; i++){
             if(choose_vm_num[16 - i] != 0){
@@ -135,7 +135,7 @@ std::vector<int> get_path(std::vector<std::vector<std::vector<int> > > &used, st
 //        int s1 = path[sum]/PACKING_N;
 //        int s2 = path[sum]%PACKING_N;
 //        current_flavor_info =  vminfo.find(s1);
-//        choose_num[s1] = (sum - s2) / (current_flavor_info->second.core + current_flavor_info->second.storage/1024);
+//        choose_num[s1] = (sum - s2) / (current_flavor_info->second.core + current_flavor_info->second.mem/1024);
 //        sum = s2;
 //    }
     return choose_num;
@@ -217,12 +217,12 @@ void MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<s
 
 
 
-Allocat_server allocate_oneserver(int id, int core, int storage, int target)
+Allocat_server allocate_oneserver(int id, int core, int mem, int target)
 {
     Allocat_server new_allocate;
     new_allocate.id = id;
     new_allocate.core = core;
-    new_allocate.storage = storage;
+    new_allocate.mem = mem;
     new_allocate.target = target;
     return new_allocate;
 }
@@ -235,7 +235,7 @@ void get_scores_p(std::map<int, int>predict_data, Server server, int number, int
         total_allocate = server.core * number;
     }
     else{
-        total_allocate = server.storage *number;
+        total_allocate = server.mem *number;
     }
     int total_need = 0;
     for (int i = 1; i<=15; i++)
@@ -257,7 +257,7 @@ void get_scores_p(std::map<int, int>predict_data, Server server, int number, int
             }
             else
             {
-                target_need = current_flavor_info->second.storage;
+                target_need = current_flavor_info->second.mem;
             }
             total_need += iter->second * target_need;
         }

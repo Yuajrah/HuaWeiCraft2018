@@ -12,7 +12,7 @@
 std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object, std::vector<int> order);
 
 //分配一个新的服务器
-Allocat_server allocate_one(int id, int core, int storage, int target);
+Allocat_server allocate_one(int id, int core, int mem, int target);
 
 //合并两个
 void merge_allocate (std::priority_queue<Allocat_server> &,std::priority_queue<Allocat_server> &);

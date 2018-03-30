@@ -15,7 +15,7 @@
 
 std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object);
 
-Allocat_server allocate_oneserver(int id, int core, int storage, int target);
+Allocat_server allocate_oneserver(int id, int core, int mem, int target);
 
 void MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos);
 

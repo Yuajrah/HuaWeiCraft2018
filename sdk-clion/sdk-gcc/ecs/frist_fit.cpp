@@ -22,7 +22,7 @@ std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server serve
     std::priority_queue<Allocat_server> allocate_result;
 
     //首先初始化一个节点
-    Allocat_server new_server = allocate_one(server_number, server.core, server.storage, target);
+    Allocat_server new_server = allocate_one(server_number, server.core, server.mem, target);
     allocate_result.push(new_server);
     std::map<int,int> new_record;
     result_record.push_back(new_record);
@@ -53,11 +53,11 @@ std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server serve
 
         //获取当前目标flavor的一些参数
         int core_need;
-        int storage_need;
+        int mem_need;
         std::map<int, Vm>::iterator current_flavor_info;
         current_flavor_info =  vm_info.find(current_flavor->first);
         core_need = current_flavor_info->second.core;
-        storage_need = current_flavor_info->second.storage/1024;
+        mem_need = current_flavor_info->second.mem/1024;
         
         //对当前的的虚拟服务器进行处理
         //首先判断是否需要开辟新的服务器
@@ -70,10 +70,10 @@ std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server serve
             current_server_data = allocate_result.top();
             allocate_result.pop();
             //如果弹出的满足分配条件，就自减然后然后放进tmp，否则就直接压进tmp
-            if(current_server_data.core >= core_need && current_server_data.storage >= storage_need)
+            if(current_server_data.core >= core_need && current_server_data.mem >= mem_need)
             {
                 current_server_data.core -= core_need;
-                current_server_data.storage -= storage_need;
+                current_server_data.mem -= mem_need;
                 tmp_allocate_result.push(current_server_data);
                 //把当前的处理加到记录里面去
                 if( result_record[current_server_data.id].find(current_flavor->first) == result_record[current_server_data.id].end())
@@ -100,7 +100,7 @@ std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server serve
         {
             //需要，就开辟一个新服务器，同时分配当前的虚拟机
             server_number++;
-            Allocat_server new_server = allocate_one(server_number, server.core - core_need, server.storage-storage_need, target);
+            Allocat_server new_server = allocate_one(server_number, server.core - core_need, server.mem-mem_need, target);
             allocate_result.push(new_server);
             std::map<int,int> new_record;
             result_record.push_back(new_record);
@@ -143,12 +143,12 @@ void merge_allocate (std::priority_queue<Allocat_server> &data1, std::priority_q
 
 }
 
-Allocat_server allocate_one(int id, int core, int storage, int target)
+Allocat_server allocate_one(int id, int core, int mem, int target)
 {
     Allocat_server new_allocate;
     new_allocate.id = id;
     new_allocate.core = core;
-    new_allocate.storage = storage;
+    new_allocate.mem = mem;
     new_allocate.target = target;
     return new_allocate;
 }
@@ -161,7 +161,7 @@ void get_scores(std::map<int, int>predict_data, Server server, int number, int t
         total_allocate = server.core * number;
     }
     else{
-        total_allocate = server.storage *number;
+        total_allocate = server.mem *number;
     }
     int total_need = 0;
     for (int i = 1; i<=15; i++)
@@ -183,7 +183,7 @@ void get_scores(std::map<int, int>predict_data, Server server, int number, int t
                 }
                 else
                 {
-                    target_need = current_flavor_info->second.storage;
+                    target_need = current_flavor_info->second.mem;
                 }
                 total_need += iter->second * target_need;
             }

@@ -25,11 +25,11 @@ bool operator< (const Allocat_server &server1, const Allocat_server &server2)
     }
     else
     {
-        if(server1.storage > server2.storage)
+        if(server1.mem > server2.mem)
         {
             return true;
         }
-        else if (server1.storage == server2.storage)
+        else if (server1.mem == server2.mem)
         {
             if(server1.id > server2.id)
             {
