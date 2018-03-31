@@ -137,10 +137,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     std::map<int, int> predict_data = predict_by_ar_1th (vm_info, train_data, need_predict_day);
 
-     print_predict_score(actual_data, predict_data);
-
-    bool weight_flag = true;
-    //if(server.mem > 2*server.core) weight_flag = true;
+    print_predict_score(actual_data, predict_data);
     std::string result1 = format_predict_res(predict_data);
 
     /*************************************************************************
@@ -175,10 +172,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
 
     std::string result = result1+result2;
-	// 需要输出的内容
-	char * result_file = (char *)"17\n\n0 8 0 20";
-	// 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
-	write_result(result.c_str(), filename);
+    // 需要输出的内容
+    char * result_file = (char *)"17\n\n0 8 0 20";
+    // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
+    write_result(result.c_str(), filename);
     //0分答案
     //write_result(result_file, filename);
 }
