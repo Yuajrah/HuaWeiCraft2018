@@ -93,7 +93,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 0;
+    int debug = 2;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -134,7 +134,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     std::map<int, int> predict_data = predict_by_ar_1th (vm_info, train_data, need_predict_day);
 
-     print_predict_score(actual_data, predict_data);
+    print_predict_score(actual_data, predict_data);
 
     bool weight_flag = true;
     //if(server.mem > 2*server.core) weight_flag = true;
@@ -170,10 +170,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    std::string result2 = format_allocate_res(allocate_result);
 
     std::string result = result1+result2;
-	// 需要输出的内容
-	char * result_file = (char *)"17\n\n0 8 0 20";
-	// 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
-	write_result(result.c_str(), filename);
+    // 需要输出的内容
+    char * result_file = (char *)"17\n\n0 8 0 20";
+    // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
+    write_result(result.c_str(), filename);
     //0分答案
     //write_result(result_file, filename);
 }
