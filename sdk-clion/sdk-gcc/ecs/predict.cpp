@@ -16,6 +16,8 @@
 #include "ARIMAModel.h"
 #include <numeric>
 #include <cfloat>
+#include <algorithm>
+#include <chrono>
 #include "ar_variant.h"
 #include "ff.h"
 #include "Random.h"
@@ -31,6 +33,7 @@
 //你要完成的功能总入口
 // info 是inputFile的数据，data是历史数据
 
+//unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 std::default_random_engine Random::generator;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
@@ -93,7 +96,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 0;
+    int debug = 2;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -166,8 +169,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
 
 //    std::vector<Vm> objects = serialize(predict_data, vm_info);
+//    random_permutation(objects);
 //    std::vector<Bin> allocate_result = ff(objects, server_info);
 //    std::string result2 = format_allocate_res(allocate_result);
+
 
     std::string result = result1+result2;
 	// 需要输出的内容
