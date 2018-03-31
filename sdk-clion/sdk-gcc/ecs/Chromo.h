@@ -25,6 +25,22 @@ public:
      */
     void calc_fitness();
 
+    /**
+     * 两条染色体的具体的交叉操作
+     */
+    void operator*(Chromo &b);
+
+    /**
+     * 交叉算子中用到的插入
+     * 1. 先统计要本体中重复包含物体的箱子, 并统计其中未重复的物体
+     * 2. 去除重复包含物体的箱子
+     * 3. 将1中统计的物体按照ffd重新插入
+     * @param index 插入位置
+     * @param genes 插入的基因片段
+     */
+    void insert(int index, std::vector<Bin> genes);
+
+
     inline double get_fitness() {return fitness;}
     inline double get_p() {return p;}
     inline void set_p(double p) {this->p  = p;}

@@ -7,10 +7,12 @@
 #include "ff.h"
 #include "Random.h"
 
-GGA::GGA(std::vector<Vm> objects, Server server_info, int pop_size):
+GGA::GGA(std::vector<Vm> objects, Server server_info, int pop_size, double p_mutation, double p_cross):
         objects(objects),
         server_info(server_info),
-        pop_size(pop_size) {}
+        pop_size(pop_size),
+        p_mutation(p_mutation),
+        p_cross(p_cross){}
 
 
 void GGA::initial() {
@@ -85,3 +87,13 @@ void GGA::rolette_select() {
 
     populations.assign(children.begin(), children.end()); // 用子代替换当前这代
 }
+
+void GGA::cross() {
+    // 交叉，开始
+    for (int i = 0;i < pop_size; i+=2) {
+        if (Random::random_double(0, 1) < p_cross) {
+            populations[i] * populations[i + 1];
+        }
+    }
+}
+
