@@ -18,6 +18,7 @@
 #include <cfloat>
 #include "ar_variant.h"
 #include "ff.h"
+#include "Random.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -29,6 +30,8 @@
  * */
 //你要完成的功能总入口
 // info 是inputFile的数据，data是历史数据
+
+std::default_random_engine Random::generator;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
