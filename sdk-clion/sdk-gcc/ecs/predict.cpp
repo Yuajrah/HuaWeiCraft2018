@@ -135,9 +135,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::map<int, int> predict_data = predict_by_ar_1th (vm_info, train_data, need_predict_day);
 
     print_predict_score(actual_data, predict_data);
-
-    bool weight_flag = true;
-    //if(server.mem > 2*server.core) weight_flag = true;
     std::string result1 = format_predict_res(predict_data);
 
     /*************************************************************************
