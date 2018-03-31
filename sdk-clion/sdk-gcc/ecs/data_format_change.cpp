@@ -2,6 +2,10 @@
 // Created by caocongcong on 18-3-19.
 //
 #include "data_format_change.h"
+#include "Random.h"
+#include <algorithm>
+#include <chrono>
+#include <iostream>
 
 /**
  * 格式化预测结果, 以方便写入最终文件
@@ -116,3 +120,17 @@ std::vector<Vm> serialize(std::map<int, int> predict_data, std::map<int, Vm> vm_
     }
     return objects;
 }
+
+/**
+ * 随机产生一个objects的排列
+ * @param objects
+ * @return
+ */
+std::vector<Vm> random_permutation(std::vector<Vm> objects) {
+    /**
+     * 注意, 只有每次使用同一个引擎的实例, 才能在下一次调用该shuffle的时候生成不同的排列
+     */
+    std::shuffle(std::begin(objects), std::end(objects), Random::generator);
+    return objects;
+}
+
