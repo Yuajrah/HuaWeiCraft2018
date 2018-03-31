@@ -12,6 +12,7 @@ struct Server {
 };
 
 struct Vm {
+    int type; // 标明类型, 比如1代表flavor1, 为了方便处理
     int core; // 所需核数
     int mem; // 所需内存大小
 };

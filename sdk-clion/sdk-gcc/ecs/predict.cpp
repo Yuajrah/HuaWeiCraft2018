@@ -148,13 +148,17 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第二版分配方式
      * 背包
      */
-    std::vector<std::map<int,int>> allocate_result = packing(vm_info, server_info, predict_data, opt_object);
-    std::string result2 = format_allocate_res(allocate_result);
-
-
-//    std::vector<Vm> objects = serialize(predict_data, vm_info);
-//    std::vector<Bin> allocate_result = ff(objects, server_info);
+//    std::vector<std::map<int,int>> allocate_result = packing(vm_info, server_info, predict_data, opt_object);
 //    std::string result2 = format_allocate_res(allocate_result);
+
+    /**
+     * 第三版分配方式
+     * 纯ff
+     */
+
+    std::vector<Vm> objects = serialize(predict_data, vm_info);
+    std::vector<Bin> allocate_result = ff(objects, server_info);
+    std::string result2 = format_allocate_res(allocate_result);
 
     std::string result = result1+result2;
 	// 需要输出的内容

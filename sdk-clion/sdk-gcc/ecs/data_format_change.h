@@ -8,8 +8,13 @@
 #include <map>
 #include <vector>
 #include <string>
-std::string change_map_char(std::map<int, int>);
+#include "Bin.h"
+
+std::string format_predict_res(std::map<int, int>);
 //转换函数转换成需要的char*
-std::string change_format(std::vector<std::map<int, int>> result_code);
+std::string format_allocate_res(std::vector<std::map<int, int>> result_code);
+std::string format_allocate_res(std::vector<Bin> bins);
+
+std::vector<Vm> serialize(std::map<int, int> predict_data, std::map<int, Vm> vm_info);
 
 #endif //SDK_GCC_DATA_FORMAT_CHANGE_H

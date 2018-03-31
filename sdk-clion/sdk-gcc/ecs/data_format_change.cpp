@@ -2,7 +2,7 @@
 // Created by caocongcong on 18-3-19.
 //
 #include "data_format_change.h"
-std::string change_map_char(std::map<int, int>data)
+std::string format_predict_res(std::map<int, int>data)
 {
 
     std::map<int,int>::iterator it;
@@ -27,8 +27,12 @@ std::string change_map_char(std::map<int, int>data)
     return result;
 }
 
-
-std::string change_format(std::vector<std::map<int,int>> result_code)
+/**
+ * 格式化分配结果
+ * @param result_code
+ * @return
+ */
+std::string format_allocate_res(std::vector<std::map<int,int>> result_code)
 {
     std::string result;
     result = std::to_string(result_code.size());
@@ -46,4 +50,63 @@ std::string change_format(std::vector<std::map<int,int>> result_code)
         result += "\n";
     }
     return result;
+}
+
+/**
+ * 格式化分配结果
+ * @param bins 分配结果, 为Bin类型的vector, 每个元素里面有objects
+ * @return
+ */
+std::string format_allocate_res(std::vector<Bin> bins)
+{
+    std::string result;
+    result = std::to_string(bins.size());
+    result += "\n";
+    int cnt = 0;
+
+    for (auto &bin: bins) {
+
+        cnt++;
+
+        result += std::to_string(cnt);
+        std::map<int, int> bin_objects; // 对一个箱子中的各个虚拟机计数
+
+        for (auto object: bin.objects) {
+            bin_objects[object.type]++;
+        }
+
+        for (auto &bin_object: bin_objects)
+        {
+            result += " ";
+            result += "flavor";
+            result += std::to_string(bin_object.first);
+            result += " ";
+            result += std::to_string(bin_object.second);
+        }
+
+        result += "\n";
+    }
+    return result;
+}
+
+/**
+ *
+ * 将预测结果, 转化成物体的序列, 然后再用于装箱问题
+ * predict_data: {vm1: 3个, vm2: 1个 ... }
+ * =>
+ * objects: {vm1, vm1, vm1, vm2 ... }
+ *
+ * @param predict_data
+ * @param vm_info
+ * @return 物体的序列
+ *
+ */
+std::vector<Vm> serialize(std::map<int, int> predict_data, std::map<int, Vm> vm_info){
+    std::vector<Vm> objects;
+    for (auto &t: predict_data) {
+        for (int i=0;i<t.second;i++) {
+            objects.push_back(vm_info[t.first]);
+        }
+    }
+    return objects;
 }

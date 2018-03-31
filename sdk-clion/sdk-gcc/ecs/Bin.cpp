@@ -14,6 +14,8 @@ Bin::Bin(double cores, double mems): cores(cores), mems(mems) {}
 bool Bin::put(Vm object) {
     if (object.core <= cores && object.mem <= mems) {
         objects.push_back(object);
+        cores -= object.core;
+        mems -= object.mem;
         return true;
     }
     return false;
