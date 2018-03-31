@@ -3,3 +3,5 @@
 //
 
 #include "Chromo.h"
+
+Chromo::Chromo(std::vector<Bin> genes): genes(genes) {}

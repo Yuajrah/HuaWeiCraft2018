@@ -9,10 +9,12 @@
 #include "Chromo.h"
 
 class GGA {
-    std::vector<Chromo> population; // 种群
+    std::vector<Vm> objects; // 要放置的物体
+    Server server_info; // 箱子（物体服务器）的信息
+    std::vector<Chromo> populations; // 种群
     int pop_size;
 public:
-    GGA(int pop_size);
+    GGA(std::vector<Vm> objects, Server server_info, int pop_size);
     void initial(); // 初始化种群
     void select(); // 选择
     void cross(); // 交叉

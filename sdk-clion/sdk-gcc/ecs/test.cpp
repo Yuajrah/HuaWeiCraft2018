@@ -4,6 +4,7 @@
 #include "test.h"
 #include "AR.h"
 #include "type_def.h"
+#include "Random.h"
 
 void test_ar(){
     //北京1987-2014人口: 35
@@ -19,3 +20,14 @@ void test_ar(){
 
     ar_model.print_model_info();
 }
+
+/**
+ * 随机数测试
+ */
+void test_random() {
+    for (int i=0;i<10;i++) {
+        int t = Random::random_int(1, 10);
+        printf("%d ", t);
+    }
+}
+

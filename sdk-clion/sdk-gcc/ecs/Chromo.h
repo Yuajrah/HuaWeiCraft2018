@@ -7,11 +7,14 @@
 
 #include "Bin.h"
 #include <vector>
+
 /**
  * 染色体类
  */
 class Chromo {
     std::vector<Bin> genes; // 染色体由基因组成, 每个基因代表一个箱子(类)
+public:
+    Chromo(std::vector<Bin> genes);
 };
 
 
