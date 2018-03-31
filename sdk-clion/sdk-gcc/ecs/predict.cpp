@@ -17,6 +17,7 @@
 #include <numeric>
 #include <cfloat>
 #include "ar_variant.h"
+#include "ff.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -48,16 +49,16 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
     std::map<int, Vm> vm_info;
 
-    Server server;
-    sscanf(info[0],"%d %d %d",&server.core, &server.mem, &server.disk); // 获取server的基本信息
+    Server server_info;
+    sscanf(info[0],"%d %d %d",&server_info.core, &server_info.mem, &server_info.disk); // 获取server的基本信息
 
     int type_num;
     sscanf(info[2],"%d",&type_num); // 获取共有type_num种类型的vm
 
 	for (int i=3;i<3+type_num;i++) {
-        int type, cores, mem;
-		sscanf(info[i],"flavor%d %d %d",&type,&cores,&mem);
-        vm_info[type] = {cores, mem}; // 获取各种vm的基本信息（包括 核心数和内存大小）
+        int type, core, mem;
+		sscanf(info[i],"flavor%d %d %d",&type,&core,&mem);
+        vm_info[type] = {type, core,  mem/ 1024}; // 获取各种vm的基本信息（包括 类型,核心数和内存大小）
 	}
 
     char *opt_object = info[4+type_num]; // 获取优化目标
@@ -89,7 +90,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 0;
+    int debug = 2;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -123,23 +124,38 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", vm_info, data_num);
     }
 
+
     std::map<int, int> predict_data = predict_by_ar_1th (vm_info, train_data, need_predict_day);
 
      print_predict_score(actual_data, predict_data);
-    std::vector<std::map<int,int>> allocate_result;
+
     bool weight_flag = true;
     //if(server.mem > 2*server.core) weight_flag = true;
 
 
+    std::string result1 = format_predict_res(predict_data);
 
-    std::vector<int> order;
-    order = get_order(vm_info, server, opt_object);
-   // allocate_result = frist_fit(vm_info, server, predict_data, opt_object,order );
-    allocate_result = packing(vm_info, server, predict_data, opt_object);
+    /**
+     * 第一版分配方式
+     * ffd
+     */
+//    std::vector<int> order;
+//    order = get_order(vm_info, server_info, opt_object);
+//    std::vector<std::map<int,int>> allocate_result = frist_fit(vm_info, server_info, predict_data, opt_object,order );
+//    std::string result2 = format_allocate_res(allocate_result);
+
+    /**
+     * 第二版分配方式
+     * 背包
+     */
+    std::vector<std::map<int,int>> allocate_result = packing(vm_info, server_info, predict_data, opt_object);
+    std::string result2 = format_allocate_res(allocate_result);
 
 
-    std::string result1 = change_map_char(predict_data);
-    std::string result2 = change_format(allocate_result);
+//    std::vector<Vm> objects = serialize(predict_data, vm_info);
+//    std::vector<Bin> allocate_result = ff(objects, server_info);
+//    std::string result2 = format_allocate_res(allocate_result);
+
     std::string result = result1+result2;
 	// 需要输出的内容
 	char * result_file = (char *)"17\n\n0 8 0 20";

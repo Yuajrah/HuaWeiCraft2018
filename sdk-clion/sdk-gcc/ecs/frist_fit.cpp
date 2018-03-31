@@ -57,7 +57,7 @@ std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server serve
         std::map<int, Vm>::iterator current_flavor_info;
         current_flavor_info =  vm_info.find(current_flavor->first);
         core_need = current_flavor_info->second.core;
-        mem_need = current_flavor_info->second.mem/1024;
+        mem_need = current_flavor_info->second.mem;
         
         //对当前的的虚拟服务器进行处理
         //首先判断是否需要开辟新的服务器

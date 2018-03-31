@@ -77,7 +77,7 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
             std::map<int, Vm>::iterator current_flavor_info;
             current_flavor_info =  vm_info.find(16-pos);
             int core_need = current_flavor_info->second.core;
-            int mem_need = current_flavor_info->second.mem/1024;
+            int mem_need = current_flavor_info->second.mem;
             int item_value = core_need + mem_need;//物品价值
             int item_num = tmp_vm_num[pos];//可用的物品数量
 
@@ -135,7 +135,7 @@ std::vector<int> get_path(std::vector<std::vector<std::vector<int> > > &used, st
 //        int s1 = path[sum]/PACKING_N;
 //        int s2 = path[sum]%PACKING_N;
 //        current_flavor_info =  vminfo.find(s1);
-//        choose_num[s1] = (sum - s2) / (current_flavor_info->second.core + current_flavor_info->second.mem/1024);
+//        choose_num[s1] = (sum - s2) / (current_flavor_info->second.core + current_flavor_info->second.mem);
 //        sum = s2;
 //    }
     return choose_num;
