@@ -2,6 +2,12 @@
 // Created by caocongcong on 18-3-19.
 //
 #include "data_format_change.h"
+
+/**
+ * 格式化预测结果, 以方便写入最终文件
+ * @param data
+ * @return
+ */
 std::string format_predict_res(std::map<int, int>data)
 {
 
@@ -28,7 +34,7 @@ std::string format_predict_res(std::map<int, int>data)
 }
 
 /**
- * 格式化分配结果
+ * 格式化分配结果, 以方便写入最终文件
  * @param result_code
  * @return
  */
@@ -53,7 +59,7 @@ std::string format_allocate_res(std::vector<std::map<int,int>> result_code)
 }
 
 /**
- * 格式化分配结果
+ * 格式化分配结果, 以方便写入最终文件
  * @param bins 分配结果, 为Bin类型的vector, 每个元素里面有objects
  * @return
  */

@@ -90,7 +90,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 2;
+    int debug = 0;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -125,15 +125,21 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     }
 
 
+    /*************************************************************************
+    *****  预测  **************************************************************
+    **************************************************************************/
+
     std::map<int, int> predict_data = predict_by_ar_1th (vm_info, train_data, need_predict_day);
 
      print_predict_score(actual_data, predict_data);
 
     bool weight_flag = true;
     //if(server.mem > 2*server.core) weight_flag = true;
-
-
     std::string result1 = format_predict_res(predict_data);
+
+    /*************************************************************************
+    *****  分配  **************************************************************
+    **************************************************************************/
 
     /**
      * 第一版分配方式
@@ -148,17 +154,17 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第二版分配方式
      * 背包
      */
-//    std::vector<std::map<int,int>> allocate_result = packing(vm_info, server_info, predict_data, opt_object);
-//    std::string result2 = format_allocate_res(allocate_result);
+    std::vector<std::map<int,int>> allocate_result = packing(vm_info, server_info, predict_data, opt_object);
+    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第三版分配方式
      * 纯ff
      */
 
-    std::vector<Vm> objects = serialize(predict_data, vm_info);
-    std::vector<Bin> allocate_result = ff(objects, server_info);
-    std::string result2 = format_allocate_res(allocate_result);
+//    std::vector<Vm> objects = serialize(predict_data, vm_info);
+//    std::vector<Bin> allocate_result = ff(objects, server_info);
+//    std::string result2 = format_allocate_res(allocate_result);
 
     std::string result = result1+result2;
 	// 需要输出的内容

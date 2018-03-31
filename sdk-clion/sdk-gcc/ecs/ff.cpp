@@ -24,7 +24,7 @@ std::vector<Bin> ff(std::vector<Vm> objects, Server server_info) {
         }
         if (is_allocated == false) { // 若现有箱子无法满足分配需求, 则新开一个箱子
             bins.push_back(Bin(server_info.core, server_info.mem)); // 打开一个新箱子
-            bins.end()->put(object);
+            bins.back().put(object);
         }
     }
     return bins;
