@@ -113,8 +113,10 @@ std::string format_allocate_res(std::vector<Bin> bins)
  */
 std::vector<Vm> serialize(std::map<int, int> predict_data, std::map<int, Vm> vm_info){
     std::vector<Vm> objects;
+    int cnt = 0;
     for (auto &t: predict_data) {
         for (int i=0;i<t.second;i++) {
+            vm_info[t.first].no = cnt;
             objects.push_back(vm_info[t.first]);
         }
     }

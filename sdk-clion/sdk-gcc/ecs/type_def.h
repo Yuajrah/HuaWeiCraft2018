@@ -15,6 +15,7 @@ struct Vm {
     int type; // 标明类型, 比如1代表flavor1, 为了方便处理
     int core; // 所需核数
     int mem; // 所需内存大小
+    int no; // 当改类型用做物体处理时, 作为编号, 其他情况不作处理
 };
 
 struct Allocat_server
