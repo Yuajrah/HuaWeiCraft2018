@@ -76,3 +76,16 @@ void Chromo::insert(int index, std::vector<Bin> insert_genes) {
     // todo 先用ff替代, 之后再用ffd替换
     genes = ff(genes, reinsert_objects);
 }
+
+void Chromo::mutation(int mutation_num) {
+    std::vector<Vm> eliminate_objects;
+    for (int i=0;i<mutation_num;i++) {
+        int index = Random::random_int(0, genes.size() - 1); // 随机产生某个基因的位置, 该位置的基因(箱子)会被删除
+        // 存下要被删除箱子中的物体
+        for (auto &object: genes[i].objects) {
+            eliminate_objects.push_back(object);
+        }
+        genes.erase(genes.begin() + index); // 删除index位置的箱子
+    }
+    ff(genes, eliminate_objects);
+}

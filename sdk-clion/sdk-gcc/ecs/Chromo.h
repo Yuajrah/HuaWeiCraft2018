@@ -40,6 +40,11 @@ public:
      */
     void insert(int index, std::vector<Bin> genes);
 
+    /**
+     * 染色体变异, 随机选取mutation_num个基因, 并删除, 将缺少的物体重新插入
+     * @param mutation_num, 变异的基因数目, 即要消除的箱子数量
+     */
+    void mutation(int mutation_num);
 
     inline double get_fitness() {return fitness;}
     inline double get_p() {return p;}

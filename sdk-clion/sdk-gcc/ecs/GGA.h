@@ -10,15 +10,15 @@
 
 class GGA {
     std::vector<Vm> objects; // 要放置的物体
-    Server server_info; // 箱子（物体服务器）的信息
     std::vector<Chromo> populations; // 种群
     int pop_size;
 
-    double p_mutation; // 变异概率
     double p_cross; // 交叉概率
+    double p_mutation; // 变异概率
+    int mutation_num; // 变异概率时所要删除的箱子个数
 
 public:
-    GGA(std::vector<Vm> objects, Server server_info, int pop_size, double p_mutation, double p_cross);
+    GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutation, int mutation_num);
 
     /**
      * 随机初始化种群
@@ -67,7 +67,15 @@ public:
      */
     void cross();
 
-
+    /**
+     * 变异算子 - GGA的变异:
+     * 随机选取一些箱子删掉, 然后重新按照ffd插入这些被删掉箱子中的物体
+     *
+     * todo 由于ffd尚未构建, 现在用ff替代
+     *
+     * todo 另外之后的改进策略有: 至少选择三个箱子消除, 并且最"空"的箱子要在其中
+     *
+     */
     void mutation();
 };
 

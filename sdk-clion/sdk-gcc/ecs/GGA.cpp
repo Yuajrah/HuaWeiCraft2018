@@ -7,12 +7,12 @@
 #include "ff.h"
 #include "Random.h"
 
-GGA::GGA(std::vector<Vm> objects, Server server_info, int pop_size, double p_mutation, double p_cross):
+GGA::GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutation, int mutation_num):
         objects(objects),
-        server_info(server_info),
         pop_size(pop_size),
+        p_cross(p_cross),
         p_mutation(p_mutation),
-        p_cross(p_cross){}
+        mutation_num(mutation_num) {}
 
 
 void GGA::initial() {
@@ -89,7 +89,7 @@ void GGA::rolette_select() {
 }
 
 void GGA::cross() {
-    // 交叉，开始
+    // 交叉, 开始
     for (int i = 0;i < pop_size; i+=2) {
         if (Random::random_double(0, 1) < p_cross) {
             populations[i] * populations[i + 1];
@@ -97,3 +97,10 @@ void GGA::cross() {
     }
 }
 
+void GGA::mutation() {
+    for (Chromo &chromo: populations) {
+        if (Random::random_double(0, 1) < p_mutation) {
+            chromo.mutation(mutation_num);
+        }
+    }
+}
