@@ -41,8 +41,15 @@ def series_to_supervised(data, split_windows):
     test_need = target[index].values
     return trian_data, target, test_need
 
-def get_predict_score(data, split_windows, predict_mothod):
-    train , test, test_need = series_to_supervised(data , split_windows)
+def get_predict_result(data, split_windows, predict_mothod):
+    train , test, need_data = series_to_supervised(data , split_windows)
     predict_mothod.fit(train, test)
     result = []
+    for i in range(split_windows):
+        tmp_data = predict_mothod.predict(need_data)
+        result.append(tmp_data[0])
+        need_data = np.delete(need_data,0, axis = 0)
+        need_data = np.append(need_data,tmp_data)
+    # print (round(sum(result)))
+    return round(sum(result))
     
