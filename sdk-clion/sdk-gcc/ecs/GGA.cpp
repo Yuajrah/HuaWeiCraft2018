@@ -16,8 +16,14 @@ GGA::GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutatio
         iter_num(iter_num){}
 
 
-void GGA::initial() {
-    for (int i=0;i<pop_size;i++) {
+void GGA::initial(std::vector<Bin> bins, int num) {
+    if (num == -1) {
+        num = 0;
+    }
+    for (int i=0;i<num;i++) {
+        populations.push_back(bins);
+    }
+    for (int i=0;i<pop_size - num;i++) {
         /**
          * 生成物体的随机排列, 然后使用ff算法去装箱, 得到装箱结果, 利用装箱结果构造染色体(这波操作可能有点秀... :P)
          */
@@ -110,8 +116,6 @@ void GGA::mutation() {
 }
 
 void GGA::start() {
-
-    initial();
     int iter_cnt = 0;
     int min_num = INT32_MAX;
     while (iter_cnt < iter_num) {

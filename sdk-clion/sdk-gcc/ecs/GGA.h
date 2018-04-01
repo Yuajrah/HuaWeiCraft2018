@@ -27,7 +27,7 @@ public:
     /**
      * 随机初始化种群
      */
-    void initial();
+    void initial(std::vector<Bin> bins, int num=-1);
 
     /**
      * 根据适应度计算概率, 在此之前要调用calc_fitness
@@ -73,7 +73,7 @@ public:
      *
      */
     void cross();
-    
+
 
     /**
      * 变异算子 - GGA的变异:

@@ -18,7 +18,14 @@ void Chromo::calc_fitness() {
      * todo 暂时直接用genes代替, 之后再改
      *
      */
-    fitness = 1.0 / genes.size();
+//    fitness = 1.0 / genes.size();
+
+    double sum = 0.0;
+    int k = 2;
+    for (Bin &bin: genes) {
+        sum += pow((BasicInfo::server_info.mem - bin.mems) * (BasicInfo::server_info.core - bin.cores) / (BasicInfo::server_info.mem * BasicInfo::server_info.core), 2);
+    }
+    fitness = sum / genes.size();
 }
 
 
@@ -99,7 +106,7 @@ void Chromo::mutation(int mutation_num) {
         // 存下要被删除箱子中的物体
         eliminate_objects.insert(eliminate_objects.end(), genes[rnd].objects.begin(), genes[rnd].objects.end());
         genes.erase(genes.begin() + rnd); // 删除rnd位置的箱子
-
+        if (genes.empty()) break;
     }
     genes = ff(genes, eliminate_objects);
 
