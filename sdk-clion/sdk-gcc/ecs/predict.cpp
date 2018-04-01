@@ -167,7 +167,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
 //    std::vector<Vm> objects = serialize(predict_data, vm_info);
 //    random_permutation(objects);
-//    std::vector<Bin> allocate_result = ff(objects, server_info);
+//    std::vector<Bin> allocate_result = ff({}, objects, server_info);
 //    std::string result2 = format_allocate_res(allocate_result);
 
 
