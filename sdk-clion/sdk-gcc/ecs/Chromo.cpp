@@ -7,7 +7,6 @@
 #include "ff.h"
 #include "BasicInfo.h"
 #include <algorithm>
-#include <gmpxx.h>
 
 Chromo::Chromo(std::vector<Bin> genes): genes(genes) {}
 
