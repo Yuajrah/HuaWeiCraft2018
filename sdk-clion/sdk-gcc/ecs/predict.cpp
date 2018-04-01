@@ -22,6 +22,7 @@
 #include "ff.h"
 #include "Random.h"
 #include "ml_predict.h"
+#include "BasicInfo.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -36,6 +37,8 @@
 
 //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 std::default_random_engine Random::generator;
+Server BasicInfo::server_info;
+std::map<int, Vm> BasicInfo::vm_info;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
@@ -54,10 +57,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * forecast_end_date， 实际预测结束日期为该日期前一天
      *
      */
-    std::map<int, Vm> vm_info;
 
-    Server server_info;
-    sscanf(info[0],"%d %d %d",&server_info.core, &server_info.mem, &server_info.disk); // 获取server的基本信息
+    sscanf(info[0],"%d %d %d",&BasicInfo::server_info.core, &BasicInfo::server_info.mem, &BasicInfo::server_info.disk); // 获取server的基本信息
 
     int type_num;
     sscanf(info[2],"%d",&type_num); // 获取共有type_num种类型的vm
@@ -65,7 +66,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 	for (int i=3;i<3+type_num;i++) {
         int type, core, mem;
 		sscanf(info[i],"flavor%d %d %d",&type,&core,&mem);
-        vm_info[type] = {type, core,  mem/ 1024}; // 获取各种vm的基本信息（包括 类型,核心数和内存大小）
+        BasicInfo::vm_info[type] = {type, core,  mem/ 1024}; // 获取各种vm的基本信息（包括 类型,核心数和内存大小）
 	}
 
     char *opt_object = info[4+type_num]; // 获取优化目标
@@ -108,27 +109,27 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
     // 项目可执行文件的参数： "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
     if (debug == 0) { // 上传所用
-        train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num);
-        actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, vm_info, data_num);
+        train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
+        actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, data_num);
     } else if (debug == 1) {
-        train_data = get_esc_data(data, date_start, "2015-05-24", vm_info, data_num);
-        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", vm_info, data_num);
+        train_data = get_esc_data(data, date_start, "2015-05-24", data_num);
+        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", data_num);
     } else if (debug == 2) { // 16年的数据集
-        train_data = get_esc_data(data, date_start, "2016-01-21", vm_info, data_num);
-        actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", vm_info, data_num);
+        train_data = get_esc_data(data, date_start, "2016-01-21", data_num);
+        actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", data_num);
     } else if (debug == 3) {
-        train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num); // 用于最终训练模型的训练数据
+        train_data = get_esc_data(data, date_start, forecast_start_date, data_num); // 用于最终训练模型的训练数据
 
         char *test_start_date = add_days(forecast_start_date, -need_predict_day); // 选取最后×天, x天为所需要预测的天数
-        fit_train_data = get_esc_data(data, date_start, test_start_date, vm_info, data_num);
-        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, vm_info, data_num);
+        fit_train_data = get_esc_data(data, date_start, test_start_date, data_num);
+        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, data_num);
     } else if (debug == 4) {
-        train_data = get_esc_data(data, date_start, "2015-05-24", vm_info, data_num); // 用于最终训练模型的训练数据
+        train_data = get_esc_data(data, date_start, "2015-05-24", data_num); // 用于最终训练模型的训练数据
 
         char *test_start_date = add_days("2015-05-24", -7); // 选取最后×天, x天为所需要预测的天数
-        fit_train_data = get_esc_data(data, date_start, test_start_date, vm_info, data_num);
-        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, vm_info, data_num);
-        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", vm_info, data_num);
+        fit_train_data = get_esc_data(data, date_start, test_start_date, data_num);
+        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, data_num);
+        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", data_num);
     }
 
 
@@ -144,7 +145,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /*
      * 使用knn进行预测
      */
-    std::map<int, int> predict_data = predict_by_knn(vm_info, train_data, need_predict_day);
+    std::map<int, int> predict_data = predict_by_knn(BasicInfo::vm_info, train_data, need_predict_day);
 
     print_predict_score(actual_data, predict_data);
     std::string result1 = format_predict_res(predict_data);
@@ -165,7 +166,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第二版分配方式
      * 背包
      */
-    std::vector<std::map<int,int>> allocate_result = packing(vm_info, server_info, predict_data, opt_object);
+    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
     std::string result2 = format_allocate_res(allocate_result);
 
     /**
