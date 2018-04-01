@@ -16,6 +16,7 @@ struct Vm {
     int core; // 所需核数
     int mem; // 所需内存大小
     int no; // 当改类型用做物体处理时, 作为编号, 其他情况不作处理
+    double size;//排序时虚拟机的size
 };
 
 struct Allocat_server
@@ -27,5 +28,6 @@ struct Allocat_server
 };
 
 bool operator< (const Allocat_server &server1, const Allocat_server &server2);
+
 
 #endif //SDK_GCC_TYPE_DEF_H
