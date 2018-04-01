@@ -7,15 +7,18 @@
 #include "ff.h"
 #include "BasicInfo.h"
 #include <algorithm>
+#include <iterator>
 
 Chromo::Chromo(std::vector<Bin> genes): genes(genes) {}
 
 
 void Chromo::calc_fitness() {
     /**
+     *
      * todo 暂时直接用genes代替, 之后再改
+     *
      */
-    fitness = 1 / genes.size();
+    fitness = 1.0 / genes.size();
 }
 
 
@@ -30,15 +33,18 @@ void Chromo::operator*(Chromo &b) {
     int b_end = Random::random_int(1, b.genes.size());
     int b_begin = Random::random_int(0, b_end - 1);
 
+    // 在插入之前要保存一下a染色体的所有基因, 因为在插入操作滞后a会被破坏
+    Chromo a_copy(*this);
     // todo 这么传入参数会不会有问题
     insert(begin, {b.genes.begin() + b_begin, b.genes.begin() + b_end});
-    b.insert(b_begin, {genes.begin() + begin, genes.begin() + end});
+    b.insert(b_begin, {a_copy.genes.begin() + begin, a_copy.genes.begin() + end});
 
 }
 
 void Chromo::insert(int index, std::vector<Bin> insert_genes) {
 
     std::vector<Vm> reinsert_objects; // 在去除重复包含物体的箱子之前, 统计去除之后会缺失的物体
+    int actual_index = index; // 由于会删除箱子, 所以实际插入的位置和index不一样
 
     // 统计重复包含的物体的编号
     std::vector<int> repeat_contain_no;
@@ -67,14 +73,16 @@ void Chromo::insert(int index, std::vector<Bin> insert_genes) {
             }
             genes.erase(genes.begin() + i);
             if (i < index) {
-                index--;
+                actual_index--;
             }
         }
 
     }
-    genes.insert(genes.begin() + index, insert_genes.begin(), insert_genes.end());
+
+    genes.insert(genes.begin() + actual_index, insert_genes.begin(), insert_genes.end());
     // todo 先用ff替代, 之后再用ffd替换
     genes = ff(genes, reinsert_objects);
+
 }
 
 void Chromo::mutation(int mutation_num) {
@@ -87,7 +95,8 @@ void Chromo::mutation(int mutation_num) {
         }
         genes.erase(genes.begin() + index); // 删除index位置的箱子
     }
-    ff(genes, eliminate_objects);
+    genes = ff(genes, eliminate_objects);
+
 }
 
 void Chromo::inversion() {

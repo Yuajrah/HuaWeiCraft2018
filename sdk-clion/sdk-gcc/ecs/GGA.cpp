@@ -7,12 +7,13 @@
 #include "ff.h"
 #include "Random.h"
 
-GGA::GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutation, int mutation_num):
+GGA::GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutation, int mutation_num, int iter_num):
         objects(objects),
         pop_size(pop_size),
         p_cross(p_cross),
         p_mutation(p_mutation),
-        mutation_num(mutation_num) {}
+        mutation_num(mutation_num),
+        iter_num(iter_num){}
 
 
 void GGA::initial() {
@@ -26,15 +27,16 @@ void GGA::initial() {
 }
 
 void GGA::calc_fitness() {
-    for (auto chromo: populations) chromo.calc_fitness();
+    for (auto &chromo: populations) chromo.calc_fitness();
 }
 
 void GGA::calc_p() {
     double sum = 0.0;
-    for (Chromo chromo: populations) {
+    for (Chromo &chromo: populations) {
         sum += chromo.get_fitness();
     }
-    for (Chromo chromo: populations) {
+
+    for (Chromo &chromo: populations) {
         chromo.set_p(chromo.get_fitness() / sum);
     }
 }
@@ -104,4 +106,19 @@ void GGA::mutation() {
         }
     }
 }
+
+void GGA::start() {
+
+    initial();
+    int iter_cnt = 0;
+    while (iter_cnt <= iter_num) {
+        calc_fitness();
+        calc_p();
+        rolette_select();
+        cross();
+        mutation();
+        iter_cnt++;
+    }
+}
+
 

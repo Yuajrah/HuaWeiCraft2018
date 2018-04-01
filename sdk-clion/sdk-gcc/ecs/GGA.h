@@ -17,8 +17,10 @@ class GGA {
     double p_mutation; // 变异概率
     int mutation_num; // 变异概率时所要删除的箱子个数
 
+    int iter_num; // 迭代代数
+
 public:
-    GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutation, int mutation_num);
+    GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutation, int mutation_num, int iter_num);
 
     /**
      * 随机初始化种群
@@ -26,7 +28,7 @@ public:
     void initial();
 
     /**
-     * 根据适应度计算概率
+     * 根据适应度计算概率, 在此之前要调用calc_fitness
      */
     void calc_p();
 
@@ -64,6 +66,9 @@ public:
      *    (a) 个体1随机截取一段位置(即产生两个交叉点), 个体2亦如此
      *    (b) 将个体1截取的那段插入到个体2的第一个交叉点处, 此时由于个体2重复来包含插入的基因(实际上是一个基因即是一个箱子)中物体, 需要去除个体2中包含重复物体的箱子, 由于被去除的箱子中还包含不重复的物体, 因此这些物体还需要按照ffd重新插入...产生一个子代
      *    (c) 对个体2作同样的操作, 产生另一个子代
+     *
+     * 注: 在交叉之前要先执行一个选择算子
+     *
      */
     void cross();
 
@@ -78,6 +83,9 @@ public:
      */
     void mutation();
 
+    void start();
+
+    
 };
 
 
