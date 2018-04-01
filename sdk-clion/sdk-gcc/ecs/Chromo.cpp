@@ -7,6 +7,7 @@
 #include "ff.h"
 #include "BasicInfo.h"
 #include <algorithm>
+#include <gmpxx.h>
 
 Chromo::Chromo(std::vector<Bin> genes): genes(genes) {}
 
@@ -88,4 +89,10 @@ void Chromo::mutation(int mutation_num) {
         genes.erase(genes.begin() + index); // 删除index位置的箱子
     }
     ff(genes, eliminate_objects);
+}
+
+void Chromo::inversion() {
+    int i = Random::random_int(0, genes.size() - 1);
+    int j = Random::random_int(0, genes.size() - 1);
+    std::swap(genes[i], genes[j]);
 }

@@ -104,3 +104,4 @@ void GGA::mutation() {
         }
     }
 }
+

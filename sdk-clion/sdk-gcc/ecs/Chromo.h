@@ -46,6 +46,11 @@ public:
      */
     void mutation(int mutation_num);
 
+    /**
+     * 逆序操作, 任意交换两个基因的位置
+     */
+    void inversion();
+
     inline double get_fitness() {return fitness;}
     inline double get_p() {return p;}
     inline void set_p(double p) {this->p  = p;}
