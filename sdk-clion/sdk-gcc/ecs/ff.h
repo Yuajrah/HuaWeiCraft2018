@@ -9,6 +9,6 @@
 #include "Bin.h"
 #include <vector>
 
-std::vector<Bin> ff(std::vector<Vm> objects, Server server_info);
+std::vector<Bin> ff(std::vector<Bin> bins, std::vector<Vm> objects, Server server_info);
 
 #endif //SDK_CLION_FF_H

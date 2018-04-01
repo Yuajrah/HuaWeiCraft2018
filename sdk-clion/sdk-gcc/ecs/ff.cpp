@@ -14,8 +14,7 @@
  * @param server_info, 箱子的各维度资源的约束信息
  * @return 返回装箱结果
  */
-std::vector<Bin> ff(std::vector<Vm> objects, Server server_info) {
-    std::vector<Bin> bins; // 存放箱子
+std::vector<Bin> ff(std::vector<Bin> bins, std::vector<Vm> objects, Server server_info) {
     for (auto &object: objects) {
         bool is_allocated = false; // 用于判断现有箱子是否可以满足分配需求
         for (auto &bin: bins) {
