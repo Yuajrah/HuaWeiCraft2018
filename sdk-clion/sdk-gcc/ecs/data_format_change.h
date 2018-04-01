@@ -16,7 +16,7 @@ std::string format_predict_res(std::map<int, int>);
 std::string format_allocate_res(std::vector<std::map<int, int>> result_code);
 std::string format_allocate_res(std::vector<Bin> bins);
 
-std::vector<Vm> serialize(std::map<int, int> predict_data, std::map<int, Vm> vm_info);
+std::vector<Vm> serialize(std::map<int, int> predict_data);
 std::vector<Vm> random_permutation(std::vector<Vm> objects);
 
 #endif //SDK_GCC_DATA_FORMAT_CHANGE_H
