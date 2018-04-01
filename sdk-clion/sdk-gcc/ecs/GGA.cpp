@@ -20,7 +20,7 @@ void GGA::initial() {
         /**
          * 生成物体的随机排列, 然后使用ff算法去装箱, 得到装箱结果, 利用装箱结果构造染色体(这波操作可能有点秀... :P)
          */
-        Chromo chromo(ff(random_permutation(objects), server_info));
+        Chromo chromo(ff({}, random_permutation(objects)));
         populations.push_back(chromo);
     }
 }
