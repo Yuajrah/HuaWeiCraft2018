@@ -55,6 +55,8 @@ void Chromo::insert(int index, std::vector<Bin> insert_genes) {
     }
 
     std::vector<Bin> t_genes(genes);
+    genes.clear();
+
     for (int i=0;i<t_genes.size();i++) {
         bool is_repeat = false;
         for (Vm &object: t_genes[i].objects) {
@@ -71,10 +73,12 @@ void Chromo::insert(int index, std::vector<Bin> insert_genes) {
                     reinsert_objects.push_back(object);
                 };
             }
-            genes.erase(genes.begin() + i);
+
             if (i < index) {
                 actual_index--;
             }
+        } else {
+            genes.push_back(t_genes[i]);
         }
 
     }
@@ -86,14 +90,16 @@ void Chromo::insert(int index, std::vector<Bin> insert_genes) {
 }
 
 void Chromo::mutation(int mutation_num) {
+
     std::vector<Vm> eliminate_objects;
+
     for (int i=0;i<mutation_num;i++) {
-        int index = Random::random_int(0, genes.size() - 1); // 随机产生某个基因的位置, 该位置的基因(箱子)会被删除
+
+        int rnd = Random::random_int(0, genes.size() - 1); // 随机产生某个基因的位置, 该位置的基因(箱子)会被删除
         // 存下要被删除箱子中的物体
-        for (auto &object: genes[i].objects) {
-            eliminate_objects.push_back(object);
-        }
-        genes.erase(genes.begin() + index); // 删除index位置的箱子
+        eliminate_objects.insert(eliminate_objects.end(), genes[rnd].objects.begin(), genes[rnd].objects.end());
+        genes.erase(genes.begin() + rnd); // 删除rnd位置的箱子
+
     }
     genes = ff(genes, eliminate_objects);
 

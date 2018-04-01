@@ -54,6 +54,8 @@ public:
     inline double get_fitness() {return fitness;}
     inline double get_p() {return p;}
     inline void set_p(double p) {this->p  = p;}
+    inline int get_bin_num(){return genes.size();}
+    inline std::vector<Bin> get_bin() {return genes;}
 };
 
 

@@ -82,6 +82,7 @@ void GGA::rolette_select() {
             s += chromo.get_p();
             if (r <= s) {
                 children.push_back(chromo);
+                break;
             }
         }
 
@@ -99,6 +100,7 @@ void GGA::cross() {
     }
 }
 
+
 void GGA::mutation() {
     for (Chromo &chromo: populations) {
         if (Random::random_double(0, 1) < p_mutation) {
@@ -111,14 +113,34 @@ void GGA::start() {
 
     initial();
     int iter_cnt = 0;
-    while (iter_cnt <= iter_num) {
+    int min_num = INT32_MAX;
+    while (iter_cnt < iter_num) {
         calc_fitness();
         calc_p();
         rolette_select();
         cross();
         mutation();
+
+        if (get_best_chrome().get_bin_num() < min_num){
+            min_num = get_best_chrome().get_bin_num();
+            best_solution = get_best_chrome();
+        }
         iter_cnt++;
     }
 }
 
+Chromo GGA::get_best_chrome() {
+    int least_num = INT32_MAX;
+    Chromo least_bin_chrome;
+    for (Chromo &chromo: populations) {
+        if (chromo.get_bin_num() < least_num) {
+            least_num = chromo.get_bin_num();
+            least_bin_chrome = chromo;
+        }
+    }
+    return least_bin_chrome;
+}
 
+Chromo GGA::get_best_solution() {
+    return best_solution;
+}

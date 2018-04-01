@@ -19,6 +19,8 @@ class GGA {
 
     int iter_num; // 迭代代数
 
+    Chromo best_solution; //
+
 public:
     GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutation, int mutation_num, int iter_num);
 
@@ -71,6 +73,7 @@ public:
      *
      */
     void cross();
+    
 
     /**
      * 变异算子 - GGA的变异:
@@ -85,7 +88,16 @@ public:
 
     void start();
 
-    
+    /**
+     * 返回当前populations箱子最少的那个染色体
+     */
+    Chromo get_best_chrome();
+
+    /**
+     * 返回GGA最后的解决方案
+     */
+    Chromo get_best_solution();
+
 };
 
 
