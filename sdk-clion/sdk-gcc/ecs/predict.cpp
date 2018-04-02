@@ -99,7 +99,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 2;
+    int debug = 0;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -207,10 +207,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    double p_mutation = 0.15;
 //    int mutation_num = 5;
 //    int inversion_num = 10;
-//    int iter_num = 10000;
+//    int iter_num = 8000;
 //    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, inversion_num, iter_num);
-//    gga.initial(bins, 100);
-////    gga.initial({}, 0);
+////    gga.initial(bins, 100);
+//    gga.initial({}, 0);
 //    gga.start();
 //    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
 //    std::string result2 = format_allocate_res(allocate_result);

@@ -24,6 +24,7 @@ void Chromo::calc_fitness() {
     int k = 2;
     for (Bin &bin: genes) {
         sum += pow((BasicInfo::server_info.mem - bin.mems) * (BasicInfo::server_info.core - bin.cores) / (BasicInfo::server_info.mem * BasicInfo::server_info.core), 2);
+//        sum += pow((BasicInfo::server_info.mem - bin.mems)  / (BasicInfo::server_info.mem), 2);
     }
     fitness = sum / genes.size();
 }
