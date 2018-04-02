@@ -23,6 +23,7 @@
 #include "Random.h"
 #include "ml_predict.h"
 #include "BasicInfo.h"
+#include "FFD.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -166,8 +167,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第二版分配方式
      * 背包
      */
-    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
-    std::string result2 = format_allocate_res(allocate_result);
+ //   std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
+//    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第三版分配方式
@@ -178,7 +179,13 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    random_permutation(objects);
 //    std::vector<Bin> allocate_result = ff({}, objects, server_info);
 //    std::string result2 = format_allocate_res(allocate_result);
+    /**
+     * 第四版分配方式
+     * ffd+
+     */
 
+    std::vector<std::map<int,int>> allocate_result = FFD_Dot(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object,2);
+    std::string result2 = format_allocate_res(allocate_result);
 
     std::string result = result1+result2;
     // 需要输出的内容

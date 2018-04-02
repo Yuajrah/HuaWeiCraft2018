@@ -14,7 +14,7 @@
 
 
 //进行分配函数
-std::vector<std::map<int,int>> FFD_Dot(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object);
+std::vector<std::map<int,int>> FFD_Dot (std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object, int order_type);
 
 
 //计算分配资源得分函数

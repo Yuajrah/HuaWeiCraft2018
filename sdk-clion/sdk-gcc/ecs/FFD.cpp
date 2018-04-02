@@ -106,7 +106,7 @@ void insert_record(int maxorder, int bin_index){
 }
 
 
-std::vector<std::map<int,int>> FFD (std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object, int order_type)
+std::vector<std::map<int,int>> FFD_Dot (std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object, int order_type)
 {
     std::map<int, int> predict_data_tmp = predict_data;
     //首先确定优化目标
@@ -125,14 +125,18 @@ std::vector<std::map<int,int>> FFD (std::map<int, Vm> vm_info, Server server, st
 
     int max_order;
     bool is_allocated = false; // 用于判断现有箱子是否可以满足分配需求
-    Bin temp = Bin(server.core,server.mem);
     std::map<int,int> new_record;
     std::map<int, Vm>::iterator ite_info;
     std::map<int, int>::iterator ite_num;
+
+    Bin temp = Bin(server.core,server.mem);
+    result_bin.push_back(temp);
+    result_record.push_back(new_record);
+
     max_order = get_max_vm(vm_info, predict_data, order_type);
     ite_info = vm_info.find((max_order));
     ite_num = predict_data.find(max_order);
-    result_bin.push_back(temp);
+
     result_bin[0].put(ite_info->second);
     total_vm_num -= 1;
     ite_num->second -= 1;
@@ -154,6 +158,8 @@ std::vector<std::map<int,int>> FFD (std::map<int, Vm> vm_info, Server server, st
                 if(a == result_bin.size()-1){
                     result_bin.push_back(Bin(BasicInfo::server_info.core, BasicInfo::server_info.mem)); // 打开一个新箱子
                     result_bin.back().put(ite_info->second);
+                    std::map<int,int> new_record;
+                    result_record.push_back(new_record);
                     total_vm_num -= 1;
                     ite_num->second -= 1;
                     insert_record(max_order, a+1);
