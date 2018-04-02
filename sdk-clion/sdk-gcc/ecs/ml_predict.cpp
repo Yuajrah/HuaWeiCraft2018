@@ -49,7 +49,7 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
         float** train_set = get_float_train(train_data_need,split_windows);
         float* train_label = get_float_test(train_data_need);
 
-        randomForest.train(train_set,train_label,train_data_need.size(),split_windows,10,true,5);
+        randomForest.train(train_set,train_label,train_data_need.size(),split_windows,10,true,3);
         float* frist_need_predict = get_frist_preditc(ecs_data, split_windows, mv_flag);
         float tmp_result = 0.0;
         double sum = 0.0;
