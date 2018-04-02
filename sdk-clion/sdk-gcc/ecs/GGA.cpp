@@ -2,15 +2,16 @@
 // Created by ruiy on 18-3-30.
 //
 
+#include <algorithm>
 #include  "GGA.h"
 #include "data_format_change.h"
 #include "ff.h"
 #include "Random.h"
 
-GGA::GGA(std::vector<Vm> objects, int pop_size, double p_cross, double p_mutation, int mutation_num, int iter_num):
+GGA::GGA(std::vector<Vm> objects, int pop_size, int cross_num, double p_mutation, int mutation_num, int iter_num):
         objects(objects),
         pop_size(pop_size),
-        p_cross(p_cross),
+        cross_num(cross_num),
         p_mutation(p_mutation),
         mutation_num(mutation_num),
         iter_num(iter_num){}
@@ -99,13 +100,32 @@ void GGA::rolette_select() {
 
 void GGA::cross() {
     // 交叉, 开始
+    // 用cross_num计算变异率
+    double p_cross = (cross_num + 0.0) / pop_size;
     for (int i = 0;i < pop_size; i+=2) {
         if (Random::random_double(0, 1) < p_cross) {
-            populations[i] * populations[i + 1];
+            std::pair<Chromo, Chromo> cross_res = populations[i] * populations[i + 1];
+            populations[i] = cross_res.first;
+            populations[i+1] = cross_res.second;
         }
     }
 }
 
+void GGA::cross_replace() {
+    // 先按fitness 降序排序
+    std::sort(populations.begin(), populations.end(), [](const Chromo &chromo1, const Chromo &chromo2){
+        return chromo1.get_fitness() > chromo2.get_fitness();
+    });
+
+    // 用前cross_num个染色体交叉得到对应的结果去代替最后cross_num个染色体
+    // 所以这里cross_num < pop_size / 2
+    cross_num = std::min(pop_size/2, cross_num);
+    for (int i=0;i<cross_num;i+=2) {
+        std::pair<Chromo, Chromo> cross_res = populations[i] * populations[i + 1];
+        populations[pop_size-i-1] = cross_res.first;
+        populations[pop_size-i-2] = cross_res.second;
+    }
+}
 
 void GGA::mutation() {
     for (Chromo &chromo: populations) {
@@ -122,7 +142,7 @@ void GGA::start() {
         calc_fitness();
         calc_p();
         rolette_select();
-        cross();
+        cross_replace();
         mutation();
 
         if (get_best_chrome().get_bin_num() < min_num){

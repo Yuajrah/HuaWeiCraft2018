@@ -23,6 +23,7 @@
 #include "Random.h"
 #include "ml_predict.h"
 #include "BasicInfo.h"
+#include "GGA.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -98,7 +99,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 0;
+    int debug = 2;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -137,18 +138,18 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     *****  预测  **************************************************************
     **************************************************************************/
 
-//    std::map<int, int> predict_data = predict_by_ar_1th (vm_info, train_data, need_predict_day);
-//
-//    print_predict_score(actual_data, predict_data);
-//    std::string result1 = format_predict_res(predict_data);
+    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
+
+    print_predict_score(actual_data, predict_data);
+    std::string result1 = format_predict_res(predict_data);
 
     /*
      * 使用knn进行预测
      */
-    std::map<int, int> predict_data = predict_by_knn(BasicInfo::vm_info, train_data, need_predict_day);
+//    std::map<int, int> predict_data = predict_by_knn(BasicInfo::vm_info, train_data, need_predict_day);
 
-    print_predict_score(actual_data, predict_data);
-    std::string result1 = format_predict_res(predict_data);
+//    print_predict_score(actual_data, predict_data);
+//    std::string result1 = format_predict_res(predict_data);
     /*************************************************************************
     *****  分配  **************************************************************
     **************************************************************************/
@@ -174,11 +175,44 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 纯ff
      */
 
-//    std::vector<Vm> objects = serialize(predict_data, vm_info);
+//    std::vector<Vm> objects = serialize(predict_data);
 //    random_permutation(objects);
 //    std::vector<Bin> allocate_result = ff({}, objects, server_info);
 //    std::string result2 = format_allocate_res(allocate_result);
 
+    /**
+     * 第四版分配方式
+     * 遗传算法测试
+     */
+
+//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
+//    std::vector<Bin> bins;
+//    int cnt = 0;
+//    for (auto &server: packing_result) {
+//        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
+//        for (auto &vm: server) {
+//            Vm t_vm = BasicInfo::vm_info[vm.first];
+//            for (int i=0;i<vm.second;i++) {
+//                t_vm.no = cnt++;
+//                t_vm.type = vm.first;
+//                bin.put(t_vm);
+//            }
+//        }
+//        bins.push_back(bin);
+//    }
+//
+//    std::vector<Vm> objects = serialize(predict_data);
+//    int pop_size = 100;
+//    int cross_num = 40;
+//    double p_mutation = 0.15;
+//    int mutation_num = 5;
+//    int iter_num = 2000;
+//    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, iter_num);
+//    gga.initial(bins, 100);
+////    gga.initial({}, 0);
+//    gga.start();
+//    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
+//    std::string result2 = format_allocate_res(allocate_result);
 
     std::string result = result1+result2;
     // 需要输出的内容

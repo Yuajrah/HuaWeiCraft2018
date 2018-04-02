@@ -117,8 +117,9 @@ std::vector<Vm> serialize(std::map<int, int> predict_data){
     int cnt = 0;
     for (auto &t: predict_data) {
         for (int i=0;i<t.second;i++) {
-            BasicInfo::vm_info[t.first].no = cnt++;
-            objects.push_back(BasicInfo::vm_info[t.first]);
+            Vm vm = BasicInfo::vm_info[t.first];
+            vm.no = cnt++;
+            objects.push_back(vm);
         }
     }
     return objects;
