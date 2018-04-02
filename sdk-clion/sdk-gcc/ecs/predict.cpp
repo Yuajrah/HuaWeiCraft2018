@@ -206,8 +206,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    int cross_num = 40;
 //    double p_mutation = 0.15;
 //    int mutation_num = 5;
-//    int iter_num = 2000;
-//    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, iter_num);
+//    int inversion_num = 10;
+//    int iter_num = 10000;
+//    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, inversion_num, iter_num);
 //    gga.initial(bins, 100);
 ////    gga.initial({}, 0);
 //    gga.start();

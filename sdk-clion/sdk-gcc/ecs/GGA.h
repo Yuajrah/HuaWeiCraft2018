@@ -16,13 +16,14 @@ class GGA {
     int cross_num; // 交叉概率
     double p_mutation; // 变异概率
     int mutation_num; // 变异概率时所要删除的箱子个数
+    int inversion_num; // 每代要逆序的染色体个数
 
     int iter_num; // 迭代代数
 
     Chromo best_solution; //
 
 public:
-    GGA(std::vector<Vm> objects, int pop_size, int cross_num, double p_mutation, int mutation_num, int iter_num);
+    GGA(std::vector<Vm> objects, int pop_size, int cross_num, double p_mutation, int mutation_num, int inversion_num, int iter_num);
 
     /**
      * 随机初始化种群
@@ -91,6 +92,11 @@ public:
      *
      */
     void mutation();
+
+    /**
+     * 任意选择inversion_num个染色体, 然后逆序操作
+     */
+    void inversion();
 
     void start();
 

@@ -8,12 +8,13 @@
 #include "ff.h"
 #include "Random.h"
 
-GGA::GGA(std::vector<Vm> objects, int pop_size, int cross_num, double p_mutation, int mutation_num, int iter_num):
+GGA::GGA(std::vector<Vm> objects, int pop_size, int cross_num, double p_mutation, int mutation_num, int inversion_num, int iter_num):
         objects(objects),
         pop_size(pop_size),
         cross_num(cross_num),
         p_mutation(p_mutation),
         mutation_num(mutation_num),
+        inversion_num(inversion_num),
         iter_num(iter_num){}
 
 
@@ -144,6 +145,7 @@ void GGA::start() {
         rolette_select();
         cross_replace();
         mutation();
+        inversion();
 
         if (get_best_chrome().get_bin_num() < min_num){
             min_num = get_best_chrome().get_bin_num();
@@ -167,4 +169,15 @@ Chromo GGA::get_best_chrome() {
 
 Chromo GGA::get_best_solution() {
     return best_solution;
+}
+
+void GGA::inversion() {
+    std::vector<int> inversion_no;
+    for (int i=0;i<inversion_num;i++) {
+        int rnd = Random::random_int(0, pop_size-1);
+        if (std::find(inversion_no.begin(), inversion_no.end(), rnd) == inversion_no.end()) {
+            populations[rnd].inversion();
+            inversion_no.push_back(rnd);
+        }
+    }
 }
