@@ -10,8 +10,9 @@
 #include "type_def.h"
 #include "data_preprocess.h"
 #include "KNN.h"
-
-const  int split_windows = 6;
+#include"RandomForest.h"
+#include"MnistPreProcess.h"
+const  int split_windows = 7;
 
 //使用线性回归进行预测
 //std::map<int, int> predict_by_lr (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
