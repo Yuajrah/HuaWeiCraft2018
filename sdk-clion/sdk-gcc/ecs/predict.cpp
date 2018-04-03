@@ -42,10 +42,12 @@
 std::default_random_engine Random::generator;
 Server BasicInfo::server_info;
 std::map<int, Vm> BasicInfo::vm_info;
+time_t BasicInfo::t_start;
 char* BasicInfo::opt_object;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
+    BasicInfo::t_start = time(NULL); // 计时开始
 
     /**
      * 先处理input_file中的数据
@@ -219,9 +221,16 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    gga.initial({}, 0);
 //    gga.start();
 //    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
 
     /**
-     * 第五版分配
+     * 第五版分配, 目前坠吼
      * 对最后的分配结果进行进一步的处理, 填充新的服务器
      */
 //    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);

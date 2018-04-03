@@ -13,8 +13,14 @@ public:
     static std::map<int, Vm> vm_info;
     static Server server_info;
     static char* opt_object;
+    static time_t t_start;
     static bool is_cpu(){return *opt_object == 'C';}
     static bool is_mem(){return *opt_object == 'M';}
+    static bool is_stop(){
+        time_t t_end = time(NULL);
+        if (t_end - t_start > 54) {return true;}
+        return false;
+    }
 };
 
 

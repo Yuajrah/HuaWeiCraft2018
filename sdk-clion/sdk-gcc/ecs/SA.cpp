@@ -21,6 +21,8 @@ void SA::start() {
     double min_f = DBL_MAX;
     while (t > t_min) {
 
+        if (BasicInfo::is_stop()) break;
+
         // 随机交换两物体顺序
         int rnd1 = Random::random_int(0, objects.size()-1);
         int rnd2 = -1;
