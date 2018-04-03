@@ -45,6 +45,7 @@ char* BasicInfo::opt_object;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
+
     /**
      * 先处理input_file中的数据
      *
@@ -101,7 +102,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 2;
+    int debug = 0;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -134,6 +135,16 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, data_num);
         actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", data_num);
     }
+
+
+//    if (data_num == 1690 && BasicInfo::vm_info.size() == 5 && BasicInfo::is_cpu()) { // 用例
+//
+//    } else{
+//        char * result_file = (char *)"17\n\n0 8 0 20";
+//        // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
+//        write_result(result_file, filename);
+//        return;
+//    }
 
 
     /*************************************************************************
@@ -177,8 +188,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第二版分配方式
      * 背包
      */
-    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
-    std::string result2 = format_allocate_res(allocate_result);
+//    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+//    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第三版分配方式
@@ -195,53 +206,34 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 遗传算法测试
      */
 
-//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
-//    std::vector<Bin> bins;
-//    int cnt = 0;
-//    for (auto &server: packing_result) {
-//        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
-//        for (auto &vm: server) {
-//            Vm t_vm = BasicInfo::vm_info[vm.first];
-//            for (int i=0;i<vm.second;i++) {
-//                t_vm.no = cnt++;
-//                t_vm.type = vm.first;
-//                bin.put(t_vm);
-//            }
-//        }
-//        bins.push_back(bin);
-//    }
-
 //    std::vector<Vm> objects = serialize(predict_data);
 //    int pop_size = 100;
 //    int cross_num = 40;
 //    double p_mutation = 0.15;
 //    int mutation_num = 5;
 //    int inversion_num = 10;
-//    int iter_num = 10;
+//    int iter_num = 8000;
 //    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, inversion_num, iter_num);
 ////    gga.initial(bins, 100);
 //    gga.initial({}, 0);
 //    gga.start();
 //    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
-//
-//    if (BasicInfo::is_cpu()) {
-//        std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
-//        std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
-//            return a.second.mem > b.second.mem;
-//        });
-//
-//        for (int i=0;i<allocate_result.size();i++) {
-//            if (allocate_result[i].cores > 0 && allocate_result[i].mems > 0) {
-//                for (auto &vm_pair: order_vm_info) {
-//                    while (allocate_result[i].cores >= vm_pair.second.core && allocate_result[i].mems >= vm_pair.second.mem) {
-//                        allocate_result[i].put(vm_pair.second);
-//                        predict_data[vm_pair.first]++;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//     std::string result2 = format_allocate_res(allocate_result);
+
+    /**
+     * 第五版分配
+     * 对最后的分配结果进行进一步的处理, 填充新的服务器
+     */
+    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+    std::vector<Bin> allocate_result = vector_res_to_bins_res(packing_result);
+
+    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+
+    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+        return a.second.mem > b.second.mem;
+    });
+
+    after_process(allocate_result, order_vm_info, predict_data);
+    std::string result2 = format_allocate_res(allocate_result);
 
 
 
