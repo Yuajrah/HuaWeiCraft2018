@@ -25,6 +25,7 @@
 #include "ml_predict.h"
 #include "BasicInfo.h"
 #include "GGA.h"
+#include "SA.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -188,8 +189,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第二版分配方式
      * 背包
      */
-//    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
-//    std::string result2 = format_allocate_res(allocate_result);
+    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第三版分配方式
@@ -223,18 +224,37 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第五版分配
      * 对最后的分配结果进行进一步的处理, 填充新的服务器
      */
-    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
-    std::vector<Bin> allocate_result = vector_res_to_bins_res(packing_result);
+//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+//    std::vector<Bin> allocate_result = vector_res_to_bins_res(packing_result);
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
 
-    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+    /**
+     * 第六版分配
+     * 模拟退火
+     */
 
-    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
-        return a.second.mem > b.second.mem;
-    });
-
-    after_process(allocate_result, order_vm_info, predict_data);
-    std::string result2 = format_allocate_res(allocate_result);
-
+//    std::vector<Vm> objects = serialize(predict_data);
+//    double t0 = 100.0;
+//    double t_min = 1;
+//    double r = 0.9999;
+//    SA sa(objects, t0, t_min, r);
+//    sa.start();
+//    std::vector<Bin> allocate_result = sa.get_best_solution();
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
 
 
     std::string result1 = format_predict_res(predict_data);
