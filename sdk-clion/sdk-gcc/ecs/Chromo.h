@@ -28,7 +28,7 @@ public:
     /**
      * 两条染色体的具体的交叉操作
      */
-    void operator*(Chromo &b);
+    std::pair<Chromo, Chromo> operator*(Chromo b);
 
     /**
      * 交叉算子中用到的插入
@@ -52,6 +52,7 @@ public:
     void inversion();
 
     inline double get_fitness() {return fitness;}
+    inline double get_fitness() const {return fitness;}
     inline double get_p() {return p;}
     inline void set_p(double p) {this->p  = p;}
     inline int get_bin_num(){return genes.size();}

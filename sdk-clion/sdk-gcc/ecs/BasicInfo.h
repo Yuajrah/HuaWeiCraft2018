@@ -12,6 +12,9 @@ class BasicInfo {
 public:
     static std::map<int, Vm> vm_info;
     static Server server_info;
+    static char* opt_object;
+    static bool is_cpu(){return *opt_object == 'C';}
+    static bool is_mem(){return *opt_object == 'M';}
 };
 
 

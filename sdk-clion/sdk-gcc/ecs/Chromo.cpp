@@ -24,12 +24,13 @@ void Chromo::calc_fitness() {
     int k = 2;
     for (Bin &bin: genes) {
         sum += pow((BasicInfo::server_info.mem - bin.mems) * (BasicInfo::server_info.core - bin.cores) / (BasicInfo::server_info.mem * BasicInfo::server_info.core), 2);
+//        sum += pow((BasicInfo::server_info.mem - bin.mems)  / (BasicInfo::server_info.mem), 2);
     }
     fitness = sum / genes.size();
 }
 
 
-void Chromo::operator*(Chromo &b) {
+std::pair<Chromo, Chromo> Chromo::operator*(Chromo b) {
     /**
      * Chromo1: [bin bin bin bin bin ... bin] 取其中的 [begin, end)
      * Chromo2: [bin bin bin bin bin ... bin] 取其中的 [begin, end) 注: 两条染色体长度并不一定相同
@@ -40,12 +41,12 @@ void Chromo::operator*(Chromo &b) {
     int b_end = Random::random_int(1, b.genes.size());
     int b_begin = Random::random_int(0, b_end - 1);
 
-    // 在插入之前要保存一下a染色体的所有基因, 因为在插入操作滞后a会被破坏
+    // 用a_copy去插入b的子段, 保证this不受破坏
     Chromo a_copy(*this);
     // todo 这么传入参数会不会有问题
-    insert(begin, {b.genes.begin() + b_begin, b.genes.begin() + b_end});
-    b.insert(b_begin, {a_copy.genes.begin() + begin, a_copy.genes.begin() + end});
-
+    a_copy.insert(begin, {b.genes.begin() + b_begin, b.genes.begin() + b_end});
+    b.insert(b_begin, {genes.begin() + begin, genes.begin() + end});
+    return {a_copy, b};
 }
 
 void Chromo::insert(int index, std::vector<Bin> insert_genes) {

@@ -18,12 +18,15 @@
 #include <cfloat>
 #include <algorithm>
 #include <chrono>
+#include <cstring>
 #include "ar_variant.h"
 #include "ff.h"
 #include "Random.h"
 #include "ml_predict.h"
 #include "BasicInfo.h"
 #include "FFD.h"
+#include "GGA.h"
+
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -40,6 +43,7 @@
 std::default_random_engine Random::generator;
 Server BasicInfo::server_info;
 std::map<int, Vm> BasicInfo::vm_info;
+char* BasicInfo::opt_object;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
@@ -70,7 +74,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         BasicInfo::vm_info[type] = {type, core,  mem/ 1024}; // 获取各种vm的基本信息（包括 类型,核心数和内存大小）
 	}
 
-    char *opt_object = info[4+type_num]; // 获取优化目标
+    BasicInfo::opt_object = info[4+type_num]; // 获取优化目标
 
     char forecast_start_date[10]; // 预测起始日期
     sscanf(info[6+type_num], "%s", forecast_start_date);
@@ -138,18 +142,26 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     *****  预测  **************************************************************
     **************************************************************************/
 
-//    std::map<int, int> predict_data = predict_by_ar_1th (vm_info, train_data, need_predict_day);
-//
-//    print_predict_score(actual_data, predict_data);
-//    std::string result1 = format_predict_res(predict_data);
+    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
+
+    print_predict_score(actual_data, predict_data);
+
 
     /*
      * 使用knn进行预测
      */
-    std::map<int, int> predict_data = predict_by_knn(BasicInfo::vm_info, train_data, need_predict_day);
+//    std::map<int, int> predict_data = predict_by_knn(BasicInfo::vm_info, train_data, need_predict_day);
 
-    print_predict_score(actual_data, predict_data);
-    std::string result1 = format_predict_res(predict_data);
+//    print_predict_score(actual_data, predict_data);
+//    std::string result1 = format_predict_res(predict_data);
+
+    /*
+    * 使用随机森林进行预测
+    * 有问题
+    */
+//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, need_predict_day);
+//    print_predict_score(actual_data, predict_data);
+//    std::string result1 = format_predict_res(predict_data);
     /*************************************************************************
     *****  分配  **************************************************************
     **************************************************************************/
@@ -167,15 +179,20 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第二版分配方式
      * 背包
      */
+
  //   std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
 //    std::string result2 = format_allocate_res(allocate_result);
+
+    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+    std::string result2 = format_allocate_res(allocate_result);
+
 
     /**
      * 第三版分配方式
      * 纯ff
      */
 
-//    std::vector<Vm> objects = serialize(predict_data, vm_info);
+//    std::vector<Vm> objects = serialize(predict_data);
 //    random_permutation(objects);
 //    std::vector<Bin> allocate_result = ff({}, objects, server_info);
 //    std::string result2 = format_allocate_res(allocate_result);
@@ -184,9 +201,67 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * ffd+
      */
 
-    std::vector<std::map<int,int>> allocate_result = FFD_Dot(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object,2);
-    std::string result2 = format_allocate_res(allocate_result);
 
+ //   std::vector<std::map<int,int>> allocate_result = FFD_Dot(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object,2);
+  //  std::string result2 = format_allocate_res(allocate_result);
+
+    /**
+     * 第四版分配方式
+     * 遗传算法测试
+     */
+
+//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
+//    std::vector<Bin> bins;
+//    int cnt = 0;
+//    for (auto &server: packing_result) {
+//        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
+//        for (auto &vm: server) {
+//            Vm t_vm = BasicInfo::vm_info[vm.first];
+//            for (int i=0;i<vm.second;i++) {
+//                t_vm.no = cnt++;
+//                t_vm.type = vm.first;
+//                bin.put(t_vm);
+//            }
+//        }
+//        bins.push_back(bin);
+//    }
+
+
+//    std::vector<Vm> objects = serialize(predict_data);
+//    int pop_size = 100;
+//    int cross_num = 40;
+//    double p_mutation = 0.15;
+//    int mutation_num = 5;
+//    int inversion_num = 10;
+//    int iter_num = 10;
+//    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, inversion_num, iter_num);
+////    gga.initial(bins, 100);
+//    gga.initial({}, 0);
+//    gga.start();
+//    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
+//
+//    if (BasicInfo::is_cpu()) {
+//        std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//        std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//            return a.second.mem > b.second.mem;
+//        });
+//
+//        for (int i=0;i<allocate_result.size();i++) {
+//            if (allocate_result[i].cores > 0 && allocate_result[i].mems > 0) {
+//                for (auto &vm_pair: order_vm_info) {
+//                    while (allocate_result[i].cores >= vm_pair.second.core && allocate_result[i].mems >= vm_pair.second.mem) {
+//                        allocate_result[i].put(vm_pair.second);
+//                        predict_data[vm_pair.first]++;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//     std::string result2 = format_allocate_res(allocate_result);
+
+
+
+    std::string result1 = format_predict_res(predict_data);
     std::string result = result1+result2;
     // 需要输出的内容
     char * result_file = (char *)"17\n\n0 8 0 20";
