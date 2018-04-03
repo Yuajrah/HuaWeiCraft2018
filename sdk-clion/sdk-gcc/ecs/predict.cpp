@@ -99,7 +99,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 0;
+    int debug = 2;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
