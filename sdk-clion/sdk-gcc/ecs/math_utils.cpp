@@ -3,6 +3,7 @@
 //
 
 #include "math_utils.h"
+#include "BasicInfo.h"
 #include <iostream>
 #include <cmath>
 #include <cstdio>
@@ -509,4 +510,44 @@ std::vector<double> reset_diff(std::vector<double> before_diff_data, int diff_da
         before_diff_data[i] += before_diff_data[i - diff_day];
     }
     return std::vector<double>(before_diff_data.begin() + before_diff_day, before_diff_data.end());
+}
+
+
+void get_scores_f(std::map<int, int>&predict_data, Server server, int number)
+{
+    int total_allocate;
+    if (BasicInfo::is_cpu())
+    {
+        total_allocate = server.core * number;
+    }
+    else{
+        total_allocate = server.mem *number;
+    }
+    int total_need = 0;
+    for (int i = 1; i<=15; i++)
+    {
+        std::map<int ,int >::iterator iter;
+        iter = predict_data.find(i);
+        if (iter == predict_data.end())
+        {
+            continue;
+        }
+        else
+        {
+            int target_need = 0;
+            std::map<int, Vm>::iterator current_flavor_info;
+            current_flavor_info =  BasicInfo::vm_info.find(i);;
+            if (BasicInfo::is_cpu())
+            {
+                target_need = current_flavor_info->second.core;
+            }
+            else
+            {
+                target_need = current_flavor_info->second.mem;
+            }
+            total_need += iter->second * target_need;
+        }
+    }
+    double percent = (total_need+0.0)/total_allocate;
+    printf("allocate score = %f\n", percent);
 }

@@ -94,6 +94,15 @@ std::vector<double> do_diff(std::vector<double> data, int diff_day);
 std::vector<double> reset_diff(std::vector<double> before_diff_data, int diff_day, std::vector<double> predict_data);
 
 std::vector<std::vector<double>> inv_lu(std::vector<std::vector<double>> a);
+
+/**
+ * 计算分数
+ * @param predict_data
+ * @param server
+ * @param number
+ * @param target
+ */
+void get_scores_f(std::map<int, int>&predict_data, Server server, int number);
 #endif //SDK_GCC_MATH_UTILS_H
 
 

@@ -26,7 +26,7 @@
 #include "BasicInfo.h"
 #include "FFD.h"
 #include "GGA.h"
-
+#include "math_utils.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -171,8 +171,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * ffd
      */
 //    std::vector<int> order;
-//    order = get_order(vm_info, server_info, opt_object);
-//    std::vector<std::map<int,int>> allocate_result = frist_fit(vm_info, server_info, predict_data, opt_object,order );
+//    order = get_order(BasicInfo::vm_info, BasicInfo::server_info, BasicInfo::opt_object);
+//    std::vector<std::map<int,int>> allocate_result = frist_fit(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,order );
 //    std::string result2 = format_allocate_res(allocate_result);
 
     /**
@@ -180,8 +180,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 背包
      */
 
- //   std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
-//    std::string result2 = format_allocate_res(allocate_result);
 
     std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
     std::string result2 = format_allocate_res(allocate_result);
@@ -200,10 +198,14 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第四版分配方式
      * ffd+
      */
+//    FFD ffd(BasicInfo::vm_info,2,predict_data);
+//    std::vector<Bin> allocate_result = ffd.FFD_Dot();
+//    std::string result2 = format_allocate_res(allocate_result);
+//    get_scores_f(predict_data, BasicInfo::server_info, allocate_result.size());
 
 
- //   std::vector<std::map<int,int>> allocate_result = FFD_Dot(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object,2);
-  //  std::string result2 = format_allocate_res(allocate_result);
+//    std::vector<std::map<int,int>> allocate_result = FFD_Dot(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,2);
+//    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第四版分配方式
