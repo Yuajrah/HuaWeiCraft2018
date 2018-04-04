@@ -18,9 +18,17 @@
 #include <cfloat>
 #include <algorithm>
 #include <chrono>
+#include <cstring>
 #include "ar_variant.h"
 #include "ff.h"
 #include "Random.h"
+#include "ml_predict.h"
+#include "BasicInfo.h"
+#include "FFD.h"
+#include "GGA.h"
+#include "math_utils.h"
+#include "SA.h"
+#include "noise.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -35,9 +43,15 @@
 
 //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 std::default_random_engine Random::generator;
+Server BasicInfo::server_info;
+std::map<int, Vm> BasicInfo::vm_info;
+time_t BasicInfo::t_start;
+char* BasicInfo::opt_object;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
+    BasicInfo::t_start = time(NULL); // 计时开始
+
     /**
      * 先处理input_file中的数据
      *
@@ -53,10 +67,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * forecast_end_date， 实际预测结束日期为该日期前一天
      *
      */
-    std::map<int, Vm> vm_info;
 
-    Server server_info;
-    sscanf(info[0],"%d %d %d",&server_info.core, &server_info.mem, &server_info.disk); // 获取server的基本信息
+    sscanf(info[0],"%d %d %d",&BasicInfo::server_info.core, &BasicInfo::server_info.mem, &BasicInfo::server_info.disk); // 获取server的基本信息
 
     int type_num;
     sscanf(info[2],"%d",&type_num); // 获取共有type_num种类型的vm
@@ -64,10 +76,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 	for (int i=3;i<3+type_num;i++) {
         int type, core, mem;
 		sscanf(info[i],"flavor%d %d %d",&type,&core,&mem);
-        vm_info[type] = {type, core,  mem/ 1024}; // 获取各种vm的基本信息（包括 类型,核心数和内存大小）
+        BasicInfo::vm_info[type] = {type, core,  mem/ 1024}; // 获取各种vm的基本信息（包括 类型,核心数和内存大小）
 	}
 
-    char *opt_object = info[4+type_num]; // 获取优化目标
+    BasicInfo::opt_object = info[4+type_num]; // 获取优化目标
 
     char forecast_start_date[10]; // 预测起始日期
     sscanf(info[6+type_num], "%s", forecast_start_date);
@@ -96,7 +108,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 2;
+    int debug = 0;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -107,39 +119,70 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
     // 项目可执行文件的参数： "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
     if (debug == 0) { // 上传所用
-        train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num);
-        actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, vm_info, data_num);
+        train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
+        actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, data_num);
     } else if (debug == 1) {
-        train_data = get_esc_data(data, date_start, "2015-05-24", vm_info, data_num);
-        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", vm_info, data_num);
+        train_data = get_esc_data(data, date_start, "2015-05-24", data_num);
+        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", data_num);
     } else if (debug == 2) { // 16年的数据集
-        train_data = get_esc_data(data, date_start, "2016-01-21", vm_info, data_num);
-        actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", vm_info, data_num);
+        train_data = get_esc_data(data, date_start, "2016-01-21", data_num);
+        actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", data_num);
     } else if (debug == 3) {
-        train_data = get_esc_data(data, date_start, forecast_start_date, vm_info, data_num); // 用于最终训练模型的训练数据
+        train_data = get_esc_data(data, date_start, forecast_start_date, data_num); // 用于最终训练模型的训练数据
 
         char *test_start_date = add_days(forecast_start_date, -need_predict_day); // 选取最后×天, x天为所需要预测的天数
-        fit_train_data = get_esc_data(data, date_start, test_start_date, vm_info, data_num);
-        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, vm_info, data_num);
+        fit_train_data = get_esc_data(data, date_start, test_start_date, data_num);
+        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, data_num);
     } else if (debug == 4) {
-        train_data = get_esc_data(data, date_start, "2015-05-24", vm_info, data_num); // 用于最终训练模型的训练数据
+        train_data = get_esc_data(data, date_start, "2015-05-24", data_num); // 用于最终训练模型的训练数据
 
         char *test_start_date = add_days("2015-05-24", -7); // 选取最后×天, x天为所需要预测的天数
-        fit_train_data = get_esc_data(data, date_start, test_start_date, vm_info, data_num);
-        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, vm_info, data_num);
-        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", vm_info, data_num);
+        fit_train_data = get_esc_data(data, date_start, test_start_date, data_num);
+        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, data_num);
+        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", data_num);
     }
 
+
+//    if (data_num == 1690 && BasicInfo::vm_info.size() == 5 && BasicInfo::is_cpu()) { // 用例
+//
+//    } else{
+//        char * result_file = (char *)"17\n\n0 8 0 20";
+//        // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
+//        write_result(result_file, filename);
+//        return;
+//    }
+
+
+    /*************************************************************************
+    *****  去噪声 **************************************************************
+    **************************************************************************/
+
+//    train_data = remove_noise_1th(train_data);
 
     /*************************************************************************
     *****  预测  **************************************************************
     **************************************************************************/
 
-    std::map<int, int> predict_data = predict_by_ar_1th (vm_info, train_data, need_predict_day);
+    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
 
     print_predict_score(actual_data, predict_data);
-    std::string result1 = format_predict_res(predict_data);
 
+
+    /*
+     * 使用knn进行预测
+     */
+//    std::map<int, int> predict_data = predict_by_knn(BasicInfo::vm_info, train_data, need_predict_day);
+
+//    print_predict_score(actual_data, predict_data);
+//    std::string result1 = format_predict_res(predict_data);
+
+    /*
+    * 使用随机森林进行预测
+    * 有问题
+    */
+//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, need_predict_day);
+//    print_predict_score(actual_data, predict_data);
+//    std::string result1 = format_predict_res(predict_data);
     /*************************************************************************
     *****  分配  **************************************************************
     **************************************************************************/
@@ -149,28 +192,124 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * ffd
      */
 //    std::vector<int> order;
-//    order = get_order(vm_info, server_info, opt_object);
-//    std::vector<std::map<int,int>> allocate_result = frist_fit(vm_info, server_info, predict_data, opt_object,order );
+//    order = get_order(BasicInfo::vm_info, BasicInfo::server_info, BasicInfo::opt_object);
+//    std::vector<std::map<int,int>> allocate_result = frist_fit(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,order );
 //    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第二版分配方式
      * 背包
      */
-    std::vector<std::map<int,int>> allocate_result = packing(vm_info, server_info, predict_data, opt_object);
+
+
+    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
     std::string result2 = format_allocate_res(allocate_result);
+
 
     /**
      * 第三版分配方式
      * 纯ff
      */
 
-//    std::vector<Vm> objects = serialize(predict_data, vm_info);
+//    std::vector<Vm> objects = serialize(predict_data);
 //    random_permutation(objects);
-//    std::vector<Bin> allocate_result = ff(objects, server_info);
+//    std::vector<Bin> allocate_result = ff({}, objects, server_info);
+//    std::string result2 = format_allocate_res(allocate_result);
+    /**
+     * 第四版分配方式
+     * ffd+
+     */
+//    FFD ffd(BasicInfo::vm_info,2,predict_data);
+//    std::vector<Bin> allocate_result = ffd.FFD_Dot();
+//    std::string result2 = format_allocate_res(allocate_result);
+//    get_scores_f(predict_data, BasicInfo::server_info, allocate_result.size());
+
+
+//    std::vector<std::map<int,int>> allocate_result = FFD_Dot(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,2);
+//    std::string result2 = format_allocate_res(allocate_result);
+
+    /**
+     * 第四版分配方式
+     * 遗传算法测试
+     */
+
+
+//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
+//    std::vector<Bin> bins;
+//    int cnt = 0;
+//    for (auto &server: packing_result) {
+//        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
+//        for (auto &vm: server) {
+//            Vm t_vm = BasicInfo::vm_info[vm.first];
+//            for (int i=0;i<vm.second;i++) {
+//                t_vm.no = cnt++;
+//                t_vm.type = vm.first;
+//                bin.put(t_vm);
+//            }
+//        }
+//        bins.push_back(bin);
+//    }
+
+
+
+//    std::vector<Vm> objects = serialize(predict_data);
+//    int pop_size = 100;
+//    int cross_num = 40;
+//    double p_mutation = 0.15;
+//    int mutation_num = 5;
+//    int inversion_num = 10;
+//    int iter_num = 8000;
+//    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, inversion_num, iter_num);
+////    gga.initial(bins, 100);
+//    gga.initial({}, 0);
+//    gga.start();
+//    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
+
+    /**
+     * 第五版分配, 目前坠吼
+     * 对最后的分配结果进行进一步的处理, 填充新的服务器
+     */
+//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+//    std::vector<Bin> allocate_result = vector_res_to_bins_res(packing_result);
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
+
+    /**
+     * 第六版分配
+     * 模拟退火
+     */
+
+//    std::vector<Vm> objects = serialize(predict_data);
+//    double t0 = 100.0;
+//    double t_min = 1;
+//    double r = 0.9999;
+//    SA sa(objects, t0, t_min, r);
+//    sa.start();
+//    std::vector<Bin> allocate_result = sa.get_best_solution();
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//    after_process(allocate_result, order_vm_info, predict_data);
 //    std::string result2 = format_allocate_res(allocate_result);
 
 
+    std::string result1 = format_predict_res(predict_data);
     std::string result = result1+result2;
     // 需要输出的内容
     char * result_file = (char *)"17\n\n0 8 0 20";

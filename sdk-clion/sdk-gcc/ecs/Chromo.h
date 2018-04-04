@@ -28,7 +28,7 @@ public:
     /**
      * 两条染色体的具体的交叉操作
      */
-    void operator*(Chromo &b);
+    std::pair<Chromo, Chromo> operator*(Chromo b);
 
     /**
      * 交叉算子中用到的插入
@@ -40,10 +40,23 @@ public:
      */
     void insert(int index, std::vector<Bin> genes);
 
+    /**
+     * 染色体变异, 随机选取mutation_num个基因, 并删除, 将缺少的物体重新插入
+     * @param mutation_num, 变异的基因数目, 即要消除的箱子数量
+     */
+    void mutation(int mutation_num);
+
+    /**
+     * 逆序操作, 任意交换两个基因的位置
+     */
+    void inversion();
 
     inline double get_fitness() {return fitness;}
+    inline double get_fitness() const {return fitness;}
     inline double get_p() {return p;}
     inline void set_p(double p) {this->p  = p;}
+    inline int get_bin_num(){return genes.size();}
+    inline std::vector<Bin> get_bin() {return genes;}
 };
 
 

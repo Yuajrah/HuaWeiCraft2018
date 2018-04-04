@@ -127,17 +127,6 @@ std::vector<int> get_path(std::vector<std::vector<std::vector<int> > > &used, st
     for(int i=1; i<=15; i++){
         choose_num[i] = used[i][U][V];
     }
-
-//    //path_CPU = pos*PACKING_N + pos - C*M  所以s1 = pos , s2 = pos - C*M
-//    //path_MEM = pos*PACKING_N + pos -D*M  所以s1 = pos , s2 = pos - D*M
-//    int sum = U+V;
-//    while(sum){
-//        int s1 = path[sum]/PACKING_N;
-//        int s2 = path[sum]%PACKING_N;
-//        current_flavor_info =  vminfo.find(s1);
-//        choose_num[s1] = (sum - s2) / (current_flavor_info->second.core + current_flavor_info->second.mem);
-//        sum = s2;
-//    }
     return choose_num;
 }
 

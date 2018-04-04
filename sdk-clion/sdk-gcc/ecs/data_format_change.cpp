@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include "BasicInfo.h"
 
 /**
  * 格式化预测结果, 以方便写入最终文件
@@ -111,13 +112,14 @@ std::string format_allocate_res(std::vector<Bin> bins)
  * @return 物体的序列
  *
  */
-std::vector<Vm> serialize(std::map<int, int> predict_data, std::map<int, Vm> vm_info){
+std::vector<Vm> serialize(std::map<int, int> predict_data){
     std::vector<Vm> objects;
     int cnt = 0;
     for (auto &t: predict_data) {
         for (int i=0;i<t.second;i++) {
-            vm_info[t.first].no = cnt;
-            objects.push_back(vm_info[t.first]);
+            Vm vm = BasicInfo::vm_info[t.first];
+            vm.no = cnt++;
+            objects.push_back(vm);
         }
     }
     return objects;
@@ -136,3 +138,46 @@ std::vector<Vm> random_permutation(std::vector<Vm> objects) {
     return objects;
 }
 
+
+/**
+ * 把背包的结果转化为bin的格式
+ * @param packing_result
+ * @return
+ */
+std::vector<Bin> vector_res_to_bins_res(std::vector<std::map<int,int>> packing_result){
+    std::vector<Bin> bins;
+    int cnt = 0;
+    for (auto &server: packing_result) {
+        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
+        for (auto &vm: server) {
+            Vm t_vm = BasicInfo::vm_info[vm.first];
+            for (int i=0;i<vm.second;i++) {
+                t_vm.no = cnt++;
+                t_vm.type = vm.first;
+                bin.put(t_vm);
+            }
+        }
+        bins.push_back(bin);
+    }
+    return bins;
+}
+
+/**
+ * 对数据进行进一步处理
+ * @param allocate_result
+ * @param order_vm_info
+ * @param predict_data
+ */
+void after_process(std::vector<Bin> &allocate_result, std::vector<std::pair<int, Vm>> &order_vm_info, std::map<int, int> &predict_data){
+
+    for (int i=0;i<allocate_result.size();i++) {
+        if (allocate_result[i].cores > 0 && allocate_result[i].mems > 0) {
+            for (auto &vm_pair: order_vm_info) {
+                while (allocate_result[i].cores >= vm_pair.second.core && allocate_result[i].mems >= vm_pair.second.mem) {
+                    allocate_result[i].put(vm_pair.second);
+                    predict_data[vm_pair.first]++;
+                }
+            }
+        }
+    }
+}
