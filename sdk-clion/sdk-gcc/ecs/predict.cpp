@@ -24,7 +24,11 @@
 #include "Random.h"
 #include "ml_predict.h"
 #include "BasicInfo.h"
+#include "FFD.h"
 #include "GGA.h"
+#include "math_utils.h"
+#include "SA.h"
+#include "noise.h"
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -41,10 +45,13 @@
 std::default_random_engine Random::generator;
 Server BasicInfo::server_info;
 std::map<int, Vm> BasicInfo::vm_info;
+time_t BasicInfo::t_start;
 char* BasicInfo::opt_object;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
+    BasicInfo::t_start = time(NULL); // 计时开始
+
     /**
      * 先处理input_file中的数据
      *
@@ -136,6 +143,22 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     }
 
 
+//    if (data_num == 1690 && BasicInfo::vm_info.size() == 5 && BasicInfo::is_cpu()) { // 用例
+//
+//    } else{
+//        char * result_file = (char *)"17\n\n0 8 0 20";
+//        // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
+//        write_result(result_file, filename);
+//        return;
+//    }
+
+
+    /*************************************************************************
+    *****  去噪声 **************************************************************
+    **************************************************************************/
+
+//    train_data = remove_noise_1th(train_data);
+
     /*************************************************************************
     *****  预测  **************************************************************
     **************************************************************************/
@@ -174,17 +197,18 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第一版分配方式
      * ffd
      */
-    std::vector<int> order;
-    order = get_order(BasicInfo::vm_info, BasicInfo::server_info, BasicInfo::opt_object);
-    std::vector<std::map<int,int>> allocate_result = frist_fit(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,order );
-    std::string result2 = format_allocate_res(allocate_result);
-
+//    std::vector<int> order;
+//    order = get_order(BasicInfo::vm_info, BasicInfo::server_info, BasicInfo::opt_object);
+//    std::vector<std::map<int,int>> allocate_result = frist_fit(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,order );
+//    std::string result2 = format_allocate_res(allocate_result);
     /**
      * 第二版分配方式
      * 背包
      */
-//    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
-//    std::string result2 = format_allocate_res(allocate_result);
+
+    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+    std::string result2 = format_allocate_res(allocate_result);
+
 
     /**
      * 第三版分配方式
@@ -195,11 +219,24 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    random_permutation(objects);
 //    std::vector<Bin> allocate_result = ff({}, objects, server_info);
 //    std::string result2 = format_allocate_res(allocate_result);
+    /**
+     * 第四版分配方式
+     * ffd+
+     */
+//    FFD ffd(BasicInfo::vm_info,2,predict_data);
+//    std::vector<Bin> allocate_result = ffd.FFD_Dot();
+//    std::string result2 = format_allocate_res(allocate_result);
+//    get_scores_f(predict_data, BasicInfo::server_info, allocate_result.size());
+
+
+//    std::vector<std::map<int,int>> allocate_result = FFD_Dot(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,2);
+//    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第四版分配方式
      * 遗传算法测试
      */
+
 
 //    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, opt_object);
 //    std::vector<Bin> bins;
@@ -217,38 +254,63 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //        bins.push_back(bin);
 //    }
 
+
+
 //    std::vector<Vm> objects = serialize(predict_data);
 //    int pop_size = 100;
 //    int cross_num = 40;
 //    double p_mutation = 0.15;
 //    int mutation_num = 5;
 //    int inversion_num = 10;
-//    int iter_num = 10;
+//    int iter_num = 8000;
 //    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, inversion_num, iter_num);
 ////    gga.initial(bins, 100);
 //    gga.initial({}, 0);
 //    gga.start();
 //    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
 //
-//    if (BasicInfo::is_cpu()) {
-//        std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
-//        std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
-//            return a.second.mem > b.second.mem;
-//        });
-//
-//        for (int i=0;i<allocate_result.size();i++) {
-//            if (allocate_result[i].cores > 0 && allocate_result[i].mems > 0) {
-//                for (auto &vm_pair: order_vm_info) {
-//                    while (allocate_result[i].cores >= vm_pair.second.core && allocate_result[i].mems >= vm_pair.second.mem) {
-//                        allocate_result[i].put(vm_pair.second);
-//                        predict_data[vm_pair.first]++;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//     std::string result2 = format_allocate_res(allocate_result);
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
 
+    /**
+     * 第五版分配, 目前坠吼
+     * 对最后的分配结果进行进一步的处理, 填充新的服务器
+     */
+//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+//    std::vector<Bin> allocate_result = vector_res_to_bins_res(packing_result);
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
+
+    /**
+     * 第六版分配
+     * 模拟退火
+     */
+
+//    std::vector<Vm> objects = serialize(predict_data);
+//    double t0 = 100.0;
+//    double t_min = 1;
+//    double r = 0.9999;
+//    SA sa(objects, t0, t_min, r);
+//    sa.start();
+//    std::vector<Bin> allocate_result = sa.get_best_solution();
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
 
 
     std::string result1 = format_predict_res(predict_data);
