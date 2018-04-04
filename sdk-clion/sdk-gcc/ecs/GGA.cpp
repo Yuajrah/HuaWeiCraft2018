@@ -7,6 +7,7 @@
 #include "data_format_change.h"
 #include "ff.h"
 #include "Random.h"
+#include "BasicInfo.h"
 
 GGA::GGA(std::vector<Vm> objects, int pop_size, int cross_num, double p_mutation, int mutation_num, int inversion_num, int iter_num):
         objects(objects),
@@ -140,6 +141,9 @@ void GGA::start() {
     int iter_cnt = 0;
     int min_num = INT32_MAX;
     while (iter_cnt < iter_num) {
+
+        if (BasicInfo::is_stop()) break;
+
         calc_fitness();
         calc_p();
         rolette_select();

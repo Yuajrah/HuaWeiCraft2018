@@ -19,4 +19,8 @@ std::string format_allocate_res(std::vector<Bin> bins);
 std::vector<Vm> serialize(std::map<int, int> predict_data);
 std::vector<Vm> random_permutation(std::vector<Vm> objects);
 
+std::vector<Bin> vector_res_to_bins_res(std::vector<std::map<int,int>> packing_result);
+
+void after_process(std::vector<Bin> &allocate_result, std::vector<std::pair<int, Vm>> &order_vm_info, std::map<int, int> &predict_data);
+
 #endif //SDK_GCC_DATA_FORMAT_CHANGE_H

@@ -3,6 +3,9 @@
 //
 
 #include "ar_variant.h"
+#include "BasicInfo.h"
+#include <functional>
+#include <algorithm>
 
 /**
  * 基于ar改动, 第一版
@@ -150,6 +153,7 @@ std::map<int, int> predict_by_ar_5th(std::map<int, Vm> vm_info, std::map<int, st
         std::vector<double> after_ma_data = ma(train_data[t.first], 6);
         std::vector<int> exist_p;
         int mean_cnt = 20;
+        double s = 0;
         for (int i=0;i<mean_cnt;i++) {
             AR ar_model(after_ma_data);
             ar_model.fit("aic", -1, exist_p);
@@ -158,12 +162,20 @@ std::map<int, int> predict_by_ar_5th(std::map<int, Vm> vm_info, std::map<int, st
 
             ar_model.predict(need_predict_day);
             auto predict_res = ar_model.get_res();
-            predict_data[t.first] += accumulate(predict_res.begin(), predict_res.end(), 0.0);
+            s += accumulate(predict_res.begin(), predict_res.end(), 0.0);
         }
-        predict_data[t.first] = round(predict_data[t.first] / double(mean_cnt));
+        predict_data[t.first] = round(s / double(mean_cnt));
 
         // ar_model.fit("aic");
         // ar_model.print_model_info();
+    }
+    return predict_data;
+}
+
+std::map<int, int> predict_by_ar_6th(std::map<int, std::vector<double>> train_data, int need_predict_day){
+    std::map<int, int> predict_data;
+    for (auto &t: BasicInfo::vm_info) {
+        predict_data[t.first] = std::max(0.0, round(std::accumulate(train_data[t.first].end()-need_predict_day, train_data[t.first].end(), 0.0)));
     }
     return predict_data;
 }
