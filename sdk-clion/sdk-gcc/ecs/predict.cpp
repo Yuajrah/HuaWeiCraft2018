@@ -101,7 +101,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
 
-    int debug = 2;
+    int debug = 0;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -140,9 +140,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     *****  预测  **************************************************************
     **************************************************************************/
 
-    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
-
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
+//
+//    print_predict_score(actual_data, predict_data);
 
 
     /*
@@ -153,6 +153,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
 
+    /*
+    * 使用决策树进行预测
+    * 有问题
+    */
+    std::map<int, int> predict_data = predict_by_cart(BasicInfo::vm_info, train_data, need_predict_day);
+    print_predict_score(actual_data, predict_data);
     /*
     * 使用随机森林进行预测
     * 有问题
@@ -168,17 +174,17 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 第一版分配方式
      * ffd
      */
-//    std::vector<int> order;
-//    order = get_order(vm_info, server_info, opt_object);
-//    std::vector<std::map<int,int>> allocate_result = frist_fit(vm_info, server_info, predict_data, opt_object,order );
-//    std::string result2 = format_allocate_res(allocate_result);
+    std::vector<int> order;
+    order = get_order(BasicInfo::vm_info, BasicInfo::server_info, BasicInfo::opt_object);
+    std::vector<std::map<int,int>> allocate_result = frist_fit(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,order );
+    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第二版分配方式
      * 背包
      */
-    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
-    std::string result2 = format_allocate_res(allocate_result);
+//    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+//    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第三版分配方式
