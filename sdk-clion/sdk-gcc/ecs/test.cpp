@@ -6,7 +6,6 @@
 #include "AR.h"
 #include "type_def.h"
 #include "Random.h"
-#include "CxLibSVM.h"
 
 void test_ar(){
     //北京1987-2014人口: 35
@@ -99,11 +98,13 @@ void gen_sample(std::vector<std::vector<double>> &x, std::vector<double>& y, lon
 }
 
 
-svm_problem prob;
-svm_parameter param;
+
 /*train_x,train_y是我已经导入的数据，分别是样本及其对应的类别标签*/
-void init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y)
+svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y)
 {
+
+    svm_problem prob;
+
     int train_size = train_y.size();
     int feature_size = train_x[0].size();
 
@@ -129,8 +130,10 @@ void init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<doub
     }
 }
 
-void init_svm_parameter()
+svm_parameter init_svm_parameter()
 {
+    svm_parameter param;
+
     param.svm_type = C_SVC;   // 即普通的二类分类
     param.kernel_type = RBF;  // 径向基核函数
     param.degree = 3;
@@ -145,6 +148,8 @@ void init_svm_parameter()
     param.probability = 0;
     param.weight_label = NULL;
     param.weight = NULL;
+
+    return param;
 }
 
 svm_node* init_test_data(std::vector<double> test_x){
@@ -167,21 +172,27 @@ svm_node* init_test_data(std::vector<double> test_x){
  */
 void test_svm(){
 
-    /*1、准备训练数据*/
+    /* 1. 准备训练数据*/
     std::vector<std::vector<double>> train_x; // 训练集
     std::vector<double> train_y; // 训练类别集
     gen_sample(train_x, train_y, 200, 10, 1);
 
+    /* 2. 准备测试数据*/
     std::vector<std::vector<double>> test_x;    // 测试集
     std::vector<double> test_y; // 测试类别集
     gen_sample(test_x, test_y, 200, 10, 1);
 
-    init_svm_problem(train_x, train_y);     // 打包训练样本
-    init_svm_parameter();   // 初始化训练参数
+    /* 3. 初始化问题*/
+    svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
+    svm_parameter param = init_svm_parameter();   // 初始化训练参数
 
+    /* 4. 训练模型 */
     svm_model* model = svm_train(&prob, &param);
     svm_save_model("model", model);     // 保存训练好的模型，下次使用时就可直接导入
+
+    /* 5. 观察精度*/
     int acc_num = 0;        // 分类正确数
+    
 //    svm_model* model = svm_load_model("model");
     for (int i = 0; i < test_x.size(); i++)
     {

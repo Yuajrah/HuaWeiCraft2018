@@ -13,7 +13,6 @@
 #include"MnistPreProcess.h"
 #include "CART.h"
 #include "svm.h"
-#include "CxLibSVM.h"
 
 const  int split_windows = 10;
 

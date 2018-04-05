@@ -11,7 +11,10 @@
 void test_ar();
 void test_random();
 void gen_sample(std::vector<std::vector<double>> &x, std::vector<double>& y, long sample_num = 200, long dim = 10, double scale = 1);
-void init_svm_param(struct svm_parameter& param);
+
+svm_parameter init_svm_param();
+svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y);
+
 svm_node* init_test_data(std::vector<double> test_x);
 
 void test_svm();
