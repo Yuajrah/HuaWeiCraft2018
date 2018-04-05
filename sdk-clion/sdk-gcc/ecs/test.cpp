@@ -1,6 +1,7 @@
 //
 // Created by ruiy on 18-3-16.
 //
+#include <cstring>
 #include "test.h"
 #include "AR.h"
 #include "type_def.h"
@@ -65,7 +66,7 @@ void init_svm_param(struct svm_parameter& param)
  * @param dim
  * @param scale
  */
-void gen_train_sample(std::vector<std::vector<double>> &x, std::vector<double>& y, long sample_num, long dim, double scale)
+void gen_sample(std::vector<std::vector<double>> &x, std::vector<double>& y, long sample_num, long dim, double scale)
 {
     //long sample_num = 200;        //样本数
     //long dim = 10;    //样本特征维度
@@ -97,70 +98,99 @@ void gen_train_sample(std::vector<std::vector<double>> &x, std::vector<double>& 
     }
 }
 
-/**
- *
- * @param x
- * @param sample_num
- * @param dim
- * @param scale
- */
 
-void gen_test_sample(std::vector<double>& x, long sample_num, long dim, double scale)
+svm_problem prob;
+svm_parameter param;
+/*train_x,train_y是我已经导入的数据，分别是样本及其对应的类别标签*/
+void init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y)
 {
-    //long sample_num = 200;        //样本数
-    //long dim = 10;    //样本特征维度
-    //double scale = 1;    //数据缩放尺度
+    int train_size = train_y.size();
+    int feature_size = train_x[0].size();
 
-    srand((unsigned)time(NULL));//随机数
-    //生成随机的正类样本
-    for (int j = 0; j < dim; j++)
+    prob.l = train_size;        // 训练样本数
+    prob.y = new double[train_size];
+    prob.x = new svm_node*[train_size];
+    svm_node* node = new svm_node[train_size*(1 + feature_size)];
+
+    memcpy(prob.y, &train_y[0], train_y.size()*sizeof(double));
+
+//    prob.y = vec2arr(train_y);
+
+    // 按照格式打包
+    for (int i = 0; i < train_size; i++)
     {
-        x.push_back(-scale*(rand() % 10));
+        for (int j = 0; j < feature_size; j++)
+        {   // 看不懂指针就得复习C语言了，类比成二维数组的操作
+            node[(feature_size + 1) * i + j].index = j + 1;
+            node[(feature_size + 1) * i + j].value = train_x[i][j];
+        }
+        node[(feature_size + 1) * i + feature_size].index = -1;
+        prob.x[i] = &node[(feature_size + 1) * i];
     }
 }
 
+void init_svm_parameter()
+{
+    param.svm_type = C_SVC;   // 即普通的二类分类
+    param.kernel_type = RBF;  // 径向基核函数
+    param.degree = 3;
+    param.gamma = 0.01;
+    param.coef0 = 0;
+    param.nu = 0.5;
+    param.cache_size = 1000;
+    param.C = 0.09;
+    param.eps = 1e-5;
+    param.p = 0.1;
+    param.shrinking = 1;
+    param.probability = 0;
+    param.weight_label = NULL;
+    param.weight = NULL;
+}
+
+svm_node* init_test_data(std::vector<double> test_x){
+    int feature_size = test_x.size();
+
+    svm_node* node = new svm_node[(1 + feature_size)];
+
+    for (int j = 0; j < feature_size; j++) {
+        node[j].index = j + 1;
+        node[j].value = test_x[j];
+    }
+
+    node[feature_size].index = -1;
+    return node;
+
+}
 
 /**
  * 测试svm功能是否正常
  */
 void test_svm(){
-    //初始化libsvm
-    CxLibSVM    svm;
-
-    //初始化参数
-    struct svm_parameter param;
-    init_svm_param(param);
 
     /*1、准备训练数据*/
-    std::vector<std::vector<double>>    x;    //样本集
-    std::vector<double>    y;            //样本类别集
-    gen_train_sample(x, y, 200, 10, 1);
+    std::vector<std::vector<double>> train_x; // 训练集
+    std::vector<double> train_y; // 训练类别集
+    gen_sample(train_x, train_y, 200, 10, 1);
 
-    /*1、交叉验证*/
-    int fold = 10;
-    param.C = 100;
-    param.svm_type = LINEAR;
-    svm.do_cross_validation(x, y, param, fold);
+    std::vector<std::vector<double>> test_x;    // 测试集
+    std::vector<double> test_y; // 测试类别集
+    gen_sample(test_x, test_y, 200, 10, 1);
 
-    /*2、训练*/
-    svm.train(x, y, param);
+    init_svm_problem(train_x, train_y);     // 打包训练样本
+    init_svm_parameter();   // 初始化训练参数
 
-    /*3、保存模型*/
-    std::string model_path = ".\\svm_model.txt";
-    svm.save_model(model_path);
+    svm_model* model = svm_train(&prob, &param);
+    svm_save_model("model", model);     // 保存训练好的模型，下次使用时就可直接导入
+    int acc_num = 0;        // 分类正确数
+//    svm_model* model = svm_load_model("model");
+    for (int i = 0; i < test_x.size(); i++)
+    {
+        svm_node* node = init_test_data(test_x[i]);
+        double pred = svm_predict(model, node);
+        if (pred == test_y[i])
+            acc_num++;
+    }
 
-    /*4、导入模型*/
-    std::string model_path_p = ".\\svm_model.txt";
-    svm.load_model(model_path_p);
-
-    /*5、预测*/
-    //生成随机测试数据
-    std::vector<double> x_test;
-    gen_test_sample(x_test, 200, 10, 1);
-    double prob_est;
-    //预测
-    double value = svm.predict(x_test, prob_est);
-
-    //打印预测类别和概率
-    printf("label:%f,prob:%f", value, prob_est);
+    printf("accuracy: %f percent", acc_num*100.0 / test_x.size());
+    printf("classification: %d / %d", acc_num, test_x.size());
 }
