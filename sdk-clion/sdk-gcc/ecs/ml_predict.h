@@ -12,6 +12,8 @@
 #include "KNN.h"
 #include"MnistPreProcess.h"
 #include "CART.h"
+#include "svm.h"
+
 const  int split_windows = 10;
 
 
