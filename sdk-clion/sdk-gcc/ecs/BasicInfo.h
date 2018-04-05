@@ -14,6 +14,7 @@ public:
     static Server server_info;
     static char* opt_object;
     static time_t t_start;
+    static int need_predict_day;
     static bool is_cpu(){return *opt_object == 'C';}
     static bool is_mem(){return *opt_object == 'M';}
     static bool is_stop(){

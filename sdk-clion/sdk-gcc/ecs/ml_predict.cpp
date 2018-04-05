@@ -113,3 +113,10 @@ std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std
 
     return result;
 }
+
+//std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data){
+//    CxLibSVM svm;
+//    svm_parameter param; // 使用了默认参数
+//    int fold = 10;
+//};
+
