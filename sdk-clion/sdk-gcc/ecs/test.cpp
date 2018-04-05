@@ -128,6 +128,7 @@ svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vect
         node[(feature_size + 1) * i + feature_size].index = -1;
         prob.x[i] = &node[(feature_size + 1) * i];
     }
+    return prob;
 }
 
 svm_parameter init_svm_parameter()
@@ -148,6 +149,7 @@ svm_parameter init_svm_parameter()
     param.probability = 0;
     param.weight_label = NULL;
     param.weight = NULL;
+    param.nr_weight = 0;
 
     return param;
 }
