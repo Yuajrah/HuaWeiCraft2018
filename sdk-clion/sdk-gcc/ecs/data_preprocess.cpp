@@ -133,3 +133,21 @@ float* add_one_data(float* primary_data, float need_add, int len)
     tmp[len-1] = need_add;
     return tmp;
 }
+std::vector<std::vector<double >> get_vector_train(std::map<std::vector<double>, double> input)
+{
+    std::vector<std::vector<double>> result;
+    for(auto t:input)
+    {
+        result.push_back(t.first);
+    }
+    return result;
+}
+std::vector<double>  get_vector_target(std::map<std::vector<double>, double> input)
+{
+    std::vector<double> result;
+    for(auto t:input)
+    {
+        result.push_back(t.second);
+    }
+    return result;
+}

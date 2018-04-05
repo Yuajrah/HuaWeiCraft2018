@@ -6,8 +6,7 @@ std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server serve
     std::map<int, int> predict_data_tmp = predict_data;
     //首先确定优化目标
     int target;
-    const char * target_string  = "CPU\n";
-    if (strcmp(target_string, opt_object) == 0)
+    if (BasicInfo::is_cpu())
     {
         target = 0;
     }
@@ -195,9 +194,8 @@ void get_scores(std::map<int, int>predict_data, Server server, int number, int t
 //确定order的函数
 std::vector<int> get_order(std::map<int, Vm> vm_info, Server server, char *opt_object)
 {
-    char *tmp_target = "CPU\n";
     std::vector<int> order;
-    if (tmp_target == opt_object)
+    if (BasicInfo::is_cpu())
     {
         for (int i = 15; i >0; i-- )
         {

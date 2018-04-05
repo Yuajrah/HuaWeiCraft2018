@@ -29,5 +29,13 @@ struct Allocat_server
 
 bool operator< (const Allocat_server &server1, const Allocat_server &server2);
 
+struct Node_index
+{
+    double value;
+    int id;
+    double target;
+};
+
+bool operator< (const Node_index &index1, const Node_index &index);
 
 #endif //SDK_GCC_TYPE_DEF_H

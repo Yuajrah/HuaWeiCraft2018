@@ -42,3 +42,16 @@ bool operator< (const Allocat_server &server1, const Allocat_server &server2)
         }
     }
 }
+
+bool operator< (const Node_index &index1, const Node_index &index2)
+{
+    if(index1.value < index2.value)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+}
