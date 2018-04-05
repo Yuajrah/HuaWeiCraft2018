@@ -21,7 +21,7 @@ std::map<int, int> predict_by_ar_1th (std::map<int, Vm> vm_info, std::map<int, s
         ar_model.predict(need_predict_day);
         // ar_model.print_model_info();
         auto predict_res = ar_model.get_res();
-        predict_data[t.first] = round(accumulate(predict_res.begin(), predict_res.end(), 0.0));
+        predict_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), -0.5)), 0.0);
     }
     return predict_data;
 }
