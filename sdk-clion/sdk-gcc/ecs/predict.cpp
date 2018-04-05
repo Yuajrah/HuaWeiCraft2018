@@ -110,7 +110,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
     BasicInfo::need_predict_day = need_predict_day;
 
-    int debug = 2;
+    int debug = 0;
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -165,9 +165,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     *****  预测  **************************************************************
     **************************************************************************/
 
-    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
-
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
+//
+//    print_predict_score(actual_data, predict_data);
 
 
     /*
@@ -191,6 +191,15 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, need_predict_day);
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
+
+
+    /**
+     * 使用svm进行预测
+     */
+
+    std::map<int, int> predict_data = predict_by_svm(train_data);
+    print_predict_score(actual_data, predict_data);
+
     /*************************************************************************
     *****  分配  **************************************************************
     **************************************************************************/
@@ -319,9 +328,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     std::string result1 = format_predict_res(predict_data);
     std::string result = result1+result2;
-
-
-    test_svm();
 
     // 需要输出的内容
     char * result_file = (char *)"17\n\n0 8 0 20";

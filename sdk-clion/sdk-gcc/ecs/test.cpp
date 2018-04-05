@@ -6,6 +6,7 @@
 #include "AR.h"
 #include "type_def.h"
 #include "Random.h"
+#include "ml_predict.h"
 
 void test_ar(){
     //北京1987-2014人口: 35
@@ -99,75 +100,7 @@ void gen_sample(std::vector<std::vector<double>> &x, std::vector<double>& y, lon
 
 
 
-/*train_x,train_y是我已经导入的数据，分别是样本及其对应的类别标签*/
-svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y)
-{
 
-    svm_problem prob;
-
-    int train_size = train_y.size();
-    int feature_size = train_x[0].size();
-
-    prob.l = train_size;        // 训练样本数
-    prob.y = new double[train_size];
-    prob.x = new svm_node*[train_size];
-    svm_node* node = new svm_node[train_size*(1 + feature_size)];
-
-    memcpy(prob.y, &train_y[0], train_y.size()*sizeof(double));
-
-//    prob.y = vec2arr(train_y);
-
-    // 按照格式打包
-    for (int i = 0; i < train_size; i++)
-    {
-        for (int j = 0; j < feature_size; j++)
-        {   // 看不懂指针就得复习C语言了，类比成二维数组的操作
-            node[(feature_size + 1) * i + j].index = j + 1;
-            node[(feature_size + 1) * i + j].value = train_x[i][j];
-        }
-        node[(feature_size + 1) * i + feature_size].index = -1;
-        prob.x[i] = &node[(feature_size + 1) * i];
-    }
-    return prob;
-}
-
-svm_parameter init_svm_parameter()
-{
-    svm_parameter param;
-
-    param.svm_type = C_SVC;   // 即普通的二类分类
-    param.kernel_type = RBF;  // 径向基核函数
-    param.degree = 3;
-    param.gamma = 0.01;
-    param.coef0 = 0;
-    param.nu = 0.5;
-    param.cache_size = 1000;
-    param.C = 0.09;
-    param.eps = 1e-5;
-    param.p = 0.1;
-    param.shrinking = 1;
-    param.probability = 0;
-    param.weight_label = NULL;
-    param.weight = NULL;
-    param.nr_weight = 0;
-
-    return param;
-}
-
-svm_node* init_test_data(std::vector<double> test_x){
-    int feature_size = test_x.size();
-
-    svm_node* node = new svm_node[(1 + feature_size)];
-
-    for (int j = 0; j < feature_size; j++) {
-        node[j].index = j + 1;
-        node[j].value = test_x[j];
-    }
-
-    node[feature_size].index = -1;
-    return node;
-
-}
 
 /**
  * 测试svm功能是否正常
@@ -198,7 +131,7 @@ void test_svm(){
 //    svm_model* model = svm_load_model("model");
     for (int i = 0; i < test_x.size(); i++)
     {
-        svm_node* node = init_test_data(test_x[i]);
+        svm_node* node = feature_to_svm_node(test_x[i]);
         double pred = svm_predict(model, node);
         if (pred == test_y[i])
             acc_num++;
