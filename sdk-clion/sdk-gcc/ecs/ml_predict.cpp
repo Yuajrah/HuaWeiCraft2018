@@ -31,6 +31,41 @@ std::map<int, int> predict_by_knn (std::map<int, Vm> vm_info, std::map<int, std:
     return result;
 }
 
+std::map<int, int> predict_by_knn_method2 (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
+{
+    std::map<int,int>result;
+    for (auto &t: vm_info) {
+        std::vector<double> ecs_data = train_data[t.first];
+        bool mv_flag = true;
+        std::vector<std::vector<double>> train_serial = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
+        std::vector<double> target_serial = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
+        std::vector<std::vector<double>> train = get_vector_train_method2(train_serial,need_predict_day);
+        std::vector<double> target = get_vector_target_method2(target_serial,need_predict_day);
+        std::vector<std::vector<double>> test = get_vector_test_method2(train_serial,need_predict_day);
+        std::map<std::vector<double>, double> train_data_use;
+        for(int i=0; i<train.size(); i++)
+        {
+            train_data_use[train[i]] = target[i];
+        }
+        //printf("获取数据成功\n");
+        //依次是树的数量，每课树的特征，树的最大深度，每个叶节点的最大样本数，最小的下降不纯度
+        //printf("训练成功\n");
+        double ecs_sum = 0.0;
+        std::vector <double> predict_ecs_data;
+        for(int i=0; i < need_predict_day; i++)
+        {
+            double tmp_predict = knn_regresion_brust(train_data_use, test[i],4);
+            predict_ecs_data.push_back(tmp_predict);
+            ecs_sum += tmp_predict;
+        }
+        result[t.first] = (int)ecs_sum;
+        //result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day);
+        //result[t.first] = get_bigger_mean(predict_ecs_data, need_predict_day/2)*need_predict_day;
+    }
+
+    return result;
+}
+
 std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
 {
     std::map<int,int>result;
