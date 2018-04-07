@@ -20,7 +20,7 @@ void RandomForest::train(std::vector<std::vector<double>> train, std::vector<dou
 {
     int primary_trian_feathe = train[0].size();
     for (int i = 0; i < _tree_num; ++i) {
-        printf("当前训练的树：%d\n",i);
+        //printf("当前训练的树：%d\n",i);
         //保存此次的训练数据
         std::vector<std::vector<double>> tmp_train;
         //获取训练数据的index
