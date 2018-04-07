@@ -13,6 +13,7 @@
 #include"MnistPreProcess.h"
 #include "CART.h"
 #include "svm.h"
+#include "RandomForest.h"
 
 const  int split_windows = 10;
 

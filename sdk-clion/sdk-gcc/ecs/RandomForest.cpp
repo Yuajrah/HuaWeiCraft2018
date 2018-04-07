@@ -4,11 +4,11 @@
 
 #include "RandomForest.h"
 
-RandomForest::RandomForest(int tree_num, int max_depth, int split_feature_num, int min_samples_split, int min_samples_leaf, double min_impurity_split)
+RandomForest::RandomForest(int tree_num, int split_feature_num, int max_depth, int min_samples_split, double min_impurity_split)
 {
     for(int i =0; i<tree_num; i++)
     {
-        decision_tree tmp(max_depth,min_samples_split, min_samples_leaf, min_impurity_split);
+        decision_tree tmp(max_depth,min_samples_split, min_impurity_split);
         trees.push_back(tmp);
     }
     _split_feather_num = split_feature_num;
@@ -20,6 +20,7 @@ void RandomForest::train(std::vector<std::vector<double>> train, std::vector<dou
 {
     int primary_trian_feathe = train[0].size();
     for (int i = 0; i < _tree_num; ++i) {
+        printf("当前训练的树：%d\n",i);
         //保存此次的训练数据
         std::vector<std::vector<double>> tmp_train;
         //获取训练数据的index
@@ -27,7 +28,7 @@ void RandomForest::train(std::vector<std::vector<double>> train, std::vector<dou
         //单个样本的训练数据
         for (int j = 0; j <train.size() ; ++j) {
             std::vector<double> tmp_sample;
-            for (int k = 0; k < _split_feather_num; ++k) {
+            for (int k: train_index) {
                 tmp_sample.push_back(train[j][k]);
             }
             tmp_train.push_back(tmp_sample);
@@ -46,7 +47,7 @@ double RandomForest::predict(std::vector<double> predict_data) {
 }
 //选取特针
 //从max个数中随机抽取number个数字
-std::vector<int> random_vector(int max, int number)
+std::vector<int> RandomForest::random_vector(int max, int number)
 {
     std::vector<int> result;
     std::vector<int> data;
@@ -65,4 +66,5 @@ std::vector<int> random_vector(int max, int number)
         end_index--;
         number--;
     }
+    return result;
 }

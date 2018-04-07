@@ -3,10 +3,9 @@
 //
 
 #include "CART.h"
-decision_tree::decision_tree(int max_depth, int min_samples_split, int min_samples_leaf, double min_impurity_split)
+decision_tree::decision_tree(int max_depth, int min_samples_split, double min_impurity_split)
 {
     _max_depth = max_depth;
-    _min_samples_leaf = min_samples_leaf;
     _min_samples_split = min_samples_split;
     _min_impurity_split = min_impurity_split;
     _max_node_len = pow(2,_max_depth);
@@ -14,7 +13,7 @@ decision_tree::decision_tree(int max_depth, int min_samples_split, int min_sampl
 
 void decision_tree::train(std::vector<std::vector<double >>train_data, std::vector<double> target_data)
 {
-    Node head(train_data, target_data,_min_impurity_split);
+    Node head(train_data, target_data,_min_impurity_split,_min_samples_split);
     for(int i=0; i< _max_node_len; i++)
     {
         Node tmp;
@@ -23,7 +22,7 @@ void decision_tree::train(std::vector<std::vector<double >>train_data, std::vect
     nodes[1] = head;
     for(int i =1; i<_max_node_len; i++)
     {
-        printf("训练到第%d个节点:\n",i);
+        //printf("训练到第%d个节点:\n",i);
         //如果树为空，直接跳过
         if(nodes[i].is_null()==1)
         {
@@ -42,8 +41,8 @@ void decision_tree::train(std::vector<std::vector<double >>train_data, std::vect
             std::vector<std::vector<double>> right_train = nodes[i].get_right_train();
             std::vector<double> left_target = nodes[i].get_left_target();
             std::vector<double> right_target = nodes[i].get_right_target();
-            Node left(left_train,left_target,_min_impurity_split);
-            Node right(right_train,right_target,_min_impurity_split);
+            Node left(left_train,left_target,_min_impurity_split,_min_samples_split);
+            Node right(right_train,right_target,_min_impurity_split,_min_samples_split);
             nodes[2*i] = left;
             nodes[2*i+1] = right;
         }

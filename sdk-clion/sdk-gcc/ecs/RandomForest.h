@@ -17,10 +17,9 @@ public:
      * max_depth: 树的最大深度
      * split_feature_num： 每棵树的特征个数
      * min_samples_split：最小样本划分
-     * min_samples_leaf:也节点的最小样本数
      * min_inpurity_split:划分的最小不纯度
  */
-    RandomForest(int tree_num, int max_depth, int split_feature_num, int min_samples_split, int min_samples_leaf, double min_impurity_split);
+    RandomForest(int tree_num,  int split_feature_num, int max_depth, int min_samples_split, double min_impurity_split);
 
     //训练函数
     void train(std::vector<std::vector<double>> train, std::vector<double> target);

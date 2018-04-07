@@ -13,7 +13,7 @@ class Node
 {
 public:
     Node();
-    Node(std::vector<std::vector<double >>, std::vector<double>, double min_impurity_split);
+    Node(std::vector<std::vector<double >>, std::vector<double>, double min_impurity_split,int min_samples_split);
     //进行寻找最佳的分配，如果寻找不到，返回false
     ~Node(){}
     bool find_best_sample();
@@ -67,5 +67,6 @@ private:
     void split_child_node();
     //判断是否为null
     int is_null_flag;
+    int _min_samples_split;
 };
 #endif //SDK_CLION_NODE_H

@@ -7,7 +7,7 @@ Node::Node()
 {
     is_null_flag = 1;
 }
-Node::Node(std::vector<std::vector<double >> given_train_data, std::vector<double>given_target_data, double min_impurity_split) {
+Node::Node(std::vector<std::vector<double >> given_train_data, std::vector<double>given_target_data, double min_impurity_split, int min_samples_split) {
     train_data = given_train_data;
     target_data = given_target_data;
     max_decrease_impurity = min_impurity_split;
@@ -19,6 +19,7 @@ Node::Node(std::vector<std::vector<double >> given_train_data, std::vector<doubl
     primary_impurity = val(target_data);
     min_impurity = primary_impurity;
     is_null_flag = 0;
+    _min_samples_split = min_samples_split;
 }
 
 int Node::get_feather_id() {
@@ -31,7 +32,7 @@ double Node::get_theta() {
 
 //对于每一个寻找最好的zhi
 bool Node::find_best_sample() {
-    if (train_data.size() <=1)
+    if (train_data.size() <=_min_samples_split)
     {
         return false;
     }
