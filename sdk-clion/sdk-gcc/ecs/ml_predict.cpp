@@ -18,19 +18,14 @@ std::map<int, int> predict_by_knn (std::map<int, Vm> vm_info, std::map<int, std:
         std::vector <double> predict_ecs_data;
         for(int i=0; i < need_predict_day; i++)
         {
-            double tmp_predict = knn_regresion_brust(train_data_need,frist_predict_data, 5);
+            double tmp_predict = knn_regresion_brust(train_data_need,frist_predict_data, 4);
             frist_predict_data.erase(frist_predict_data.begin());
             frist_predict_data.push_back(tmp_predict);
             predict_ecs_data.push_back(tmp_predict);
             ecs_sum += tmp_predict;
         }
-        if (mv_flag)
-        {
-            result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day);
-        }
-        else {
-            result[t.first] = (int) ecs_sum;
-        }
+            //result[t.first] = predict_ecs_data[0]*need_predict_day*2;
+            result[t.first] = (int) ecs_sum*1.5;
     }
 
     return result;
@@ -43,11 +38,13 @@ std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std
         std::vector<double> ecs_data = train_data[t.first];
         printf("训练第%d种服务器：\n",t.first);
         bool mv_flag = true;
-        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
-        std::vector<std::vector<double>> train = get_vector_train(train_data_need);
-        std::vector<double> target = get_vector_target(train_data_need);
+//        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
+//        std::vector<std::vector<double>> train = get_vector_train(train_data_need);
+//        std::vector<double> target = get_vector_target(train_data_need);
         std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
-        decision_tree df(5,2,0.0);
+        std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
+        std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
+        decision_tree df(6,2,0.0);
         df.train(train,target);
         double ecs_sum = 0.0;
         std::vector <double> predict_ecs_data;
@@ -72,12 +69,14 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
         std::vector<double> ecs_data = train_data[t.first];
         //printf("训练第%d种服务器：\n",t.first);
         bool mv_flag = true;
-        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
-        std::vector<std::vector<double>> train = get_vector_train(train_data_need);
-        std::vector<double> target = get_vector_target(train_data_need);
+//        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
+//        std::vector<std::vector<double>> train = get_vector_train(train_data_need);
+//        std::vector<double> target = get_vector_target(train_data_need);
+        std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
+        std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
         std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
         //依次是树的数量，每课树的特征，树的最大深度，每个叶节点的最大样本数，最小的下降不纯度
-        RandomForest rf(50,6,9,3,1.0);
+        RandomForest rf(50,3,5,2,1.0);
         rf.train(train,target);
         double ecs_sum = 0.0;
         std::vector <double> predict_ecs_data;
@@ -90,11 +89,55 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
             ecs_sum += tmp_predict;
         }
         result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day);
+        //result[t.first] = get_bigger_mean(predict_ecs_data, need_predict_day/2)*need_predict_day;
     }
 
     return result;
 }
 
+std::map<int, int> predict_by_randomForest_method2 (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
+{
+    std::map<int,int>result;
+    for (auto &t: vm_info) {
+        std::vector<double> ecs_data = train_data[t.first];
+        //printf("训练第%d种服务器：\n",t.first);
+        bool mv_flag = true;
+        std::vector<std::vector<double>> train_serial = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
+        std::vector<double> target_serial = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
+        std::vector<std::vector<double>> train = get_vector_train_method2(train_serial,need_predict_day);
+        std::vector<double> target = get_vector_target_method2(target_serial,need_predict_day);
+        std::vector<std::vector<double>> test = get_vector_test_method2(train_serial,need_predict_day);
+        //printf("获取数据成功\n");
+        //依次是树的数量，每课树的特征，树的最大深度，每个叶节点的最大样本数，最小的下降不纯度
+        RandomForest rf(50,3,5,2,1.0);
+        rf.train(train,target);
+        //printf("训练成功\n");
+        double ecs_sum = 0.0;
+        std::vector <double> predict_ecs_data;
+        for(int i=0; i < need_predict_day; i++)
+        {
+            double tmp_predict = rf.predict(test[i]);
+            predict_ecs_data.push_back(tmp_predict);
+            ecs_sum += tmp_predict;
+        }
+        result[t.first] = (int)ecs_sum;
+        //result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day);
+        //result[t.first] = get_bigger_mean(predict_ecs_data, need_predict_day/2)*need_predict_day;
+    }
+
+    return result;
+}
+
+int get_bigger_mean(std::vector<double> data, int num)
+{
+    std::sort(data.begin(),data.end());
+    double sum = 0.0;
+    for(int i=0; i< num; i++)
+    {
+        sum+=data[i];
+    }
+    return (int)sum/num;
+}
 //std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data){
 //    CxLibSVM svm;
 //    svm_parameter param; // 使用了默认参数

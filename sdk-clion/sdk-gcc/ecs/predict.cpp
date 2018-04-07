@@ -174,7 +174,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 使用knn进行预测
      */
 //    std::map<int, int> predict_data = predict_by_knn(BasicInfo::vm_info, train_data, need_predict_day);
-
+//
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
 
@@ -188,8 +188,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     * 使用随机森林进行预测
     * 有问题
     */
-//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, need_predict_day);
-//    print_predict_score(actual_data, predict_data);
+    //std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, need_predict_day);
+    std::map<int, int> predict_data = predict_by_randomForest_method2(BasicInfo::vm_info, train_data, need_predict_day);
+    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
 
 
@@ -197,8 +198,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 使用svm进行预测
      */
 
-    std::map<int, int> predict_data = predict_by_svm(train_data);
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_svm(train_data);
+//    print_predict_score(actual_data, predict_data);
 
     /*************************************************************************
     *****  分配  **************************************************************
@@ -218,8 +219,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
 
 
-//    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
-//    std::string result2 = format_allocate_res(allocate_result);
+    std::vector<std::map<int,int>> allocate_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+    std::string result2 = format_allocate_res(allocate_result);
 
 
 
@@ -251,43 +252,43 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
 
 
-    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
-    std::vector<Bin> bins;
-    int cnt = 0;
-    for (auto &server: packing_result) {
-        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
-        for (auto &vm: server) {
-            Vm t_vm = BasicInfo::vm_info[vm.first];
-            for (int i=0;i<vm.second;i++) {
-                t_vm.no = cnt++;
-                t_vm.type = vm.first;
-                bin.put(t_vm);
-            }
-        }
-        bins.push_back(bin);
-    }
-
-
-
-    std::vector<Vm> objects = serialize(predict_data);
-    int pop_size = 100;
-    int cross_num = 40;
-    double p_mutation = 0.15;
-    int mutation_num = 5;
-    int inversion_num = 10;
-    int iter_num = 8000;
-    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, inversion_num, iter_num);
-    gga.initial(bins, 100);
-//    gga.initial({}, 0);
-    gga.start();
-    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
-
-    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
-    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
-        return a.second.mem > b.second.mem;
-    });
-    after_process(allocate_result, order_vm_info, predict_data);
-    std::string result2 = format_allocate_res(allocate_result);
+//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+//    std::vector<Bin> bins;
+//    int cnt = 0;
+//    for (auto &server: packing_result) {
+//        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
+//        for (auto &vm: server) {
+//            Vm t_vm = BasicInfo::vm_info[vm.first];
+//            for (int i=0;i<vm.second;i++) {
+//                t_vm.no = cnt++;
+//                t_vm.type = vm.first;
+//                bin.put(t_vm);
+//            }
+//        }
+//        bins.push_back(bin);
+//    }
+//
+//
+//
+//    std::vector<Vm> objects = serialize(predict_data);
+//    int pop_size = 100;
+//    int cross_num = 40;
+//    double p_mutation = 0.15;
+//    int mutation_num = 5;
+//    int inversion_num = 10;
+//    int iter_num = 8000;
+//    GGA gga(objects, pop_size, cross_num, p_mutation, mutation_num, inversion_num, iter_num);
+//    gga.initial(bins, 100);
+////    gga.initial({}, 0);
+//    gga.start();
+//    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
+//
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//    after_process(allocate_result, order_vm_info, predict_data);
+//    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 第六版分配, 目前坠吼

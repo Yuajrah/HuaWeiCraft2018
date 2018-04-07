@@ -64,6 +64,51 @@ std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<doubl
     }
     return result;
 }
+
+std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<double> ecs_data, int split_windows, bool mv )
+{
+    std::vector<std::vector<double>> result;
+    std::vector<double> used_data = ecs_data;
+    if (mv)
+    {
+        used_data = ma(ecs_data,6);
+    }
+    std::vector<double> tmp_train;
+    int index = 0;
+    while(index < split_windows) {
+        tmp_train.push_back(used_data[index]);
+        index++;
+    }
+    while(index < used_data.size())
+    {
+        result.push_back(tmp_train);
+        tmp_train.erase(tmp_train.begin());
+        tmp_train.push_back(used_data[index]);
+        index++;
+    }
+    return result;
+}
+
+std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data, int split_windows, bool mv)
+{
+    std::vector<double> result;
+    std::vector<double> used_data = ecs_data;
+    if (mv)
+    {
+        used_data = ma(ecs_data,6);
+    }
+    int index = 0;
+    while(index < split_windows) {
+        index++;
+    }
+    while(index < used_data.size())
+    {
+        double tmp_test = used_data[index];
+        result.push_back(tmp_test);
+        index++;
+    }
+    return result;
+}
 std::vector<double>  get_frist_predict_data(std::vector<double>ecs_data, int split_windows, bool mv )
 {
     std::vector<double> result;
@@ -148,6 +193,35 @@ std::vector<double>  get_vector_target(std::map<std::vector<double>, double> inp
     for(auto t:input)
     {
         result.push_back(t.second);
+    }
+    return result;
+}
+
+
+std::vector<std::vector<double >> get_vector_train_method2(std::vector<std::vector<double>>input,int predict_need_date)
+{
+    std::vector<std::vector<double>> result;
+    for(int i =0; i<input.size()-predict_need_date; i++)
+    {
+        result.push_back(input[i]);
+    }
+    return result;
+}
+std::vector<double>  get_vector_target_method2(std::vector<double> input, int predict_need_date)
+{
+    std::vector<double> result;
+    for (int i = predict_need_date; i < input.size(); ++i) {
+        result.push_back(input[i]);
+    }
+    return result;
+}
+
+std::vector<std::vector<double>>  get_vector_test_method2(std::vector<std::vector<double>> input, int predict_need_date)
+{
+    std::vector<std::vector<double>> result;
+    for(int i =input.size()-predict_need_date; i<input.size(); i++)
+    {
+        result.push_back(input[i]);
     }
     return result;
 }
