@@ -41,6 +41,7 @@ def series_to_supervised(data, split_windows):
     test_need = target[index].values
     return trian_data, target, test_need
 
+#逐步预测得到的机器学习
 def get_predict_result(data, split_windows, predict_mothod, mv_flag):
     train , test, need_data = series_to_supervised(data , split_windows)
     predict_mothod.fit(train, test)
@@ -55,3 +56,33 @@ def get_predict_result(data, split_windows, predict_mothod, mv_flag):
         return round(result[split_windows-1]*split_windows)
     return round(sum(result))
     
+def series_to_supervised_mothod2(data, split_windows,predict_len):
+    data = pd.DataFrame(data)
+    cols = list()
+    names = list()
+    for i in range(split_windows):
+        cols.append(data.shift(i))
+        names += [('var(t-%d)' % (i))]
+    tmp_data = pd.concat(cols, axis=1)
+    tmp_data.columns = names
+    tmp_data.dropna(inplace=True)
+    target = data.shift(-predict_len)
+    target.dropna(inplace=True)
+    target = target[target.index>=tmp_data.index[0]]
+    trian_data = tmp_data[tmp_data.index<=target.index[-1]]
+    test_data = tmp_data[tmp_data.index>target.index[-1]]
+    return trian_data, target, test_data
+
+def get_predict_result_mothod2(data, split_windows, predict_mothod,predict_len):
+    train, target, test = series_to_supervised_mothod2(data , split_windows, predict_len)
+    # print("train:")
+    # print(train)
+    # print("target")
+    # print (target)
+    predict_mothod.fit(train, target)
+    # print("test")
+    # print (test)
+    result = predict_mothod.predict(test)
+    # print("预测的结果")
+    # print (result)
+    return round(np.sum(result))
