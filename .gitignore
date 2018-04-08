@@ -1,3 +1,7 @@
+######################
+# python
+######################
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -14,7 +18,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+#lib/
 lib64/
 parts/
 sdist/
@@ -104,7 +108,60 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+#######################
 # others
-
+#######################
 练习数据/
 练习数据.zip
+
+# img
+imgs/
+
+# dest
+bin/
+ecs.tar.gz
+data/exercise/output_file.txt 
+
+#######################
+# c++
+#######################
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+######################
+# ide
+######################
+
+.idea/
+sdk-clion/cmake-build-debug/*
