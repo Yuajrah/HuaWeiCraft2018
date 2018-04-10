@@ -11,8 +11,7 @@
 std::map<int, std::vector<double>> get_esc_data(char ** data,
                                                 char *start_date,
                                                 char *end_date /*不包含该天*/,
-                                                int data_num,
-                                                int hour_split=24);
+                                                int data_num);
 
 std::map<int, int> get_sum_data(
         char **data, // 直接将data数组传入即可

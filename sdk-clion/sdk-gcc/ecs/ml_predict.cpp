@@ -296,7 +296,7 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
 
         /* 5. 开始预测 */
         std::vector<double> predict_ecs_data;
-        for(int i=0; i < BasicInfo::need_predict_day; i++)
+        for(int i=0; i < BasicInfo::need_predict_cnt; i++)
         {
             svm_node* node = feature_to_svm_node(frist_predict_data);
             double tmp_predict = svm_predict(model, node);
