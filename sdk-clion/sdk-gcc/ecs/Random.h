@@ -7,11 +7,12 @@
 
 #include <random>
 #include <ctime>
+#include <vector>
 
 class Random {
 public:
     static std::default_random_engine generator;
-    // Random(time_t t = time(NULL)): generator(t) {}
+    //Random(time_t t = time(NULL)): generator(t) {}
 
     static uint32_t random_int(uint32_t min, uint32_t max) { // [min, max]
         return std::uniform_int_distribution<uint32_t>{min, max}(generator);

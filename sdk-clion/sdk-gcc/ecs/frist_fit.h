@@ -7,7 +7,7 @@
 #include <map>
 #include <queue>
 #include <string>
-
+#include "BasicInfo.h"
 //进行分配函数
 std::vector<std::map<int,int>> frist_fit(std::map<int, Vm> vm_info, Server server, std::map<int, int> predict_data,  char *opt_object, std::vector<int> order);
 
