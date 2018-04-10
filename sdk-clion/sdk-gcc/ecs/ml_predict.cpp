@@ -111,7 +111,9 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
         std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
         std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
         //依次是树的数量，每课树的特征，树的最大深度，每个叶节点的最大样本数，最小的下降不纯度
-        RandomForest rf(50,3,5,2,1.0);
+        //50,4,7,1,1.0 72.6
+        RandomForest rf(50,4,7,1,1.0, sqrt(train.size()));
+        //RandomForest rf(100,7,5,3,1.0, sqrt(train.size()));
         rf.train(train,target);
         double ecs_sum = 0.0;
         std::vector <double> predict_ecs_data;
@@ -144,7 +146,7 @@ std::map<int, int> predict_by_randomForest_method2 (std::map<int, Vm> vm_info, s
         std::vector<std::vector<double>> test = get_vector_test_method2(train_serial,need_predict_day);
         //printf("获取数据成功\n");
         //依次是树的数量，每课树的特征，树的最大深度，每个叶节点的最大样本数，最小的下降不纯度
-        RandomForest rf(50,3,5,2,1.0);
+        RandomForest rf(50,3,5,2,1.0,train.size()-train.size()/4);
         rf.train(train,target);
         //printf("训练成功\n");
         double ecs_sum = 0.0;
