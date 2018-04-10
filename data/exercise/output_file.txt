@@ -22,16 +22,16 @@ flavor15 2
 4 flavor12 3 flavor13 2
 5 flavor12 3 flavor13 2
 6 flavor12 3 flavor13 2
-7 flavor11 3 flavor12 2 flavor13 1
-8 flavor9 2 flavor11 6
-9 flavor9 2 flavor11 6
-10 flavor9 6 flavor13 2
-11 flavor9 6 flavor13 2
-12 flavor6 4 flavor8 12
-13 flavor6 4 flavor8 12
-14 flavor3 2 flavor5 1 flavor8 13
-15 flavor5 2 flavor8 13
-16 flavor2 6 flavor5 25
-17 flavor1 1 flavor2 21 flavor4 1 flavor7 2 flavor10 1 flavor13 1
+7 flavor9 2 flavor12 2 flavor13 2
+8 flavor9 6 flavor13 2
+9 flavor9 6 flavor13 2
+10 flavor9 2 flavor11 6
+11 flavor6 4 flavor11 6
+12 flavor6 4 flavor8 6 flavor11 3
+13 flavor3 2 flavor5 1 flavor8 13
+14 flavor8 14
+15 flavor8 14
+16 flavor5 22 flavor8 3
+17 flavor1 1 flavor2 27 flavor4 1 flavor5 5 flavor7 2 flavor10 1
 18 flavor1 20 flavor4 6 flavor7 2
 

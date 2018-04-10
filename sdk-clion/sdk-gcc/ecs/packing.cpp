@@ -5,6 +5,21 @@
 #include "packing.h"
 #include <cstring>
 
+//get Ai
+std::vector<double> getA(std::map<int, int> predict_data, std::map<int,Vm> vm_info)
+{
+    std::vector<double> A(2,0);
+    int count = 0;
+    for(auto &t: predict_data)
+    {
+        A[0] += (vm_info[t.first].core * t.second);
+        A[1] += (vm_info[t.first].mem * t.second);
+        count += t.second;
+    }
+    A[0] = A[0] * 1.0 / count;
+    A[1] = A[1] * 1.0 / count;
+    return A;
+}
 
 std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object){
     std::map<int, int> predict_data_tmp = predict_data;
@@ -22,7 +37,8 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
     // 初始化服务器节点
     int server_number = 0;
     std::priority_queue<Allocat_server> allocate_result;
-
+    //归一化系数
+    std::vector<double> paramA = getA(predict_data,vm_info);
 
     //用来保存虚拟机的剩余数量，反向对应，比如tmp_vm_num[15]对应vm1，tmp_vm_num[1]对应vm15
     std::vector<int> tmp_vm_num(16,0);
@@ -67,8 +83,7 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
         std::map<int,int> new_record;
         std::vector<std::vector <int> > dp (server.core+1, std::vector<int>(server.mem+1,0));
         std::vector<std::vector<std::vector<int> > > used(16, std::vector<std::vector<int> >(server.core+1, std::vector<int>(server.mem+1,0)));
-       // std::vector<int> path_cpu(PACKING_N, 0);
-       // std::vector<int> path_mem(PACKING_N, 0);
+
 
 
         //一次二维多重背包循环,pos表示前pos个物品
@@ -78,7 +93,7 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
             current_flavor_info =  vm_info.find(16-pos);
             int core_need = current_flavor_info->second.core;
             int mem_need = current_flavor_info->second.mem;
-            int item_value = core_need + mem_need;//物品价值
+            int item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
             int item_num = tmp_vm_num[pos];//可用的物品数量
 
             //void MultiplePack(int C, int D, int U, int V, int W, int M);
