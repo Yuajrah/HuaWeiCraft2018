@@ -7,6 +7,7 @@
 #include "type_def.h"
 #include "Random.h"
 #include "ml_predict.h"
+#include "date_utils.h"
 
 void test_ar(){
     //北京1987-2014人口: 35
@@ -33,30 +34,6 @@ void test_random() {
     }
 }
 
-/**
- *
- * @param param
- */
-void init_svm_param(struct svm_parameter& param)
-{
-    //参数初始化，参数调整部分在这里修改即可
-    // 默认参数
-    param.svm_type = C_SVC;        //算法类型
-    param.kernel_type = LINEAR;    //核函数类型
-    param.degree = 3;    //多项式核函数的参数degree
-    param.coef0 = 0;    //多项式核函数的参数coef0
-    param.gamma = 0.5;    //1/num_features，rbf核函数参数
-    param.nu = 0.5;        //nu-svc的参数
-    param.C = 10;        //正则项的惩罚系数
-    param.eps = 1e-3;    //收敛精度
-    param.cache_size = 100;    //求解的内存缓冲 100MB
-    param.p = 0.1;
-    param.shrinking = 1;
-    param.probability = 1;    //1表示训练时生成概率模型，0表示训练时不生成概率模型，用于预测样本的所属类别的概率
-    param.nr_weight = 0;    //类别权重
-    param.weight = NULL;    //样本权重
-    param.weight_label = NULL;    //类别权重
-}
 
 /**
  *
@@ -140,3 +117,8 @@ void test_svm(){
     printf("accuracy: %f percent", acc_num*100.0 / test_x.size());
     printf("classification: %d / %d", acc_num, test_x.size());
 }
+
+void test_get_hours(){
+    int hours = get_hours("2015-12-01 00:17:03", "2015-12-01 03:20:55");
+    printf("\nsub hours = %d\n", hours);
+};
