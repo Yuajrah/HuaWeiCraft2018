@@ -22,6 +22,8 @@ public:
         if (t_end - t_start > 54) {return true;}
         return false;
     }
+    static int split_hour; // 以hour_split小时为统计单元, hour_split最好为24*数据天数的因子, 否则最后不足的数据将直接取往前一次的数据代替
+    static int need_predict_cnt;
 };
 
 

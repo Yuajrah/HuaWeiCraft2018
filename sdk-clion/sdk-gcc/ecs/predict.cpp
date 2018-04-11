@@ -48,9 +48,13 @@ std::map<int, Vm> BasicInfo::vm_info;
 time_t BasicInfo::t_start;
 char* BasicInfo::opt_object;
 int BasicInfo::need_predict_day;
+int BasicInfo::split_hour;
+int BasicInfo::need_predict_cnt;
 
 void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int data_num, char * filename)
 {
+
+    BasicInfo::split_hour = 24;
     BasicInfo::t_start = time(NULL); // 计时开始
 
     /**
@@ -82,9 +86,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     BasicInfo::opt_object = info[4+type_num]; // 获取优化目标
 
-    char forecast_start_date[10]; // 预测起始日期
+    char forecast_start_date[20]; // 预测起始日期
     sscanf(info[6+type_num], "%s", forecast_start_date);
-    char forecast_end_date[10]; // 预测结束日期（不包含）
+    char forecast_end_date[20]; // 预测结束日期（不包含）
     sscanf(info[7+type_num], "%s", forecast_end_date);
 
     /**
@@ -104,13 +108,21 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-    char date_start[11];
+    test_get_hours();
+
+    char date_start[20];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
+    strcat(date_start, " 00:00:00");
+
+    printf("date_start = %s\n", date_start);
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
+
     BasicInfo::need_predict_day = need_predict_day;
+    BasicInfo::need_predict_cnt = BasicInfo::need_predict_day * 24 / BasicInfo::split_hour;
 
     int debug = 0;
+
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
@@ -127,8 +139,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         train_data = get_esc_data(data, date_start, "2015-05-24", data_num);
         actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", data_num);
     } else if (debug == 2) { // 16年的数据集
-        train_data = get_esc_data(data, date_start, "2016-01-21", data_num);
-        actual_data = get_sum_data(data, "2016-01-21", "2016-01-28", data_num);
+        train_data = get_esc_data(data, date_start, "2016-01-21 00:00:00", data_num);
+        actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
     } else if (debug == 3) {
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num); // 用于最终训练模型的训练数据
 
@@ -166,7 +178,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     **************************************************************************/
 
 //    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
-//
+////
 //    print_predict_score(actual_data, predict_data);
 
 
