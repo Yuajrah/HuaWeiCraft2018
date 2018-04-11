@@ -108,7 +108,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-    test_get_hours();
 
     char date_start[20];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
@@ -121,13 +120,14 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     BasicInfo::need_predict_day = need_predict_day;
     BasicInfo::need_predict_cnt = BasicInfo::need_predict_day * 24 / BasicInfo::split_hour;
 
-    int debug = 0;
+    int debug = 5;
 
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
     std::map<int, std::vector<double>> fit_train_data; // 拟合阶段所用的训练集合
     std::map<int, int> fit_test_data;  // 拟合阶段的测试集合
+    std::map<int, std::vector<double>> fit_test_data_everyday; // 拟合阶段的测试集合, 包含每天的数据
 
     std::map<int, int> actual_data;
     // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
@@ -154,6 +154,23 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         fit_train_data = get_esc_data(data, date_start, test_start_date, data_num);
         fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, data_num);
         actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", data_num);
+    } else if (debug == 5) {
+        // 拟合阶段所用的训练集合
+        train_data = get_esc_data(data, date_start, forecast_start_date, data_num); // 用于最终训练模型的训练数据
+
+        char *test_start_date = add_days(forecast_start_date, -need_predict_day * 2); // 选取最后×天, x天为所需要预测的天数
+        fit_train_data = get_esc_data(data, date_start, test_start_date, data_num);
+        fit_test_data = get_sum_data(data, test_start_date, forecast_start_date, data_num);
+        fit_test_data_everyday = get_esc_data(data, test_start_date, forecast_start_date, data_num);
+
+    } else if (debug == 6) {
+        // 拟合阶段所用的训练集合
+        train_data = get_esc_data(data, date_start, "2016-01-21 00:00:00", data_num); // 用于最终训练模型的训练数据
+
+        char *test_start_date = add_days("2016-01-21", -need_predict_day); // 选取最后×天, x天为所需要预测的天数
+        fit_train_data = get_esc_data(data, date_start, test_start_date, data_num);
+        fit_test_data_everyday = get_esc_data(data, test_start_date, "2016-01-21 00:00:00", data_num);
+        actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
     }
 
 
@@ -210,7 +227,14 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 使用svm进行预测
      */
 
-    std::map<int, int> predict_data = predict_by_svm(train_data);
+//    std::map<int, int> predict_data = predict_by_svm(train_data);
+//    print_predict_score(actual_data, predict_data);
+
+    /**
+     * 用残差做预测
+     */
+
+    std::map<int, int> predict_data = predict_by_ar_7th(fit_train_data, fit_test_data_everyday, train_data);
     print_predict_score(actual_data, predict_data);
 
     /*************************************************************************
