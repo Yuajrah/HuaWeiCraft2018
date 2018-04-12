@@ -22,6 +22,13 @@ std::vector<double> getA(std::map<int, int> predict_data, std::map<int,Vm> vm_in
 }
 
 std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object){
+	for(int i=1; i<=2; i++){
+		packing(vm_info, server, predict_data, opt_object, i);
+	}
+}
+
+
+std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object, int value_type){
     std::map<int, int> predict_data_tmp = predict_data;
     //首先确定优化目标
     int target;
@@ -93,7 +100,12 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
             current_flavor_info =  vm_info.find(16-pos);
             int core_need = current_flavor_info->second.core;
             int mem_need = current_flavor_info->second.mem;
-            int item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
+ 			int item_value;
+			if(value_type == 1){
+				item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
+			}else if(value_type == 2){
+				item_value = core_need + mem_need;//物品价值		
+			}
             int item_num = tmp_vm_num[pos];//可用的物品数量
 
             //void MultiplePack(int C, int D, int U, int V, int W, int M);
