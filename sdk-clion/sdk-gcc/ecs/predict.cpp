@@ -217,7 +217,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     * 使用随机森林进行预测
     * 有问题
     */
-//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, need_predict_day);
+//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, BasicInfo:need_predict_cnt);
 //    //std::map<int, int> predict_data = predict_by_randomForest_method2(BasicInfo::vm_info, train_data, need_predict_day);
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
