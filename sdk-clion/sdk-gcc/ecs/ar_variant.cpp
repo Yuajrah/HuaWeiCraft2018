@@ -6,6 +6,8 @@
 #include "BasicInfo.h"
 #include <functional>
 #include <algorithm>
+#include "svm.h"
+#include "ml_predict.h"
 
 /**
  * 基于ar改动, 第一版
@@ -21,7 +23,7 @@ std::map<int, int> predict_by_ar_1th (std::map<int, Vm> vm_info, std::map<int, s
         ar_model.predict(need_predict_day);
         // ar_model.print_model_info();
         auto predict_res = ar_model.get_res();
-        predict_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), -0.5)), 0.0);
+        predict_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), -0.5)), 0.0) * 1.1;
     }
     return predict_data;
 }
@@ -176,6 +178,81 @@ std::map<int, int> predict_by_ar_6th(std::map<int, std::vector<double>> train_da
     std::map<int, int> predict_data;
     for (auto &t: BasicInfo::vm_info) {
         predict_data[t.first] = std::max(0.0, round(std::accumulate(train_data[t.first].end()-need_predict_day, train_data[t.first].end(), 0.0)));
+    }
+    return predict_data;
+}
+
+
+/**
+ * 基于测试集合的残差做svm模型的训练, 然后预测残差, 再加到ar预测的结果上去
+ * @param vm_info
+ * @param fit_train_data
+ * @param fit_test_data
+ * @param train_data
+ * @param need_predict_day
+ * @return
+ */
+std::map<int, int> predict_by_ar_7th(std::map<int, std::vector<double>> fit_train_data, std::map<int, std::vector<double>> fit_test_data, std::map<int, std::vector<double>> train_data){
+    std::map<int, int> predict_residual_data;
+    for (auto &t: BasicInfo::vm_info) {
+        std::vector<double> after_ma_data = ma(fit_train_data[t.first], 6);
+        AR ar_model(after_ma_data);
+        ar_model.fit("none");
+        // ar_model.fit("aic");
+        ar_model.predict(BasicInfo::need_predict_day);
+        // ar_model.print_model_info();
+        auto predict_res = ar_model.get_res();
+
+        for (int i=0;i<predict_res.size();i++) {
+            predict_res[i] = fit_test_data[t.first][i] - predict_res[i];
+        }
+
+        int split_windows = 4;
+        bool mv_flag = false;
+        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(predict_res, split_windows, mv_flag);
+        std::vector<std::vector<double>> train_x = get_vector_train(train_data_need);
+        std::vector<double> train_y = get_vector_target(train_data_need);
+
+        /* 2. 初始化问题*/
+        svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
+        svm_parameter param = init_svm_parameter();   // 初始化训练参数
+
+        /* 3. 训练模型 */
+        svm_model* model = svm_train(&prob, &param);
+
+        /* 4. 获取所需要的特征 */
+        std::vector<double> frist_predict_data = get_frist_predict_data(predict_res, split_windows, mv_flag);
+
+        /* 5. 开始预测 */
+        std::vector<double> predict_ecs_data;
+        for(int i=0; i < fit_test_data[t.first].size() * 24 / BasicInfo::split_hour; i++)
+        {
+            svm_node* node = feature_to_svm_node(frist_predict_data);
+            double tmp_predict = svm_predict(model, node);
+
+            /* 6. 构造新的预测所需特征 */
+            frist_predict_data.erase(frist_predict_data.begin());
+            frist_predict_data.push_back(tmp_predict);
+
+            /* 7. 存储预测结果 */
+            predict_ecs_data.push_back(tmp_predict);
+        }
+
+        predict_residual_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), 0.0)), 0.0);
+    }
+
+
+    std::map<int, int> predict_data;
+    for (auto &t: BasicInfo::vm_info) {
+        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
+        AR ar_model(after_ma_data);
+        ar_model.fit("none");
+        // ar_model.fit("aic");
+        ar_model.predict(BasicInfo::need_predict_day);
+        // ar_model.print_model_info();
+        auto predict_res = ar_model.get_res();
+        predict_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), 0.0)), 0.0);
+        predict_data[t.first] += predict_residual_data[t.first];
     }
     return predict_data;
 }

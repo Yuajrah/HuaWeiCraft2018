@@ -16,6 +16,7 @@
 #include "RandomForest.h"
 #include "BasicInfo.h"
 #include <algorithm>
+#include <math.h>
 
 const  int split_windows = 10;
 

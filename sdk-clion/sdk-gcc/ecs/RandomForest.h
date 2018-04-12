@@ -18,8 +18,9 @@ public:
      * split_feature_num： 每棵树的特征个数
      * min_samples_split：最小样本划分
      * min_inpurity_split:划分的最小不纯度
+     * data_num： 每颗树随机获取的训练数据
  */
-    RandomForest(int tree_num,  int split_feature_num, int max_depth, int min_samples_split, double min_impurity_split);
+    RandomForest(int tree_num,  int split_feature_num, int max_depth, int min_samples_split, double min_impurity_split, int data_num);
 
     //训练函数
     void train(std::vector<std::vector<double>> train, std::vector<double> target);
@@ -27,6 +28,7 @@ public:
     //预测函数
     double predict(std::vector<double> predict_data);
     std::vector<int> random_vector(int max, int number);
+
 private:
     std::vector<decision_tree> trees;
 
@@ -35,5 +37,8 @@ private:
 
     //树的数目
     int _tree_num;
+
+    //每颗树选取的数目
+    int _data_num;
 };
 #endif //SDK_CLION_RANDOMFOREST_H
