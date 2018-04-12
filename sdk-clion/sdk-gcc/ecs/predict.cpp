@@ -120,7 +120,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     BasicInfo::need_predict_day = need_predict_day;
     BasicInfo::need_predict_cnt = BasicInfo::need_predict_day * 24 / BasicInfo::split_hour;
 
-    int debug = 5;
+    int debug = 0;
 
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
@@ -217,7 +217,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     * 使用随机森林进行预测
     * 有问题
     */
-//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, need_predict_day);
+//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, BasicInfo:need_predict_cnt);
 //    //std::map<int, int> predict_data = predict_by_randomForest_method2(BasicInfo::vm_info, train_data, need_predict_day);
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
@@ -227,15 +227,14 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 使用svm进行预测
      */
 
-//    std::map<int, int> predict_data = predict_by_svm(train_data);
-//    print_predict_score(actual_data, predict_data);
+    std::map<int, int> predict_data = predict_by_svm(train_data);
+    print_predict_score(actual_data, predict_data);
 
     /**
      * 用残差做预测
      */
 
-    std::map<int, int> predict_data = predict_by_ar_7th(fit_train_data, fit_test_data_everyday, train_data);
-
+//    std::map<int, int> predict_data = predict_by_ar_7th(fit_train_data, fit_test_data_everyday, train_data);
 //    print_predict_score(actual_data, predict_data);
 
 

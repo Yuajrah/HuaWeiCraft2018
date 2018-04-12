@@ -5,6 +5,8 @@
 #include "packing.h"
 #include <cstring>
 
+double score1,score2;
+
 //get Ai
 std::vector<double> getA(std::map<int, int> predict_data, std::map<int,Vm> vm_info)
 {
@@ -22,6 +24,21 @@ std::vector<double> getA(std::map<int, int> predict_data, std::map<int,Vm> vm_in
 }
 
 std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object){
+    std::vector<std::map<int,int>>result_record_1;
+    std::vector<std::map<int,int>>result_record_2;
+
+	result_record_1 = packing(vm_info, server, predict_data, opt_object, 1);
+	result_record_2 = packing(vm_info, server, predict_data, opt_object, 2);
+
+	if(score1 >= score2){
+	    return result_record_2;
+	}else{
+        return  result_record_1;
+	}
+}
+
+
+std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object, int value_type){
     std::map<int, int> predict_data_tmp = predict_data;
     //首先确定优化目标
     int target;
@@ -93,7 +110,12 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
             current_flavor_info =  vm_info.find(16-pos);
             int core_need = current_flavor_info->second.core;
             int mem_need = current_flavor_info->second.mem;
-            int item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
+ 			int item_value;
+			if(value_type == 1){
+				item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
+			}else if(value_type == 2){
+				item_value =core_need + mem_need;//物品价值
+			}
             int item_num = tmp_vm_num[pos];//可用的物品数量
 
             //void MultiplePack(int C, int D, int U, int V, int W, int M);
@@ -118,7 +140,13 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
         result_record.push_back(new_record);
         is_vm_empty = check_vmnum_empty(tmp_vm_num);
     }
-    get_scores_p(predict_data_tmp, server, server_number, target, vm_info);
+
+    if(value_type == 1){
+        score1 = get_scores_p(predict_data_tmp, server, server_number, target, vm_info);
+    }else{
+        score2 = get_scores_p(predict_data_tmp, server, server_number, target, vm_info);
+    }
+
     return result_record;
 }
 
@@ -147,9 +175,7 @@ std::vector<int> get_path(std::vector<std::vector<std::vector<int> > > &used, st
 
 void CompletePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int pos)
 {
-//    for v <-- C to V
-//        F(v) <-- max{F(v), F(v-C)+W}
- //   std::cout<<"CompetePack("<<C<<", "<<D<<", "<<W<<", "<<pos<<")"<<std::endl;
+
     for(int u=C; u<=U; u++)
     {
         for(int v=D; v<=V; v++){
@@ -231,7 +257,7 @@ Allocat_server allocate_oneserver(int id, int core, int mem, int target)
     return new_allocate;
 }
 
-void get_scores_p(std::map<int, int>predict_data, Server server, int number, int target, std::map<int, Vm> vm_info)
+double get_scores_p(std::map<int, int>predict_data, Server server, int number, int target, std::map<int, Vm> vm_info)
 {
     int total_allocate;
     if (target == 0)
@@ -268,4 +294,5 @@ void get_scores_p(std::map<int, int>predict_data, Server server, int number, int
     }
     double percent = (total_need+0.0)/total_allocate;
     printf("allocate score = %f\n", percent);
+    return percent;
 }

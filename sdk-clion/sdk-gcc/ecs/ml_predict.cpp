@@ -125,7 +125,7 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
             predict_ecs_data.push_back(tmp_predict);
             ecs_sum += tmp_predict;
         }
-        result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day)*1.1;
+        result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day);
         //result[t.first] = get_bigger_mean(predict_ecs_data, need_predict_day/2)*need_predict_day;
     }
 
