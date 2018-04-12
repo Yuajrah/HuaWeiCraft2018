@@ -290,6 +290,24 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
         svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
         svm_parameter param = init_svm_parameter();   // 初始化训练参数
 
+
+        param.svm_type = NU_SVR;
+        param.kernel_type = LINEAR;
+        param.degree = 3;
+        param.gamma = 0.01;	// 1/num_features
+        param.coef0 = 0;
+        param.nu = 0.5;
+        param.cache_size = 100;
+        param.C = 1;
+        param.eps = 1e-3;
+        param.p = 0.1;
+        param.shrinking = 1;
+        param.probability = 0;
+        param.nr_weight = 0;
+        param.weight_label = NULL;
+        param.weight = NULL;
+
+
         /* 3. 训练模型 */
         svm_model* model = svm_train(&prob, &param);
 

@@ -25,7 +25,7 @@ std::map<int, std::vector<double>> get_esc_data(
     std::map<int, std::vector<double>> res;
 
     // 初始化，给每种vm分配数据存储空间（连续天）
-    int periods_len = std::ceil(get_days(start_date, end_date) * 24 / static_cast<double>(BasicInfo::split_hour));  // 数据长度
+    int periods_len = std::ceil(get_days(start_date, end_date) * 24 / (double)(BasicInfo::split_hour));  // 数据长度
 
     for (auto &info: BasicInfo::vm_info) {
         res[info.first].assign(periods_len, (double)0);
