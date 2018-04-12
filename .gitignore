@@ -121,6 +121,8 @@ imgs/
 bin/
 ecs.tar.gz
 data/exercise/output_file.txt 
+/data/exercise/output_file.txt
+/data/exercise/output_file.txt
 
 #######################
 # c++
