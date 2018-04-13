@@ -29,7 +29,7 @@ void SVR::train() {
         model.probA = std::vector<double>(1, svr_probability(prob, param));
     }
 
-    decision_function f = svm_train_one(prob, param,0,0);
+    decision_function f = train_one(prob, param,0,0);
     model.rho = std::vector<double>(1, f.rho);
 
     int nSV = 0;
@@ -96,7 +96,7 @@ double SVR::svr_probability(
 //	double rho;
 //};
 
-decision_function SVR::svm_train_one(svm_problem prob, svm_parameter param, double Cp, double Cn)
+decision_function SVR::train_one(svm_problem prob, svm_parameter param, double Cp, double Cn)
 {
 //	double *alpha = Malloc(double,prob.l);
     std::vector<double> alpha(prob.l, 0.0);
