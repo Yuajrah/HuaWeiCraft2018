@@ -28,66 +28,6 @@ std::map<int, int> predict_by_ar_1th (std::map<int, Vm> vm_info, std::map<int, s
     return predict_data;
 }
 
-/**
-* 基于ar改动, 第二版
-*/
-std::map<int, int> predict_by_ar_2th (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day) {
-
-    std::map<int, int> predict_data;
-    for (auto &t: vm_info) {
-
-        int tmp_sum = 0;
-        for (int jj=0;jj<need_predict_day;jj++) {
-            ARIMAModel* arima = new ARIMAModel(ma(train_data[t.first], 5));
-
-            int period = 1;
-            int modelCnt = 5;
-            std::vector<int> tmpPredict(modelCnt);
-            std::vector<std::vector<int>> list;
-            int cnt=0;
-
-            for (int k = 0; k < modelCnt; ++k)			//控制通过多少组参数进行计算最终的结果
-            {
-                std::vector<int> bestModel = arima->getARIMAModel(period, list, (k == 0) ? false : true);
-                //std::cout<<bestModel.size()<<std::endl;
-
-                if (bestModel.size() == 0)
-                {
-                    tmpPredict[k] = (int)train_data[t.first][train_data[t.first].size() - period];
-                    cnt++;
-                    break;
-                }
-                else
-                {
-                    //std::cout<<bestModel[0]<<bestModel[1]<<std::endl;
-
-                    int predictDiff = arima->predictValue(bestModel[0], bestModel[1], period);
-                    //std::cout<<"fuck"<<std::endl;
-                    tmpPredict[k] = arima->aftDeal(predictDiff, period);
-                    cnt++;
-                }
-                std::cout<<bestModel[0]<<" "<<bestModel[1]<<std::endl;
-                list.push_back(bestModel);
-            }
-            double sumPredict = 0.0;
-
-            for (int k = 0; k < cnt; ++k)
-            {
-                sumPredict += ((double)tmpPredict[k])/(double)cnt;
-//        printf("%f ", sumPredict);
-            }
-
-            int predict = (int)std::round(sumPredict);
-            tmp_sum += predict;
-            printf("predict = %d ", predict);
-            train_data[t.first].push_back(predict);
-        }
-
-        predict_data[t.first] = tmp_sum;
-    }
-    return predict_data;
-}
-
 
 /**
 * 基于ar改动, 第三版

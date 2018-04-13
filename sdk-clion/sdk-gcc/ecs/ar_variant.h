@@ -19,7 +19,6 @@
 #include "packing.h"
 #include "lib_io.h"
 #include "data_format_change.h"
-#include "ARIMAModel.h"
 #include <numeric>
 #include <cfloat>
 #include "data_preprocess.h"
