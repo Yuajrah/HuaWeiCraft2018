@@ -72,8 +72,8 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param);
 void svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fold, std::vector<double> target);
 
 
-double svm_predict_values(const struct svm_model *model, const std::vector<svm_node> x, double* dec_values);
-double svm_predict(const struct svm_model *model, const std::vector<svm_node> x);
+double svm_predict_values(const svm_model &model, const std::vector<svm_node> x, std::vector<double> &dec_values);
+double svm_predict(svm_model model, const std::vector<svm_node> x);
 double svm_predict_probability(const struct svm_model *model, const std::vector<svm_node> x, double* prob_estimates);
 
 #endif /* _LIBSVM_H */
