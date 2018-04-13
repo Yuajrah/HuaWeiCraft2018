@@ -20,7 +20,6 @@ template <class S, class T> static inline void clone(T*& dst, S* src, int n)
 
 #define INF HUGE_VAL
 #define TAU 1e-12
-#define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
 static void print_string_stdout(const char *s)
 {
@@ -279,8 +278,8 @@ public:
 		double r;	// for Solver_NU
 	};
 
-	void Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
-			   double *alpha_, double Cp, double Cn, double eps,
+	void Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const schar *y_,
+			   std::vector<double> &alpha_, double Cp, double Cn, double eps,
 			   SolutionInfo* si, int shrinking);
 protected:
 	int active_size;
@@ -288,12 +287,14 @@ protected:
 	double *G;		// gradient of objective function
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
-	double *alpha;
+//	double *alpha;
+	std::vector<double> alpha;
 	const QMatrix *Q;
 	const double *QD;
 	double eps;
 	double Cp,Cn;
-	double *p;
+	std::vector<double> p;
+//	double *p;
 	int *active_set;
 	double *G_bar;		// gradient, if we treat free variables as 0
 	int l;
@@ -377,8 +378,8 @@ void Solver::reconstruct_gradient()
 	}
 }
 
-void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
-				   double *alpha_, double Cp, double Cn, double eps,
+void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const schar *y_,
+				   std::vector<double> &alpha_, double Cp, double Cn, double eps,
 				   SolutionInfo* si, int shrinking)
 {
 	this->l = l;
@@ -386,9 +387,10 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	QD=Q.get_QD();
 
 
-	clone(p, p_,l);
+//	clone(p, p_,l);
+	p = p_;
 	clone(y, y_,l);
-	clone(alpha,alpha_,l);
+	alpha = alpha_;
 	this->Cp = Cp;
 	this->Cn = Cn;
 	this->eps = eps;
@@ -651,9 +653,9 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 
 	info("\noptimization finished, #iter = %d\n",iter);
 
-	delete[] p;
+//	delete[] p;
 	delete[] y;
-	delete[] alpha;
+//	delete[] alpha;
 	delete[] alpha_status;
 	delete[] active_set;
 	delete[] G;
@@ -888,8 +890,8 @@ class Solver_NU: public Solver
 {
 public:
 	Solver_NU() {}
-	void Solve(int l, const QMatrix& Q, const double *p, const schar *y,
-			   double *alpha, double Cp, double Cn, double eps,
+	void Solve(int l, const QMatrix& Q, const std::vector<double> &p, const schar *y,
+			   std::vector<double> &alpha, double Cp, double Cn, double eps,
 			   SolutionInfo* si, int shrinking)
 	{
 		this->si = si;
@@ -1215,40 +1217,42 @@ private:
 };
 
 static void solve_nu_svr(
-		const svm_problem *prob, const svm_parameter *param,
-		std::vector<double> &alpha, Solver::SolutionInfo* si)
+		const svm_problem &prob,
+		const svm_parameter &param,
+		std::vector<double> &alpha,
+		Solver::SolutionInfo &si)
 {
-	int l = prob->l;
-	double C = param->C;
-	double *alpha2 = new double[2*l];
-	double *linear_term = new double[2*l];
+	int l = prob.l;
+	double C = param.C;
+	std::vector<double> alpha2(2*l);
+	std::vector<double> linear_term(2*l);
+
 	schar *y = new schar[2*l];
 	int i;
 
-	double sum = C * param->nu * l / 2;
+	double sum = C * param.nu * l / 2;
 	for(i=0;i<l;i++)
 	{
 		alpha2[i] = alpha2[i+l] = std::min(sum,C);
 		sum -= alpha2[i];
 
-		linear_term[i] = - prob->y[i];
+		linear_term[i] = - prob.y[i];
 		y[i] = 1;
 
-		linear_term[i+l] = prob->y[i];
+		linear_term[i+l] = prob.y[i];
 		y[i+l] = -1;
 	}
 
 	Solver_NU s;
-	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
-			alpha2, C, C, param->eps, si, param->shrinking);
+	s.Solve(2*l, SVR_Q(prob, param), linear_term, y,
+			alpha2, C, C, param.eps, &si, param.shrinking);
 
-	info("epsilon = %f\n",-si->r);
 
 	for(i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
 
-	delete[] alpha2;
-	delete[] linear_term;
+//	delete[] alpha2;
+//	delete[] linear_term;
 	delete[] y;
 }
 
@@ -1267,7 +1271,7 @@ static decision_function svm_train_one(svm_problem prob, svm_parameter param, do
 	std::vector<double> alpha(prob.l, 0.0);
 	Solver::SolutionInfo si;
 
-	solve_nu_svr(&prob, &param, alpha,&si);
+	solve_nu_svr(prob, param, alpha, si);
 
 	info("obj = %f, rho = %f\n",si.obj,si.rho);
 
@@ -1300,195 +1304,6 @@ static decision_function svm_train_one(svm_problem prob, svm_parameter param, do
 	f.rho = si.rho;
 	return f;
 }
-
-// Platt's binary SVM Probablistic Output: an improvement from Lin et al.
-static void sigmoid_train(
-		int l, const double *dec_values, const std::vector<double> labels,
-		double& A, double& B)
-{
-	double prior1=0, prior0 = 0;
-	int i;
-
-	for (i=0;i<l;i++)
-		if (labels[i] > 0) prior1+=1;
-		else prior0+=1;
-
-	int max_iter=100;	// Maximal number of iterations
-	double min_step=1e-10;	// Minimal step taken in line search
-	double sigma=1e-12;	// For numerically strict PD of Hessian
-	double eps=1e-5;
-	double hiTarget=(prior1+1.0)/(prior1+2.0);
-	double loTarget=1/(prior0+2.0);
-	double *t=Malloc(double,l);
-	double fApB,p,q,h11,h22,h21,g1,g2,det,dA,dB,gd,stepsize;
-	double newA,newB,newf,d1,d2;
-	int iter;
-
-	// Initial Point and Initial Fun Value
-	A=0.0; B=log((prior0+1.0)/(prior1+1.0));
-	double fval = 0.0;
-
-	for (i=0;i<l;i++)
-	{
-		if (labels[i]>0) t[i]=hiTarget;
-		else t[i]=loTarget;
-		fApB = dec_values[i]*A+B;
-		if (fApB>=0)
-			fval += t[i]*fApB + log(1+exp(-fApB));
-		else
-			fval += (t[i] - 1)*fApB +log(1+exp(fApB));
-	}
-	for (iter=0;iter<max_iter;iter++)
-	{
-		// Update Gradient and Hessian (use H' = H + sigma I)
-		h11=sigma; // numerically ensures strict PD
-		h22=sigma;
-		h21=0.0;g1=0.0;g2=0.0;
-		for (i=0;i<l;i++)
-		{
-			fApB = dec_values[i]*A+B;
-			if (fApB >= 0)
-			{
-				p=exp(-fApB)/(1.0+exp(-fApB));
-				q=1.0/(1.0+exp(-fApB));
-			}
-			else
-			{
-				p=1.0/(1.0+exp(fApB));
-				q=exp(fApB)/(1.0+exp(fApB));
-			}
-			d2=p*q;
-			h11+=dec_values[i]*dec_values[i]*d2;
-			h22+=d2;
-			h21+=dec_values[i]*d2;
-			d1=t[i]-p;
-			g1+=dec_values[i]*d1;
-			g2+=d1;
-		}
-
-		// Stopping Criteria
-		if (fabs(g1)<eps && fabs(g2)<eps)
-			break;
-
-		// Finding Newton direction: -inv(H') * g
-		det=h11*h22-h21*h21;
-		dA=-(h22*g1 - h21 * g2) / det;
-		dB=-(-h21*g1+ h11 * g2) / det;
-		gd=g1*dA+g2*dB;
-
-
-		stepsize = 1;		// Line Search
-		while (stepsize >= min_step)
-		{
-			newA = A + stepsize * dA;
-			newB = B + stepsize * dB;
-
-			// New function value
-			newf = 0.0;
-			for (i=0;i<l;i++)
-			{
-				fApB = dec_values[i]*newA+newB;
-				if (fApB >= 0)
-					newf += t[i]*fApB + log(1+exp(-fApB));
-				else
-					newf += (t[i] - 1)*fApB +log(1+exp(fApB));
-			}
-			// Check sufficient decrease
-			if (newf<fval+0.0001*stepsize*gd)
-			{
-				A=newA;B=newB;fval=newf;
-				break;
-			}
-			else
-				stepsize = stepsize / 2.0;
-		}
-
-		if (stepsize < min_step)
-		{
-			info("Line search fails in two-class probability estimates\n");
-			break;
-		}
-	}
-
-	if (iter>=max_iter)
-		info("Reaching maximal iterations in two-class probability estimates\n");
-	free(t);
-}
-
-static double sigmoid_predict(double decision_value, double A, double B)
-{
-	double fApB = decision_value*A+B;
-	// 1-p used later; avoid catastrophic cancellation
-	if (fApB >= 0)
-		return exp(-fApB)/(1.0+exp(-fApB));
-	else
-		return 1.0/(1+exp(fApB)) ;
-}
-
-// Method 2 from the multiclass_prob paper by Wu, Lin, and Weng
-static void multiclass_probability(int k, double **r, double *p)
-{
-	int t,j;
-	int iter = 0, max_iter=std::max(100,k);
-	double **Q=Malloc(double *,k);
-	double *Qp=Malloc(double,k);
-	double pQp, eps=0.005/k;
-
-	for (t=0;t<k;t++)
-	{
-		p[t]=1.0/k;  // Valid if k = 1
-		Q[t]=Malloc(double,k);
-		Q[t][t]=0;
-		for (j=0;j<t;j++)
-		{
-			Q[t][t]+=r[j][t]*r[j][t];
-			Q[t][j]=Q[j][t];
-		}
-		for (j=t+1;j<k;j++)
-		{
-			Q[t][t]+=r[j][t]*r[j][t];
-			Q[t][j]=-r[j][t]*r[t][j];
-		}
-	}
-	for (iter=0;iter<max_iter;iter++)
-	{
-		// stopping condition, recalculate QP,pQP for numerical accuracy
-		pQp=0;
-		for (t=0;t<k;t++)
-		{
-			Qp[t]=0;
-			for (j=0;j<k;j++)
-				Qp[t]+=Q[t][j]*p[j];
-			pQp+=p[t]*Qp[t];
-		}
-		double max_error=0;
-		for (t=0;t<k;t++)
-		{
-			double error=fabs(Qp[t]-pQp);
-			if (error>max_error)
-				max_error=error;
-		}
-		if (max_error<eps) break;
-
-		for (t=0;t<k;t++)
-		{
-			double diff=(-Qp[t]+pQp)/Q[t][t];
-			p[t]+=diff;
-			pQp=(pQp+diff*(diff*Q[t][t]+2*Qp[t]))/(1+diff)/(1+diff);
-			for (j=0;j<k;j++)
-			{
-				Qp[j]=(Qp[j]+diff*Q[t][j])/(1+diff);
-				p[j]/=(1+diff);
-			}
-		}
-	}
-	if (iter>=max_iter)
-		info("Exceeds max_iter in multiclass_prob\n");
-	for(t=0;t<k;t++) free(Q[t]);
-	free(Q);
-	free(Qp);
-}
-
 
 
 // Return parameter of a Laplace distribution
