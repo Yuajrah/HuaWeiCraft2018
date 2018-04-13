@@ -293,7 +293,8 @@ protected:
 	std::vector<double> p;
 //	int *active_set;
 	std::vector<int> active_set;
-	double *G_bar;		// gradient, if we treat free variables as 0
+//	double *G_bar;		// gradient, if we treat free variables as 0
+	std::vector<double> G_bar;
 	int l;
 	bool unshrink;	// XXX
 
@@ -411,7 +412,7 @@ void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::ve
 	// initialize gradient
 	{
 		G = std::vector<double>(l, 0.0);
-		G_bar = new double[l];
+		G_bar = std::vector<double>(l, 0.0);
 		int i;
 		for(i=0;i<l;i++)
 		{
@@ -656,7 +657,7 @@ void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::ve
 	delete[] alpha_status;
 //	delete[] active_set;
 //	delete[] G;
-	delete[] G_bar;
+//	delete[] G_bar;
 }
 
 // return 1 if already optimal, return 0 otherwise
