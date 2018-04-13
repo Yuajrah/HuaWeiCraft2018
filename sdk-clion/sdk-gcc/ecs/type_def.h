@@ -5,6 +5,11 @@
 #ifndef SDK_GCC_TYPE_DEF_H
 #define SDK_GCC_TYPE_DEF_H
 
+#define INF HUGE_VAL
+#define TAU 1e-12
+
+#include <vector>
+
 struct Server {
     int core;// 核数
     int mem; // 内存大小
@@ -37,5 +42,45 @@ struct Node_index
 };
 
 bool operator< (const Node_index &index1, const Node_index &index);
+
+
+/**
+ * svm type
+ */
+
+struct SolverRes {
+    double obj;
+    double rho;
+    double upper_bound_p;
+    double upper_bound_n;
+    double r;
+};
+
+
+struct svm_parameter
+{
+    double cache_size;
+    double eps;
+    double C;
+    double nu;
+    int shrinking;
+    int probability;
+};
+
+struct svm_model
+{
+    svm_parameter param;
+    int l;
+    std::vector<std::vector<double>> SV;
+    std::vector<std::vector<double>> sv_coef;
+    std::vector<double> rho;
+    std::vector<double> probA;
+    std::vector<double> probB;
+    std::vector<int> sv_indices;
+    std::vector<int> label;
+    std::vector<int> nSV;
+};
+
+enum { LOWER_BOUND, UPPER_BOUND, FREE };
 
 #endif //SDK_GCC_TYPE_DEF_H

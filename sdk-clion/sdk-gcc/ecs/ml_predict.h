@@ -12,12 +12,14 @@
 #include "KNN.h"
 #include "MnistPreProcess.h"
 #include "CART.h"
+
+#include "type_def.h"
 #include "RandomForest.h"
 #include "BasicInfo.h"
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 
-#include "linerRegression.h"
+#include "LinerRegression.h"
 
 //训练集划分的标准
 const bool unchangale = false;
@@ -37,7 +39,20 @@ std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std
 
 std::map<int, int> predict_by_LR(std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 
+std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data);
+
 //取结果前一半的平均值
 int get_bigger_mean(std::vector<double> data, int num);
+
+///////////////////////////////////////////////////
+//// svm 相关函数 //////////////////////////////////
+///////////////////////////////////////////////////
+
+/**
+ * 初始化参数, 默认参数
+ * @return
+ */
+svm_parameter init_svm_parameter();
+
 
 #endif //SDK_CLION_ML_PREDICT_H
