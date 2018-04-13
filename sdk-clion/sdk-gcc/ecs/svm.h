@@ -65,11 +65,8 @@ struct svm_model
     /* 0 if svm_model is created by svm_train */
 };
 
-svm_model svm_train(const struct svm_problem *prob, const struct svm_parameter *param);
+svm_model svm_train(const svm_problem &prob, const svm_parameter &param);
 void svm_cross_validation(const struct svm_problem *prob, const struct svm_parameter *param, int nr_fold, double *target);
-
-
-int svm_get_nr_class(const struct svm_model *model);
 
 
 double svm_predict_values(const struct svm_model *model, const struct svm_node *x, double* dec_values);

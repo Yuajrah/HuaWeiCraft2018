@@ -1957,7 +1957,7 @@ static void svm_binary_svc_probability(
 			subparam.weight_label[1]=-1;
 			subparam.weight[0]=Cp;
 			subparam.weight[1]=Cn;
-			struct svm_model submodel = svm_train(&subprob,&subparam);
+			struct svm_model submodel = svm_train(subprob, subparam);
 			for(j=begin;j<end;j++)
 			{
 				svm_predict_values(&submodel,prob->x[perm[j]],&(dec_values[perm[j]]));
@@ -2091,10 +2091,10 @@ static void svm_group_classes(const svm_problem *prob, int *nr_class_ret, int **
 //
 // Interface functions
 //
-svm_model svm_train(const svm_problem *prob, const svm_parameter *param)
+svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
 {
 	svm_model model;
-	model.param = *param;
+	model.param = param;
 	model.free_sv = 0;	// XXX
 
 
@@ -2105,31 +2105,31 @@ svm_model svm_train(const svm_problem *prob, const svm_parameter *param)
 		model.probA = NULL; model.probB = NULL;
 		model.sv_coef = Malloc(double *,1);
 
-		if(param->probability &&
-		   (param->svm_type == EPSILON_SVR ||
-			param->svm_type == NU_SVR))
+		if(param.probability &&
+		   (param.svm_type == EPSILON_SVR ||
+			param.svm_type == NU_SVR))
 		{
 			model.probA = Malloc(double,1);
-			model.probA[0] = svm_svr_probability(prob,param);
+			model.probA[0] = svm_svr_probability(&prob, &param);
 		}
 
-		decision_function f = svm_train_one(prob,param,0,0);
+		decision_function f = svm_train_one(&prob, &param,0,0);
 		model.rho = Malloc(double,1);
 		model.rho[0] = f.rho;
 
 		int nSV = 0;
 		int i;
-		for(i=0;i<prob->l;i++)
+		for(i=0;i<prob.l;i++)
 			if(fabs(f.alpha[i]) > 0) ++nSV;
 		model.l = nSV;
 		model.SV = Malloc(svm_node *,nSV);
 		model.sv_coef[0] = Malloc(double,nSV);
 		model.sv_indices = Malloc(int,nSV);
 		int j = 0;
-		for(i=0;i<prob->l;i++)
+		for(i=0;i<prob.l;i++)
 			if(fabs(f.alpha[i]) > 0)
 			{
-				model.SV[j] = prob->x[i];
+				model.SV[j] = prob.x[i];
 				model.sv_coef[0][j] = f.alpha[i];
 				model.sv_indices[j] = i+1;
 				++j;
@@ -2242,7 +2242,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 			subprob.y[k] = prob->y[perm[j]];
 			++k;
 		}
-		svm_model submodel = svm_train(&subprob,param);
+		svm_model submodel = svm_train(subprob, *param);
 		if(param->probability &&
 		   (param->svm_type == C_SVC || param->svm_type == NU_SVC))
 		{
