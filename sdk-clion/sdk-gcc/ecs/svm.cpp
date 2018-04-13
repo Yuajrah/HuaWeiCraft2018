@@ -13,25 +13,7 @@
 #define INF HUGE_VAL
 #define TAU 1e-12
 
-static void print_string_stdout(const char *s)
-{
-	fputs(s,stdout);
-	fflush(stdout);
-}
-static void (*svm_print_string) (const char *) = &print_string_stdout;
-#if 1
-static void info(const char *fmt,...)
-{
-	char buf[BUFSIZ];
-	va_list ap;
-	va_start(ap,fmt);
-	vsprintf(buf,fmt,ap);
-	va_end(ap);
-	(*svm_print_string)(buf);
-}
-#else
-static void info(const char *fmt,...) {}
-#endif
+
 
 static void solve_nu_svr(
 		const svm_problem &prob,
@@ -83,7 +65,6 @@ static decision_function svm_train_one(svm_problem prob, svm_parameter param, do
 
 	solve_nu_svr(prob, param, alpha, si);
 
-	info("obj = %f, rho = %f\n",si.obj,si.rho);
 
 	// output SVs
 
@@ -107,7 +88,6 @@ static decision_function svm_train_one(svm_problem prob, svm_parameter param, do
 		}
 	}
 
-	info("nSV = %d, nBSV = %d\n",nSV,nBSV);
 
 	decision_function f;
 	f.alpha = alpha;
@@ -146,7 +126,6 @@ static double svm_svr_probability(
 			mae+=fabs(ymv[i]);
 
 	mae /= (prob.l-count);
-	info("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma= %g\n",mae);
 	return mae;
 }
 

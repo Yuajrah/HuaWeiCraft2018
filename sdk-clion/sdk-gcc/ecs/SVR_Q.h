@@ -48,8 +48,6 @@ public:
     static double dot(const std::vector<svm_node> px, const std::vector<svm_node> py);
 
     ~SVR_Q();
-
-
 };
 
 #endif //SDK_CLION_SVR_Q_H
