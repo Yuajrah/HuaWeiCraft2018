@@ -16,7 +16,7 @@ class Cache;
 class SVR_Q
 {
 private:
-    std::vector<std::vector<double>> x;
+    std::vector<std::vector<double>> X;
 
     // svm_parameter
     int l;
@@ -28,7 +28,7 @@ private:
     double *QD;
 
 public:
-    SVR_Q(const svm_problem& prob, const svm_parameter& param);
+    SVR_Q(std::vector<std::vector<double>> X, std::vector<double> Y, const svm_parameter& param);
     void swap_index(int i, int j) const;
 
     float *get_Q(int i, int len);

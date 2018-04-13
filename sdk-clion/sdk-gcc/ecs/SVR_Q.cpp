@@ -4,10 +4,10 @@
 
 #include "SVR_Q.h"
 
-SVR_Q::SVR_Q(const svm_problem& prob, const svm_parameter& param) {
+SVR_Q::SVR_Q(std::vector<std::vector<double>> X, std::vector<double> Y, const svm_parameter& param) {
 
-    x = prob.x;
-    l = prob.l;
+    this->X = X;
+    l = Y.size();
 
     cache = new Cache(l,(long int)(param.cache_size*(1<<20)));
 
@@ -63,7 +63,7 @@ double * SVR_Q::get_QD() const
 
 double SVR_Q::kernel_linear(int i, int j)
 {
-    return dot(x[i],x[j]);
+    return dot(X[i],X[j]);
 }
 
 double SVR_Q::dot(const std::vector<double> px, const std::vector<double> py)

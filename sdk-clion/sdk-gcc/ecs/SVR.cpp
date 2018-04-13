@@ -4,7 +4,7 @@
 
 #include "SVR.h"
 
-SVR::SVR(svm_problem prob, svm_parameter param): prob(prob), param(param){}
+SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param): X(X), Y(Y), param(param){}
 
 void SVR::train() {
 
@@ -19,7 +19,7 @@ void SVR::train() {
     model.rho = std::vector<double>(1, alpha_rho.second);
 
     model.l = 0;
-    for(int i=0;i<prob.l;i++)
+    for(int i=0;i<Y.size();i++)
         if(fabs(alpha_rho.first[i]) > 0) model.l++;
 
     model.SV = std::vector<std::vector<double>>(model.l);
@@ -27,9 +27,9 @@ void SVR::train() {
     model.sv_indices = std::vector<int>(model.l, 0);
 
     int j = 0;
-    for(int i=0;i<prob.l;i++) {
+    for(int i=0;i<Y.size();i++) {
         if (fabs(alpha_rho.first[i]) > 0) {
-            model.SV[j] = prob.x[i];
+            model.SV[j] = X[i];
             model.sv_coef[0][j] = alpha_rho.first[i];
             model.sv_indices[j] = i + 1;
             j++;
@@ -41,35 +41,35 @@ void SVR::train() {
 // Return parameter of a Laplace distribution
 double SVR::svr_probability()
 {
-    std::vector<double> ymv(prob.l);
+    std::vector<double> ymv(Y.size());
     double mae = 0;
 
 
-    for(int i=0;i<prob.l;i++)
+    for(int i=0;i<Y.size();i++)
     {
-        ymv[i]=prob.y[i]-ymv[i];
+        ymv[i]=Y[i]-ymv[i];
         mae += fabs(ymv[i]);
     }
 
-    mae /= prob.l;
+    mae /= Y.size();
     double std=sqrt(2*mae*mae);
     int count=0;
 
     mae=0;
-    for(int i=0;i<prob.l;i++)
+    for(int i=0;i<Y.size();i++)
         if (fabs(ymv[i]) > 5*std)
             count=count+1;
         else
             mae+=fabs(ymv[i]);
 
-    mae /= (prob.l-count);
+    mae /= (Y.size()-count);
     return mae;
 }
 
 
 std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
 {
-    std::vector<double> alpha(prob.l, 0.0);
+    std::vector<double> alpha(Y.size(), 0.0);
 
     SolutionInfo si;
     solve_nu_svr(alpha, si);
@@ -78,12 +78,12 @@ std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
 
     int nSV = 0;
     int nBSV = 0;
-    for(int i=0;i<prob.l;i++)
+    for(int i=0;i<Y.size();i++)
     {
         if(fabs(alpha[i]) > 0)
         {
             ++nSV;
-            if(prob.y[i] > 0)
+            if(Y[i] > 0)
             {
                 if(fabs(alpha[i]) >= si.upper_bound_p)
                     ++nBSV;
@@ -101,28 +101,28 @@ std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
 
 void SVR::solve_nu_svr(std::vector<double> &alpha, SolutionInfo &si) {
 
-    std::vector<double> t_alpha(2 * prob.l);
-    std::vector<double> linear_term(2 * prob.l);
-    std::vector<char> y(2 * prob.l);
+    std::vector<double> t_alpha(2 * Y.size());
+    std::vector<double> linear_term(2 * Y.size());
+    std::vector<char> y(2 * Y.size());
 
-    double sum = param.C * param.nu * prob.l / 2;
+    double sum = param.C * param.nu * Y.size() / 2;
 
-    for(int i=0;i<prob.l;i++) {
-        t_alpha[i] = t_alpha[i+prob.l] = std::min(param.C, sum);
+    for(int i=0;i<Y.size();i++) {
+        t_alpha[i] = t_alpha[i+Y.size()] = std::min(param.C, sum);
         sum -= t_alpha[i];
 
-        linear_term[i] = - prob.y[i];
+        linear_term[i] = - Y[i];
         y[i] = 1;
 
-        linear_term[i+prob.l] = prob.y[i];
-        y[i+prob.l] = -1;
+        linear_term[i+Y.size()] = Y[i];
+        y[i+Y.size()] = -1;
     }
 
-    SVR_Q svr_q(prob, param);
-    Solve(2 * prob.l, svr_q, linear_term, y, t_alpha, param.C, param.C, param.eps, si, param.shrinking);
+    SVR_Q svr_q(X, Y, param);
+    Solve(2 * Y.size(), svr_q, linear_term, y, t_alpha, param.C, param.C, param.eps, si, param.shrinking);
 
-    for(int i=0;i<prob.l;i++)
-        alpha[i] = t_alpha[i] - t_alpha[i+prob.l];
+    for(int i=0;i<Y.size();i++)
+        alpha[i] = t_alpha[i] - t_alpha[i+Y.size()];
 }
 
 

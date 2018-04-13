@@ -52,7 +52,7 @@ svm_parameter init_svm_parameter();
  * @param train_y
  * @return
  */
-svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y);
+//svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y);
 
 
 /**

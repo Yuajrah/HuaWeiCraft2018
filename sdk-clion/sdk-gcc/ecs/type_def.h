@@ -56,14 +56,12 @@ struct SolutionInfo {
     double r;
 };
 
-
-
-struct svm_problem
-{
-    int l;
-    std::vector<double> y;
-    std::vector<std::vector<double>> x;
-};
+//struct svm_problem
+//{
+//    int l;
+//    std::vector<double> y;
+//    std::vector<std::vector<double>> x;
+//};
 
 struct svm_parameter
 {

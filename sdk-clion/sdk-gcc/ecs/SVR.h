@@ -11,12 +11,14 @@
 
 class SVR {
 public:
-    svm_problem prob;
+    std::vector<std::vector<double>> X;
+    std::vector<double> Y;
+
     svm_parameter param;
 
     svm_model model;
 
-    SVR(svm_problem prob, svm_parameter param);
+    SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param);
     void train();
     double svr_probability();
     std::pair<std::vector<double>, double> train_one(double Cp, double Cn);

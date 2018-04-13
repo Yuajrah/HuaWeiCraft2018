@@ -183,52 +183,52 @@ int get_bigger_mean(std::vector<double> data, int num)
 //};
 //
 /*train_x,train_y是我已经导入的数据，分别是样本及其对应的类别标签*/
-svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y)
-{
-
-    svm_problem prob;
-
-    int train_size = train_y.size();
-    int feature_size = train_x[0].size();
-
-    prob.l = train_size;        // 训练样本数
-//    prob.y = new double[train_size];
-    prob.y = train_y;
-//    prob.x = new svm_node*[train_size];
-//    prob.x = train_x;
-    prob.x = train_x;
-//    svm_node* node = new svm_node[train_size*(1 + feature_size)];
-
-////    memcpy(prob.y, &train_y[0], train_y.size()*sizeof(double));
+//svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y)
+//{
 //
-////    prob.y = vec2arr(train_y);
-//    // 按照格式打包
-//    for (int i = 0; i < train_size; i++)
-//    {
-//        for (int j = 0; j < feature_size; j++)
-//        {   // 看不懂指针就得复习C语言了，类比成二维数组的操作
-//            svm_node node;
-//            node.index = j + 1;
-//            node.value = train_x[i][j];
-//            prob.x[i].push_back(node);
-//        }
-//        svm_node node;
-//        node.index = -1;
-//        prob.x[i].push_back(node);
-//    }
-//    // 按照格式打包
+//    svm_problem prob;
+//
+//    int train_size = train_y.size();
+//    int feature_size = train_x[0].size();
+//
+//    prob.l = train_size;        // 训练样本数
+////    prob.y = new double[train_size];
+//    prob.y = train_y;
+////    prob.x = new svm_node*[train_size];
+////    prob.x = train_x;
+//    prob.x = train_x;
+////    svm_node* node = new svm_node[train_size*(1 + feature_size)];
+//
+//////    memcpy(prob.y, &train_y[0], train_y.size()*sizeof(double));
+////
+//////    prob.y = vec2arr(train_y);
+////    // 按照格式打包
 ////    for (int i = 0; i < train_size; i++)
 ////    {
 ////        for (int j = 0; j < feature_size; j++)
 ////        {   // 看不懂指针就得复习C语言了，类比成二维数组的操作
-////            node[(feature_size + 1) * i + j].index = j + 1;
-////            node[(feature_size + 1) * i + j].value = train_x[i][j];
+////            svm_node node;
+////            node.index = j + 1;
+////            node.value = train_x[i][j];
+////            prob.x[i].push_back(node);
 ////        }
-////        node[(feature_size + 1) * i + feature_size].index = -1;
-////        prob.x[i] = &node[(feature_size + 1) * i];
+////        svm_node node;
+////        node.index = -1;
+////        prob.x[i].push_back(node);
 ////    }
-    return prob;
-}
+////    // 按照格式打包
+//////    for (int i = 0; i < train_size; i++)
+//////    {
+//////        for (int j = 0; j < feature_size; j++)
+//////        {   // 看不懂指针就得复习C语言了，类比成二维数组的操作
+//////            node[(feature_size + 1) * i + j].index = j + 1;
+//////            node[(feature_size + 1) * i + j].value = train_x[i][j];
+//////        }
+//////        node[(feature_size + 1) * i + feature_size].index = -1;
+//////        prob.x[i] = &node[(feature_size + 1) * i];
+//////    }
+//    return prob;
+//}
 
 svm_parameter init_svm_parameter()
 {
@@ -286,14 +286,14 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
         std::vector<double> train_y = get_vector_target(train_data_need);
 
         /* 2. 初始化问题*/
-        svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
+//        svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
         svm_parameter param = init_svm_parameter();   // 初始化训练参数
 
         param.C = 0.13;
 
         /* 3. 训练模型 */
 //        svm_model model = svm_train(prob, param);
-        SVR svr(prob, param);
+        SVR svr(train_x, train_y, param);
         svr.train();
 
         /* 4. 获取所需要的特征 */
