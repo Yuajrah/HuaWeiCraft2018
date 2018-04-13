@@ -34,7 +34,6 @@ public:
     // return some position p where [p,len) need to be filled
     // (p >= len if nothing needs to be filled)
     int get_data(const int index, float **data, int len);
-    void swap_index(int i, int j);
 
 private:
     int l;
