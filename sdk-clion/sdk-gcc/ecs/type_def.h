@@ -59,18 +59,11 @@ struct svm_problem
 {
     int l;
     std::vector<double> y;
-//    struct svm_node **x;
     std::vector<std::vector<svm_node>> x;
 };
 
-//enum { C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };	/* svm_type */
-//enum { LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED }; /* kernel_type */
-
 struct svm_parameter
 {
-    int kernel_type;
-
-
     /* these are for training only */
     double cache_size; /* in MB */
     double eps;	/* stopping criteria */

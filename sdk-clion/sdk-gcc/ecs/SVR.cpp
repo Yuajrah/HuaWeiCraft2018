@@ -8,7 +8,7 @@
 SVR::SVR(svm_problem prob, svm_parameter param): prob(prob), param(param){}
 
 void SVR::train() {
-    svm_model model;
+
     model.param = param;
     model.free_sv = 0;
     model.nr_class = 2;
@@ -19,7 +19,7 @@ void SVR::train() {
         model.probA = std::vector<double>(1, svr_probability(prob, param));
     }
 
-    std::pair<std::vector<double>, double> alpha_rho = train_one(prob, param,0,0);
+    std::pair<std::vector<double>, double> alpha_rho = train_one(0, 0);
     model.rho = std::vector<double>(1, alpha_rho.second);
 
     int nSV = 0;
@@ -41,7 +41,6 @@ void SVR::train() {
             j++;
         }
 
-    this->model = model;
 }
 
 // Return parameter of a Laplace distribution
@@ -73,23 +72,13 @@ double SVR::svr_probability(
     return mae;
 }
 
-//
-// decision_function
-//
-//struct decision_function
-//{
-//	std::vector<double> alpha;
-//	double rho;
-//};
 
-std::pair<std::vector<double>, double> SVR::train_one(svm_problem prob, svm_parameter param, double Cp, double Cn)
+std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
 {
-//	double *alpha = Malloc(double,prob.l);
     std::vector<double> alpha(prob.l, 0.0);
+
     Solver::SolutionInfo si;
-
-    solve_nu_svr(prob, param, alpha, si);
-
+    solve_nu_svr(alpha, si);
 
     // output SVs
 
@@ -116,37 +105,31 @@ std::pair<std::vector<double>, double> SVR::train_one(svm_problem prob, svm_para
     return {alpha, si.rho};
 }
 
-void SVR::solve_nu_svr(
-        const svm_problem &prob,
-        const svm_parameter &param,
-        std::vector<double> &alpha,
-        Solver::SolutionInfo &si)
-{
-    int l = prob.l;
-    double C = param.C;
-    std::vector<double> alpha2(2*l);
-    std::vector<double> linear_term(2*l);
-    std::vector<char> y(2*l);
+void SVR::solve_nu_svr(std::vector<double> &alpha, Solver::SolutionInfo &si) {
 
-    double sum = C * param.nu * l / 2;
-    for(int i=0;i<l;i++)
-    {
-        alpha2[i] = alpha2[i+l] = std::min(sum,C);
-        sum -= alpha2[i];
+    std::vector<double> t_alpha(2 * prob.l);
+    std::vector<double> linear_term(2 * prob.l);
+    std::vector<char> y(2 * prob.l);
+
+    double sum = param.C * param.nu * prob.l / 2;
+
+    for(int i=0;i<prob.l;i++) {
+        t_alpha[i] = t_alpha[i+prob.l] = std::min(param.C, sum);
+        sum -= t_alpha[i];
 
         linear_term[i] = - prob.y[i];
         y[i] = 1;
 
-        linear_term[i+l] = prob.y[i];
-        y[i+l] = -1;
+        linear_term[i+prob.l] = prob.y[i];
+        y[i+prob.l] = -1;
     }
 
     Solver s;
     SVR_Q svr_q(prob, param);
-    s.Solve(2*l, svr_q, linear_term, y, alpha2, C, C, param.eps, si, param.shrinking);
+    s.Solve(2 * prob.l, svr_q, linear_term, y, t_alpha, param.C, param.C, param.eps, si, param.shrinking);
 
-    for(int i=0;i<l;i++)
-        alpha[i] = alpha2[i] - alpha2[i+l];
+    for(int i=0;i<prob.l;i++)
+        alpha[i] = t_alpha[i] - t_alpha[i+prob.l];
 }
 
 

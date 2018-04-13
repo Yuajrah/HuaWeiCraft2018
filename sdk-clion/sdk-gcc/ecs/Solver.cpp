@@ -33,8 +33,6 @@ void Solver::reconstruct_gradient()
         if(is_free(j))
             nr_free++;
 
-//    if(2*nr_free < active_size)
-//        info("\nWARNING: using -h 0 may be faster\n");
 
     if (nr_free*l > 2*active_size*(l-active_size))
     {
@@ -70,8 +68,6 @@ void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::ve
     this->Q = &Q;
     QD=Q.get_QD();
 
-
-//	clone(p, p_,l);
     p = p_;
     y = y_;
     alpha = alpha_;
@@ -80,44 +76,38 @@ void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::ve
     this->eps = eps;
     unshrink = false;
 
-    // initialize alpha_status
-    {
-        alpha_status = new char[l];
-        for(int i=0;i<l;i++)
-            update_alpha_status(i);
-    }
+    alpha_status = new char[l];
+    for(int i=0;i<l;i++)
+        update_alpha_status(i);
 
-    // initialize active set (for shrinking)
-    {
-        active_set = std::vector<int>(l);
-        for(int i=0;i<l;i++)
-            active_set[i] = i;
-        active_size = l;
-    }
+    active_set = std::vector<int>(l);
+    for(int i=0;i<l;i++)
+        active_set[i] = i;
+    active_size = l;
 
-    // initialize gradient
+
+
+    G = std::vector<double>(l, 0.0);
+    G_bar = std::vector<double>(l, 0.0);
+    int i;
+    for(i=0;i<l;i++)
     {
-        G = std::vector<double>(l, 0.0);
-        G_bar = std::vector<double>(l, 0.0);
-        int i;
-        for(i=0;i<l;i++)
+        G[i] = p[i];
+        G_bar[i] = 0;
+    }
+    for(i=0;i<l;i++)
+        if(!is_lower_bound(i))
         {
-            G[i] = p[i];
-            G_bar[i] = 0;
-        }
-        for(i=0;i<l;i++)
-            if(!is_lower_bound(i))
-            {
-                const float *Q_i = Q.get_Q(i,l);
-                double alpha_i = alpha[i];
-                int j;
+            const float *Q_i = Q.get_Q(i,l);
+            double alpha_i = alpha[i];
+            int j;
+            for(j=0;j<l;j++)
+                G[j] += alpha_i*Q_i[j];
+            if(is_upper_bound(i))
                 for(j=0;j<l;j++)
-                    G[j] += alpha_i*Q_i[j];
-                if(is_upper_bound(i))
-                    for(j=0;j<l;j++)
-                        G_bar[j] += get_C(i) * Q_i[j];
-            }
-    }
+                    G_bar[j] += get_C(i) * Q_i[j];
+        }
+
 
     // optimization step
 
@@ -324,26 +314,11 @@ void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::ve
             alpha_[active_set[i]] = alpha[i];
     }
 
-    // juggle everything back
-    /*{
-        for(int i=0;i<l;i++)
-            while(active_set[i] != i)
-                swap_index(i,active_set[i]);
-                // or Q.swap_index(i,active_set[i]);
-    }*/
-
     si.upper_bound_p = Cp;
     si.upper_bound_n = Cn;
 
-//    info("\noptimization finished, #iter = %d\n",iter);
-
-//	delete[] p;
-//	delete[] y;
-//	delete[] alpha;
     delete[] alpha_status;
-//	delete[] active_set;
-//	delete[] G;
-//	delete[] G_bar;
+
 }
 
 // return 1 if already optimal, return 0 otherwise

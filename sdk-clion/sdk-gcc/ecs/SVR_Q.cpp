@@ -6,9 +6,6 @@
 
 SVR_Q::SVR_Q(const svm_problem& prob, const svm_parameter& param) {
 
-    kernel_type = param.kernel_type;
-
-
     x = prob.x;
     l = prob.l;
 
