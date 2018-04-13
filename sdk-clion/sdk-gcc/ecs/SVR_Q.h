@@ -20,9 +20,7 @@ private:
 
     // svm_parameter
     int kernel_type;
-    int degree;
-    double gamma;
-    double coef0;
+
 
     int l;
     Cache *cache;

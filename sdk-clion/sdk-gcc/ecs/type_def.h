@@ -79,9 +79,7 @@ struct svm_problem
 struct svm_parameter
 {
     int kernel_type;
-    int degree;	/* for poly */
-    double gamma;	/* for poly/rbf/sigmoid */
-    double coef0;	/* for poly/sigmoid */
+
 
     /* these are for training only */
     double cache_size; /* in MB */
@@ -89,7 +87,6 @@ struct svm_parameter
     double C;	/* for C_SVC, EPSILON_SVR and NU_SVR */
 
     double nu;	/* for NU_SVC, ONE_CLASS, and NU_SVR */
-    double p;	/* for EPSILON_SVR */
     int shrinking;	/* use the shrinking heuristics */
     int probability; /* do probability estimates */
 };
