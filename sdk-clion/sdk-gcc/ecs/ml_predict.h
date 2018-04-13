@@ -46,20 +46,4 @@ int get_bigger_mean(std::vector<double> data, int num);
  */
 svm_parameter init_svm_parameter();
 
-/**
- * 初始化svm问题
- * @param train_x
- * @param train_y
- * @return
- */
-//svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y);
-
-
-/**
- * 把对应的一行特征转化svm_node
- * @param test_x
- * @return
- */
-std::vector<double> feature_to_svm_node(std::vector<double> test_x);
-
 #endif //SDK_CLION_ML_PREDICT_H

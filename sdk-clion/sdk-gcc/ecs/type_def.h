@@ -48,7 +48,7 @@ bool operator< (const Node_index &index1, const Node_index &index);
  * svm type
  */
 
-struct SolutionInfo {
+struct SolverRes {
     double obj;
     double rho;
     double upper_bound_p;
@@ -56,49 +56,31 @@ struct SolutionInfo {
     double r;
 };
 
-//struct svm_problem
-//{
-//    int l;
-//    std::vector<double> y;
-//    std::vector<std::vector<double>> x;
-//};
 
 struct svm_parameter
 {
-    /* these are for training only */
-    double cache_size; /* in MB */
-    double eps;	/* stopping criteria */
-    double C;	/* for C_SVC, EPSILON_SVR and NU_SVR */
-
-    double nu;	/* for NU_SVC, ONE_CLASS, and NU_SVR */
-    int shrinking;	/* use the shrinking heuristics */
-    int probability; /* do probability estimates */
+    double cache_size;
+    double eps;
+    double C;
+    double nu;
+    int shrinking;
+    int probability;
 };
 
-//
-// svm_model
-//
 struct svm_model
 {
-    svm_parameter param;	/* parameter */
-    int nr_class;		/* number of classes, = 2 in regression/one class svm */
-    int l;			/* total #SV */
-//    struct svm_node **SV;		/* SVs (SV[l]) */
-    std::vector<std::vector<double>> SV;		/* SVs (SV[l]) */
-    std::vector<std::vector<double>> sv_coef;	/* coefficients for SVs in decision functions (sv_coef[k-1][l]) */
-    std::vector<double> rho;		/* constants in decision functions (rho[k*(k-1)/2]) */
-    std::vector<double> probA;		/* pariwise probability information */
+    svm_parameter param;
+    int nr_class;
+    int l;
+    std::vector<std::vector<double>> SV;
+    std::vector<std::vector<double>> sv_coef;
+    std::vector<double> rho;
+    std::vector<double> probA;
     std::vector<double> probB;
-    std::vector<int> sv_indices;        /* sv_indices[0,...,nSV-1] are values in [1,...,num_traning_data] to indicate SVs in the training set */
-
-    /* for classification only */
-
-    std::vector<int> label;		/* label of each class (label[k]) */
-    std::vector<int> nSV;		/* number of SVs for each class (nSV[k]) */
-    /* nSV[0] + nSV[1] + ... + nSV[k-1] = l */
-    /* XXX */
-    int free_sv;		/* 1 if svm_model is created by svm_load_model*/
-    /* 0 if svm_model is created by svm_train */
+    std::vector<int> sv_indices;
+    std::vector<int> label;
+    std::vector<int> nSV;
+    int free_sv;
 };
 
 

@@ -176,59 +176,6 @@ int get_bigger_mean(std::vector<double> data, int num)
     }
     return (int)sum/num;
 }
-//std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data){
-//    CxLibSVM svm;
-//    svm_parameter param; // 使用了默认参数
-//    int fold = 10;
-//};
-//
-/*train_x,train_y是我已经导入的数据，分别是样本及其对应的类别标签*/
-//svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vector<double> train_y)
-//{
-//
-//    svm_problem prob;
-//
-//    int train_size = train_y.size();
-//    int feature_size = train_x[0].size();
-//
-//    prob.l = train_size;        // 训练样本数
-////    prob.y = new double[train_size];
-//    prob.y = train_y;
-////    prob.x = new svm_node*[train_size];
-////    prob.x = train_x;
-//    prob.x = train_x;
-////    svm_node* node = new svm_node[train_size*(1 + feature_size)];
-//
-//////    memcpy(prob.y, &train_y[0], train_y.size()*sizeof(double));
-////
-//////    prob.y = vec2arr(train_y);
-////    // 按照格式打包
-////    for (int i = 0; i < train_size; i++)
-////    {
-////        for (int j = 0; j < feature_size; j++)
-////        {   // 看不懂指针就得复习C语言了，类比成二维数组的操作
-////            svm_node node;
-////            node.index = j + 1;
-////            node.value = train_x[i][j];
-////            prob.x[i].push_back(node);
-////        }
-////        svm_node node;
-////        node.index = -1;
-////        prob.x[i].push_back(node);
-////    }
-////    // 按照格式打包
-//////    for (int i = 0; i < train_size; i++)
-//////    {
-//////        for (int j = 0; j < feature_size; j++)
-//////        {   // 看不懂指针就得复习C语言了，类比成二维数组的操作
-//////            node[(feature_size + 1) * i + j].index = j + 1;
-//////            node[(feature_size + 1) * i + j].value = train_x[i][j];
-//////        }
-//////        node[(feature_size + 1) * i + feature_size].index = -1;
-//////        prob.x[i] = &node[(feature_size + 1) * i];
-//////    }
-//    return prob;
-//}
 
 svm_parameter init_svm_parameter()
 {
@@ -247,24 +194,7 @@ svm_parameter init_svm_parameter()
     return param;
 }
 
-//std::vector<svm_node> feature_to_svm_node(std::vector<double> test_x){
-//    int feature_size = test_x.size();
-//
-//    std::vector<svm_node> nodes;
-//
-//    for (int j = 0; j < feature_size; j++) {
-//        svm_node node;
-//        node.index = j + 1;
-//        node.value = test_x[j];
-//        nodes.push_back(node);
-//    }
-//
-//    svm_node node;
-//    node.index = -1;
-//
-//    return nodes;
-//
-//}
+
 
 /**
  * 使用svm进行预测
@@ -303,9 +233,6 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
         std::vector<double> predict_ecs_data;
         for(int i=0; i < BasicInfo::need_predict_cnt; i++)
         {
-//            std::vector<svm_node> node = feature_to_svm_node(frist_predict_data);
-//            double tmp_predict = svm_predict(model, node);
-
             double tmp_predict = svr.predict(frist_predict_data);
 
             /* 6. 构造新的预测所需特征 */

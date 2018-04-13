@@ -22,11 +22,11 @@ public:
     void train();
     double svr_probability();
     std::pair<std::vector<double>, double> train_one(double Cp, double Cn);
-    void solve_nu_svr(std::vector<double> &alpha, SolutionInfo &si);
+    void solve_nu_svr(std::vector<double> &alpha, SolverRes &si);
     double predict(const std::vector<double> x);
     void Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
                std::vector<double> &alpha_, double Cp, double Cn, double eps,
-               SolutionInfo &si, int shrinking);
+               SolverRes &si, int shrinking);
 protected:
     int active_size;
     std::vector<char> y;
@@ -56,16 +56,15 @@ protected:
     inline bool is_lower_bound(int i) { return alpha_status[i] == LOWER_BOUND; }
     inline bool is_free(int i) { return alpha_status[i] == FREE; }
     void reconstruct_gradient();
-    virtual int select_working_set(int &i, int &j);
-    virtual double calculate_rho();
+    int select_working_set(int &i, int &j);
+    double calculate_rho();
+    void shrink();
 
-    virtual void do_shrinking();
-
-    bool be_shrunk(int i, double Gmax1, double Gmax2);
-    bool be_shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4);
+    bool shrunk(int i, double Gmax1, double Gmax2);
+    bool shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4);
 
 private:
-    SolutionInfo si;
+    SolverRes si;
 };
 
 #endif //SDK_CLION_SVR_H

@@ -71,7 +71,7 @@ std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
 {
     std::vector<double> alpha(Y.size(), 0.0);
 
-    SolutionInfo si;
+    SolverRes si;
     solve_nu_svr(alpha, si);
 
     // output SVs
@@ -99,7 +99,7 @@ std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
     return {alpha, si.rho};
 }
 
-void SVR::solve_nu_svr(std::vector<double> &alpha, SolutionInfo &si) {
+void SVR::solve_nu_svr(std::vector<double> &alpha, SolverRes &si) {
 
     std::vector<double> t_alpha(2 * Y.size());
     std::vector<double> linear_term(2 * Y.size());
@@ -164,7 +164,7 @@ void SVR::reconstruct_gradient() {
 
 void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
                    std::vector<double> &alpha_, double Cp, double Cn, double eps,
-                   SolutionInfo &si, int shrinking) {
+                SolverRes &si, int shrinking) {
 
     this->si = si;
 
@@ -227,7 +227,7 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
         if(--counter == 0)
         {
             counter = std::min(l,1000);
-            if(shrinking) do_shrinking();
+            if(shrinking) shrink();
 //            info(".");
         }
 
@@ -537,7 +537,7 @@ int SVR::select_working_set(int &out_i, int &out_j)
     return 0;
 }
 
-bool SVR::be_shrunk(int i, double Gmax1, double Gmax2)
+bool SVR::shrunk(int i, double Gmax1, double Gmax2)
 {
     if(is_upper_bound(i))
     {
@@ -609,7 +609,7 @@ double SVR::calculate_rho()
 
 
 
-bool SVR::be_shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4)
+bool SVR::shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4)
 {
     if(is_upper_bound(i))
     {
@@ -629,7 +629,7 @@ bool SVR::be_shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax
         return(false);
 }
 
-void SVR::do_shrinking()
+void SVR::shrink()
 {
     double Gmax1 = -INF;	// max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
     double Gmax2 = -INF;	// max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
@@ -666,12 +666,12 @@ void SVR::do_shrinking()
     }
 
     for(i=0;i<active_size;i++)
-        if (be_shrunk(i, Gmax1, Gmax2, Gmax3, Gmax4))
+        if (shrunk(i, Gmax1, Gmax2, Gmax3, Gmax4))
         {
             active_size--;
             while (active_size > i)
             {
-                if (!be_shrunk(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
+                if (!shrunk(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
                 {
 
                     Q->swap_index(i, active_size);
