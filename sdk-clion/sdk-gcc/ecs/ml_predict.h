@@ -12,7 +12,7 @@
 #include "KNN.h"
 #include"MnistPreProcess.h"
 #include "CART.h"
-#include "svm.h"
+#include "type_def.h"
 #include "RandomForest.h"
 #include "BasicInfo.h"
 #include <algorithm>

@@ -6,7 +6,7 @@
 #define SDK_GCC_TEST_H
 
 #include <vector>
-#include "svm.h"
+#include "type_def.h"
 
 void test_ar();
 void test_random();

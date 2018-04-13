@@ -6,7 +6,7 @@
 #include "BasicInfo.h"
 #include <functional>
 #include <algorithm>
-#include "svm.h"
+#include "type_def.h"
 #include "ml_predict.h"
 
 /**

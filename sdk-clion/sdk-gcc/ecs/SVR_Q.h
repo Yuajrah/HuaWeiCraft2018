@@ -8,7 +8,7 @@
 #define INF HUGE_VAL
 #define TAU 1e-12
 
-#include "svm.h"
+#include "type_def.h"
 
 #include "Cache.h"
 class Cache;

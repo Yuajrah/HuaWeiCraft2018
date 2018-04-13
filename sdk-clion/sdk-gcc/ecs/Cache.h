@@ -15,7 +15,7 @@
 #include <limits.h>
 #include <locale.h>
 
-#include "svm.h"
+#include "type_def.h"
 #include "Solver.h"
 
 #define INF HUGE_VAL

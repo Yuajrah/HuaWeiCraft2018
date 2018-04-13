@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include "ml_predict.h"
+#include "SVR.h"
 
 std::map<int, int> predict_by_knn (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
 {
@@ -314,7 +315,9 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
         param.C = 0.13;
 
         /* 3. 训练模型 */
-        svm_model model = svm_train(prob, param);
+//        svm_model model = svm_train(prob, param);
+        SVR svr(prob, param);
+        svr.train();
 
         /* 4. 获取所需要的特征 */
         std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
@@ -324,7 +327,9 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
         for(int i=0; i < BasicInfo::need_predict_cnt; i++)
         {
             std::vector<svm_node> node = feature_to_svm_node(frist_predict_data);
-            double tmp_predict = svm_predict(model, node);
+//            double tmp_predict = svm_predict(model, node);
+
+            double tmp_predict = svr.svm_predict(node);
 
             /* 6. 构造新的预测所需特征 */
             frist_predict_data.erase(frist_predict_data.begin());
