@@ -16,7 +16,7 @@ void SVR::train() {
 
     if(param.probability)
     {
-        model.probA = std::vector<double>(1, svr_probability(prob, param));
+        model.probA = std::vector<double>(1, svr_probability());
     }
 
     std::pair<std::vector<double>, double> alpha_rho = train_one(0, 0);
@@ -44,8 +44,7 @@ void SVR::train() {
 }
 
 // Return parameter of a Laplace distribution
-double SVR::svr_probability(
-        const svm_problem prob, const svm_parameter param)
+double SVR::svr_probability()
 {
     std::vector<double> ymv(prob.l);
     double mae = 0;
