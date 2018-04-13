@@ -10,29 +10,14 @@
 #include "svm.h"
 typedef float Qfloat;
 typedef signed char schar;
-#ifndef min
-template <class T> static inline T min(T x,T y) { return (x<y)?x:y; }
-#endif
-#ifndef max
-template <class T> static inline T max(T x,T y) { return (x>y)?x:y; }
-#endif
-template <class T> static inline void swap(T& x, T& y) { T t=x; x=y; y=t; }
+
+
 template <class S, class T> static inline void clone(T*& dst, S* src, int n)
 {
 	dst = new T[n];
 	memcpy((void *)dst,(void *)src,sizeof(T)*n);
 }
-static inline double powi(double base, int times)
-{
-	double tmp = base, ret = 1.0;
 
-	for(int t=times; t>0; t/=2)
-	{
-		if(t%2==1) ret*=tmp;
-		tmp = tmp * tmp;
-	}
-	return ret;
-}
 #define INF HUGE_VAL
 #define TAU 1e-12
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
@@ -95,7 +80,7 @@ Cache::Cache(int l_,long int size_):l(l_),size(size_)
 	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
 	size /= sizeof(Qfloat);
 	size -= l * sizeof(head_t) / sizeof(Qfloat);
-	size = max(size, 2 * (long int) l);	// cache must be large enough for two columns
+	size = std::max(size, 2 * (long int) l);	// cache must be large enough for two columns
 	lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -144,7 +129,7 @@ int Cache::get_data(const int index, Qfloat **data, int len)
 		// allocate new space
 		h->data = (Qfloat *)realloc(h->data,sizeof(Qfloat)*len);
 		size -= more;
-		swap(h->len,len);
+		std::swap(h->len,len);
 	}
 
 	lru_insert(h);
@@ -185,7 +170,7 @@ public:
 		x[i] = x[j];
 		x[j] = tmp;
 
-		if(x_square) swap(x_square[i],x_square[j]);
+		if(x_square) std::swap(x_square[i],x_square[j]);
 	}
 protected:
 
@@ -202,29 +187,11 @@ private:
 	const double gamma;
 	const double coef0;
 
-//	static double dot(const svm_node *px, const svm_node *py);
-
 	static double dot(const std::vector<svm_node> px, const std::vector<svm_node> py);
 
 	double kernel_linear(int i, int j) const
 	{
 		return dot(x[i],x[j]);
-	}
-	double kernel_poly(int i, int j) const
-	{
-		return powi(gamma*dot(x[i],x[j])+coef0,degree);
-	}
-	double kernel_rbf(int i, int j) const
-	{
-		return exp(-gamma*(x_square[i]+x_square[j]-2*dot(x[i],x[j])));
-	}
-	double kernel_sigmoid(int i, int j) const
-	{
-		return tanh(gamma*dot(x[i],x[j])+coef0);
-	}
-	double kernel_precomputed(int i, int j) const
-	{
-		return x[i][(int)(x[j][0].value)].value;
 	}
 };
 
@@ -232,37 +199,9 @@ Kernel::Kernel(int l, const std::vector<std::vector<svm_node>> &x_, const svm_pa
 		:kernel_type(param.kernel_type), degree(param.degree),
 		 gamma(param.gamma), coef0(param.coef0)
 {
-	switch(kernel_type)
-	{
-		case LINEAR:
-			kernel_function = &Kernel::kernel_linear;
-			break;
-		case POLY:
-			kernel_function = &Kernel::kernel_poly;
-			break;
-		case RBF:
-			kernel_function = &Kernel::kernel_rbf;
-			break;
-		case SIGMOID:
-			kernel_function = &Kernel::kernel_sigmoid;
-			break;
-		case PRECOMPUTED:
-			kernel_function = &Kernel::kernel_precomputed;
-			break;
-	}
-
-//	clone(x,x_,l);
-
+	kernel_function = &Kernel::kernel_linear;
 	x = x_;
-
-	if(kernel_type == RBF)
-	{
-		x_square = new double[l];
-		for(int i=0;i<l;i++)
-			x_square[i] = dot(x[i],x[i]);
-	}
-	else
-		x_square = 0;
+	x_square = 0;
 }
 
 Kernel::~Kernel()
@@ -387,13 +326,13 @@ private:
 void Solver::swap_index(int i, int j)
 {
 	Q->swap_index(i,j);
-	swap(y[i],y[j]);
-	swap(G[i],G[j]);
-	swap(alpha_status[i],alpha_status[j]);
-	swap(alpha[i],alpha[j]);
-	swap(p[i],p[j]);
-	swap(active_set[i],active_set[j]);
-	swap(G_bar[i],G_bar[j]);
+	std::swap(y[i],y[j]);
+	std::swap(G[i],G[j]);
+	std::swap(alpha_status[i],alpha_status[j]);
+	std::swap(alpha[i],alpha[j]);
+	std::swap(p[i],p[j]);
+	std::swap(active_set[i],active_set[j]);
+	std::swap(G_bar[i],G_bar[j]);
 }
 
 void Solver::reconstruct_gradient()
@@ -445,6 +384,8 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	this->l = l;
 	this->Q = &Q;
 	QD=Q.get_QD();
+
+
 	clone(p, p_,l);
 	clone(y, y_,l);
 	clone(alpha,alpha_,l);
@@ -495,8 +436,8 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	// optimization step
 
 	int iter = 0;
-	int max_iter = max(10000000, l>INT_MAX/100 ? INT_MAX : 100*l);
-	int counter = min(l,1000)+1;
+	int max_iter = std::max(10000000, l>INT_MAX/100 ? INT_MAX : 100*l);
+	int counter = std::min(l,1000)+1;
 
 	while(iter < max_iter)
 	{
@@ -504,7 +445,7 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 
 		if(--counter == 0)
 		{
-			counter = min(l,1000);
+			counter = std::min(l,1000);
 			if(shrinking) do_shrinking();
 			info(".");
 		}
@@ -912,16 +853,16 @@ double Solver::calculate_rho()
 		if(is_upper_bound(i))
 		{
 			if(y[i]==-1)
-				ub = min(ub,yG);
+				ub = std::min(ub,yG);
 			else
-				lb = max(lb,yG);
+				lb = std::max(lb,yG);
 		}
 		else if(is_lower_bound(i))
 		{
 			if(y[i]==+1)
-				ub = min(ub,yG);
+				ub = std::min(ub,yG);
 			else
-				lb = max(lb,yG);
+				lb = std::max(lb,yG);
 		}
 		else
 		{
@@ -1063,7 +1004,7 @@ int Solver_NU::select_working_set(int &out_i, int &out_j)
 		}
 	}
 
-	if(max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2) < eps || Gmin_idx == -1)
+	if(std::max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2) < eps || Gmin_idx == -1)
 		return 1;
 
 	if (y[Gmin_idx] == +1)
@@ -1124,7 +1065,7 @@ void Solver_NU::do_shrinking()
 		}
 	}
 
-	if(unshrink == false && max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10)
+	if(unshrink == false && std::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10)
 	{
 		unshrink = true;
 		reconstruct_gradient();
@@ -1159,9 +1100,9 @@ double Solver_NU::calculate_rho()
 		if(y[i]==+1)
 		{
 			if(is_upper_bound(i))
-				lb1 = max(lb1,G[i]);
+				lb1 = std::max(lb1,G[i]);
 			else if(is_lower_bound(i))
-				ub1 = min(ub1,G[i]);
+				ub1 = std::min(ub1,G[i]);
 			else
 			{
 				++nr_free1;
@@ -1171,9 +1112,9 @@ double Solver_NU::calculate_rho()
 		else
 		{
 			if(is_upper_bound(i))
-				lb2 = max(lb2,G[i]);
+				lb2 = std::max(lb2,G[i]);
 			else if(is_lower_bound(i))
-				ub2 = min(ub2,G[i]);
+				ub2 = std::min(ub2,G[i]);
 			else
 			{
 				++nr_free2;
@@ -1225,9 +1166,9 @@ public:
 
 	void swap_index(int i, int j) const
 	{
-		swap(sign[i],sign[j]);
-		swap(index[i],index[j]);
-		swap(QD[i],QD[j]);
+		std::swap(sign[i],sign[j]);
+		std::swap(index[i],index[j]);
+		std::swap(QD[i],QD[j]);
 	}
 
 	Qfloat *get_Q(int i, int len) const
@@ -1273,12 +1214,6 @@ private:
 	double *QD;
 };
 
-
-
-
-
-
-
 static void solve_nu_svr(
 		const svm_problem *prob, const svm_parameter *param,
 		double *alpha, Solver::SolutionInfo* si)
@@ -1293,7 +1228,7 @@ static void solve_nu_svr(
 	double sum = C * param->nu * l / 2;
 	for(i=0;i<l;i++)
 	{
-		alpha2[i] = alpha2[i+l] = min(sum,C);
+		alpha2[i] = alpha2[i+l] = std::min(sum,C);
 		sum -= alpha2[i];
 
 		linear_term[i] = - prob->y[i];
@@ -1501,7 +1436,7 @@ static double sigmoid_predict(double decision_value, double A, double B)
 static void multiclass_probability(int k, double **r, double *p)
 {
 	int t,j;
-	int iter = 0, max_iter=max(100,k);
+	int iter = 0, max_iter=std::max(100,k);
 	double **Q=Malloc(double *,k);
 	double *Qp=Malloc(double,k);
 	double pQp, eps=0.005/k;
@@ -1642,8 +1577,8 @@ static void svm_group_classes(const svm_problem *prob, int *nr_class_ret, int **
 	//
 	if (nr_class == 2 && label[0] == -1 && label[1] == 1)
 	{
-		swap(label[0],label[1]);
-		swap(count[0],count[1]);
+		std::swap(label[0],label[1]);
+		std::swap(count[0],count[1]);
 		for(i=0;i<l;i++)
 		{
 			if(data_label[i] == 0)
@@ -1760,7 +1695,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 			for(i=0;i<count[c];i++)
 			{
 				int j = i+rand()%(count[c]-i);
-				swap(index[start[c]+j],index[start[c]+i]);
+				std::swap(index[start[c]+j],index[start[c]+i]);
 			}
 		for(i=0;i<nr_fold;i++)
 		{
@@ -1797,7 +1732,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		for(i=0;i<l;i++)
 		{
 			int j = i+rand()%(l-i);
-			swap(perm[i],perm[j]);
+			std::swap(perm[i],perm[j]);
 		}
 		for(i=0;i<=nr_fold;i++)
 			fold_start[i]=i*l/nr_fold;
@@ -1808,7 +1743,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		int begin = fold_start[i];
 		int end = fold_start[i+1];
 		int j,k;
-		struct svm_problem subprob;
+		svm_problem subprob;
 
 		subprob.l = l-(end-begin);
 //		subprob.x = Malloc(struct svm_node*,subprob.l);
@@ -1841,19 +1776,8 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		else
 			for(j=begin;j<end;j++)
 				target[perm[j]] = svm_predict(&submodel,prob->x[perm[j]]);
-
-		auto t = &submodel;
-		auto tt = &t;
-		svm_free_and_destroy_model(tt);
-//		free(subprob.x);
-//		free(subprob.y);
 	}
-	free(fold_start);
-	free(perm);
 }
-
-
-
 
 
 double svm_predict_values(const svm_model *model, const std::vector<svm_node> x, double* dec_values)
@@ -1939,8 +1863,7 @@ double svm_predict(const svm_model *model, const std::vector<svm_node> x)
 {
 	int nr_class = model->nr_class;
 	double *dec_values;
-	if(model->param.svm_type == ONE_CLASS ||
-	   model->param.svm_type == EPSILON_SVR ||
+	if(model->param.svm_type == EPSILON_SVR ||
 	   model->param.svm_type == NU_SVR)
 		dec_values = Malloc(double, 1);
 	else
@@ -1969,7 +1892,7 @@ double svm_predict_probability(
 		for(i=0;i<nr_class;i++)
 			for(int j=i+1;j<nr_class;j++)
 			{
-				pairwise_prob[i][j]=min(max(sigmoid_predict(dec_values[k],model->probA[k],model->probB[k]),min_prob),1-min_prob);
+				pairwise_prob[i][j]=std::min(std::max(sigmoid_predict(dec_values[k],model->probA[k],model->probB[k]),min_prob),1-min_prob);
 				pairwise_prob[j][i]=1-pairwise_prob[i][j];
 				k++;
 			}
@@ -1994,16 +1917,3 @@ double svm_predict_probability(
 	else
 		return svm_predict(model, x);
 }
-
-
-
-
-void svm_free_and_destroy_model(svm_model** model_ptr_ptr)
-{
-	if(model_ptr_ptr != NULL && *model_ptr_ptr != NULL)
-	{
-		free(*model_ptr_ptr);
-		*model_ptr_ptr = NULL;
-	}
-}
-
