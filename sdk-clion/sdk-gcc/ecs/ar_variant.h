@@ -9,7 +9,6 @@
 #include "predict.h"
 #include "AR.h"
 #include "math_utils.h"
-#include "test.h"
 #include <cstdio>
 #include "get_data.h"
 #include "type_def.h"
@@ -44,5 +43,4 @@ std::map<int, int> predict_by_ar_5th(std::map<int, Vm> vm_info, std::map<int, st
  */
 std::map<int, int> predict_by_ar_6th(std::map<int, std::vector<double>> train_data, int need_predict_day);
 
-std::map<int, int> predict_by_ar_7th(std::map<int, std::vector<double>> fit_train_data, std::map<int, std::vector<double>> fit_test_data, std::map<int, std::vector<double>> train_data);
 #endif //SDK_CLION_AR_VARIANT_H

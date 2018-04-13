@@ -2,7 +2,6 @@
 #include "predict.h"
 #include "AR.h"
 #include "math_utils.h"
-#include "test.h"
 #include <cstdio>
 #include "get_data.h"
 #include "type_def.h"
@@ -223,12 +222,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
 
 
-    /**
-     * 使用svm进行预测
-     */
-    std::map<int, int> predict_data;
-    predict_data = predict_by_svm(train_data);
-    print_predict_score(actual_data, predict_data);
 
     /**
      * 用残差做预测
@@ -241,8 +234,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /**
      * 使用单独线性模型做预测
      */
-//    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::need_predict_cnt);
-//    print_predict_score(actual_data, predict_data);
+    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::need_predict_cnt);
+    print_predict_score(actual_data, predict_data);
     /*************************************************************************
     *****  分配  **************************************************************
     **************************************************************************/
