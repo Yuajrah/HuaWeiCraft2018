@@ -4,7 +4,6 @@
 
 #include "Solver.h"
 
-
 void Solver::swap_index(int i, int j)
 {
     Q->swap_index(i, j);
@@ -59,13 +58,13 @@ void Solver::reconstruct_gradient()
 
 void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
                    std::vector<double> &alpha_, double Cp, double Cn, double eps,
-                   SolutionInfo &si, int shrinking)
-{
+                   SolutionInfo &si, int shrinking) {
 
     this->si = si;
 
     this->l = l;
     this->Q = &Q;
+
     QD=Q.get_QD();
 
     p = p_;

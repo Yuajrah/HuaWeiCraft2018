@@ -19,9 +19,6 @@ private:
     std::vector<std::vector<svm_node>> x;
 
     // svm_parameter
-    int kernel_type;
-
-
     int l;
     Cache *cache;
     char *sign;
