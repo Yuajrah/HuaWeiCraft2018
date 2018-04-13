@@ -21,12 +21,7 @@ public:
     double svr_probability();
     std::pair<std::vector<double>, double> train_one(double Cp, double Cn);
     void solve_nu_svr(std::vector<double> &alpha, SolutionInfo &si);
-
     double predict(const std::vector<svm_node> x);
-
-public:
-
-
     void Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
                std::vector<double> &alpha_, double Cp, double Cn, double eps,
                SolutionInfo &si, int shrinking);
@@ -47,22 +42,17 @@ protected:
     int l;
     bool unshrink;
 
-    double get_C(int i)
-    {
-        return (y[i] > 0)? Cp : Cn;
-    }
-    void update_alpha_status(int i)
-    {
+    inline double get_C(int i) { return (y[i] > 0)? Cp : Cn;}
+    void update_alpha_status(int i) {
         if(alpha[i] >= get_C(i))
             alpha_status[i] = UPPER_BOUND;
         else if(alpha[i] <= 0)
             alpha_status[i] = LOWER_BOUND;
         else alpha_status[i] = FREE;
     }
-    bool is_upper_bound(int i) { return alpha_status[i] == UPPER_BOUND; }
-    bool is_lower_bound(int i) { return alpha_status[i] == LOWER_BOUND; }
-    bool is_free(int i) { return alpha_status[i] == FREE; }
-    void swap_index(int i, int j);
+    inline bool is_upper_bound(int i) { return alpha_status[i] == UPPER_BOUND; }
+    inline bool is_lower_bound(int i) { return alpha_status[i] == LOWER_BOUND; }
+    inline bool is_free(int i) { return alpha_status[i] == FREE; }
     void reconstruct_gradient();
     virtual int select_working_set(int &i, int &j);
     virtual double calculate_rho();
@@ -75,6 +65,5 @@ protected:
 private:
     SolutionInfo si;
 };
-
 
 #endif //SDK_CLION_SVR_H

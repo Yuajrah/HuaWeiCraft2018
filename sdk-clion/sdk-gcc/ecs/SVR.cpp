@@ -4,7 +4,6 @@
 
 #include "SVR.h"
 
-
 SVR::SVR(svm_problem prob, svm_parameter param): prob(prob), param(param){}
 
 void SVR::train() {
@@ -14,32 +13,28 @@ void SVR::train() {
     model.nr_class = 2;
     model.sv_coef = std::vector<std::vector<double>>(1);
 
-    if(param.probability)
-    {
-        model.probA = std::vector<double>(1, svr_probability());
-    }
+    if(param.probability) model.probA = std::vector<double>(1, svr_probability());
 
     std::pair<std::vector<double>, double> alpha_rho = train_one(0, 0);
     model.rho = std::vector<double>(1, alpha_rho.second);
 
-    int nSV = 0;
+    model.l = 0;
     for(int i=0;i<prob.l;i++)
-        if(fabs(alpha_rho.first[i]) > 0) nSV++;
+        if(fabs(alpha_rho.first[i]) > 0) model.l++;
 
-    model.l = nSV;
-    model.SV = std::vector<std::vector<svm_node>>(nSV);
-    model.sv_coef[0] = std::vector<double>(nSV, 0.0);
-    model.sv_indices = std::vector<int>(nSV, 0);
+    model.SV = std::vector<std::vector<svm_node>>(model.l);
+    model.sv_coef[0] = std::vector<double>(model.l, 0.0);
+    model.sv_indices = std::vector<int>(model.l, 0);
 
     int j = 0;
-    for(int i=0;i<prob.l;i++)
-        if(fabs(alpha_rho.first[i]) > 0)
-        {
+    for(int i=0;i<prob.l;i++) {
+        if (fabs(alpha_rho.first[i]) > 0) {
             model.SV[j] = prob.x[i];
             model.sv_coef[0][j] = alpha_rho.first[i];
-            model.sv_indices[j] = i+1;
+            model.sv_indices[j] = i + 1;
             j++;
         }
+    }
 
 }
 
@@ -142,57 +137,26 @@ double SVR::predict(const std::vector<svm_node> x)
     return pred_result;
 }
 
-
-// solver
-
-
-void SVR::swap_index(int i, int j)
-{
-    Q->swap_index(i, j);
-    std::swap(y[i],y[j]);
-    std::swap(G[i],G[j]);
-    std::swap(alpha_status[i],alpha_status[j]);
-    std::swap(alpha[i],alpha[j]);
-    std::swap(p[i],p[j]);
-    std::swap(active_set[i],active_set[j]);
-    std::swap(G_bar[i],G_bar[j]);
-}
-
-void SVR::reconstruct_gradient()
-{
-    // reconstruct inactive elements of G from G_bar and free variables
-
+void SVR::reconstruct_gradient() {
     if(active_size == l) return;
 
-    int i,j;
     int nr_free = 0;
 
-    for(j=active_size;j<l;j++)
-        G[j] = G_bar[j] + p[j];
+    for(int j=active_size;j<l;j++) G[j] = G_bar[j] + p[j];
 
-    for(j=0;j<active_size;j++)
-        if(is_free(j))
-            nr_free++;
+    for(int j=0;j<active_size;j++) if(is_free(j)) nr_free++;
 
-
-    if (nr_free*l > 2*active_size*(l-active_size))
-    {
-        for(i=active_size;i<l;i++)
-        {
+    if (nr_free*l > 2*active_size*(l-active_size)) {
+        for(int i=active_size;i<l;i++) {
             const float *Q_i = Q->get_Q(i,active_size);
-            for(j=0;j<active_size;j++)
-                if(is_free(j))
-                    G[i] += alpha[j] * Q_i[j];
+            for(int j=0;j<active_size;j++) if(is_free(j))G[i] += alpha[j] * Q_i[j];
         }
-    }
-    else
-    {
-        for(i=0;i<active_size;i++)
-            if(is_free(i))
-            {
+    } else {
+        for(int i=0;i<active_size;i++)
+            if(is_free(i)) {
                 const float *Q_i = Q->get_Q(i,l);
                 double alpha_i = alpha[i];
-                for(j=active_size;j<l;j++)
+                for(int j=active_size;j<l;j++)
                     G[j] += alpha_i * Q_i[j];
             }
     }
@@ -709,7 +673,15 @@ void SVR::do_shrinking()
             {
                 if (!be_shrunk(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
                 {
-                    swap_index(i,active_size);
+
+                    Q->swap_index(i, active_size);
+                    std::swap(y[i],y[active_size]);
+                    std::swap(G[i],G[active_size]);
+                    std::swap(alpha_status[i],alpha_status[active_size]);
+                    std::swap(alpha[i],alpha[active_size]);
+                    std::swap(p[i],p[active_size]);
+                    std::swap(active_set[i],active_set[active_size]);
+                    std::swap(G_bar[i],G_bar[active_size]);
                     break;
                 }
                 active_size--;
