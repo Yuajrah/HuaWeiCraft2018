@@ -64,11 +64,7 @@ double * SVR_Q::get_QD() const
     return QD;
 }
 
-double SVR_Q::k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
-                         const svm_parameter& param)
-{
-    return dot(x,y);
-}
+
 
 double SVR_Q::kernel_linear(int i, int j)
 {

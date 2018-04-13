@@ -19,12 +19,12 @@ void SVR::train() {
         model.probA = std::vector<double>(1, svr_probability(prob, param));
     }
 
-    decision_function f = train_one(prob, param,0,0);
-    model.rho = std::vector<double>(1, f.rho);
+    std::pair<std::vector<double>, double> alpha_rho = train_one(prob, param,0,0);
+    model.rho = std::vector<double>(1, alpha_rho.second);
 
     int nSV = 0;
     for(int i=0;i<prob.l;i++)
-        if(fabs(f.alpha[i]) > 0) nSV++;
+        if(fabs(alpha_rho.first[i]) > 0) nSV++;
 
     model.l = nSV;
     model.SV = std::vector<std::vector<svm_node>>(nSV);
@@ -33,10 +33,10 @@ void SVR::train() {
 
     int j = 0;
     for(int i=0;i<prob.l;i++)
-        if(fabs(f.alpha[i]) > 0)
+        if(fabs(alpha_rho.first[i]) > 0)
         {
             model.SV[j] = prob.x[i];
-            model.sv_coef[0][j] = f.alpha[i];
+            model.sv_coef[0][j] = alpha_rho.first[i];
             model.sv_indices[j] = i+1;
             j++;
         }
@@ -48,13 +48,9 @@ void SVR::train() {
 double SVR::svr_probability(
         const svm_problem prob, const svm_parameter param)
 {
-    int nr_fold = 5;
     std::vector<double> ymv(prob.l);
     double mae = 0;
 
-    svm_parameter newparam(param);
-    newparam.probability = 0;
-    cross_validation(prob, newparam, nr_fold, ymv);
 
     for(int i=0;i<prob.l;i++)
     {
@@ -86,7 +82,7 @@ double SVR::svr_probability(
 //	double rho;
 //};
 
-decision_function SVR::train_one(svm_problem prob, svm_parameter param, double Cp, double Cn)
+std::pair<std::vector<double>, double> SVR::train_one(svm_problem prob, svm_parameter param, double Cp, double Cn)
 {
 //	double *alpha = Malloc(double,prob.l);
     std::vector<double> alpha(prob.l, 0.0);
@@ -117,11 +113,7 @@ decision_function SVR::train_one(svm_problem prob, svm_parameter param, double C
         }
     }
 
-
-    decision_function f;
-    f.alpha = alpha;
-    f.rho = si.rho;
-    return f;
+    return {alpha, si.rho};
 }
 
 void SVR::solve_nu_svr(
@@ -161,84 +153,10 @@ void SVR::solve_nu_svr(
 double SVR::predict(const std::vector<svm_node> x)
 {
     svm_model model = this->model;
-    std::vector<double> dec_values;
-
-    dec_values.assign(1, 0.0);
-
-    double pred_result = predict_values(model, x, dec_values);
-
-    return pred_result;
-}
-
-
-
-
-// Stratified cross validation
-void SVR::cross_validation(svm_problem prob, svm_parameter param, int nr_fold, std::vector<double> target)
-{
-    int i;
-    int l = prob.l;
-
-    std::vector<int> perm(l);
-
-    nr_fold = std::max(nr_fold, l);
-    std::vector<int> fold_start(nr_fold+1);
-
-    // stratified cv may not give leave-one-out rate
-    // Each class to l folds -> some folds may have zero elements
-
-    for(i=0;i<l;i++) perm[i]=i;
-    for(i=0;i<l;i++) {
-        int j = i+rand()%(l-i);
-        std::swap(perm[i],perm[j]);
-    }
-    for(i=0;i<=nr_fold;i++)
-        fold_start[i]=i*l/nr_fold;
-
-    for(i=0;i<nr_fold;i++)
-    {
-        int begin = fold_start[i];
-        int end = fold_start[i+1];
-        svm_problem subprob;
-
-        subprob.l = l-(end-begin);
-        subprob.x = std::vector<std::vector<svm_node>>(subprob.l);
-        subprob.y = std::vector<double>(subprob.l);
-
-        int k=0;
-        for(int j=0;j<begin;j++)
-        {
-            subprob.x[k] = prob.x[perm[j]];
-            subprob.y[k] = prob.y[perm[j]];
-            k++;
-        }
-        for(int j=end;j<l;j++)
-        {
-            subprob.x[k] = prob.x[perm[j]];
-            subprob.y[k] = prob.y[perm[j]];
-            k++;
-        }
-
-        SVR svr(subprob, param);
-        svr.train();
-
-        for(int j=begin;j<end;j++)
-            target[perm[j]] = svr.predict(prob.x[perm[j]]);
-    }
-}
-
-
-double SVR::predict_values(const svm_model &model, const std::vector<svm_node> x, std::vector<double> &dec_values)
-{
-    std::vector<double> sv_coef = model.sv_coef[0];
-    double sum = 0;
+    double pred_result = -model.rho[0];
 
     for(int i=0;i<model.l;i++)
-        sum += sv_coef[i] * SVR_Q::k_function(x, model.SV[i],model.param);
+        pred_result += model.sv_coef[0][i] * SVR_Q::dot(x, model.SV[i]);
 
-    sum -= model.rho[0];
-    dec_values[0] = sum;
-
-    return sum;
-
+    return pred_result;
 }

@@ -38,9 +38,6 @@ public:
 
     double *get_QD() const;
 
-    static double k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
-                             const svm_parameter& param);
-
     double kernel_linear(int i, int j);
 
     static double dot(const std::vector<svm_node> px, const std::vector<svm_node> py);

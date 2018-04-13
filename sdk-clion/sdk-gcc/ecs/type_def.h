@@ -48,16 +48,6 @@ bool operator< (const Node_index &index1, const Node_index &index);
  * svm type
  */
 
-//
-// decision_function
-//
-
-struct decision_function
-{
-    std::vector<double> alpha;
-    double rho;
-};
-
 
 struct svm_node
 {
