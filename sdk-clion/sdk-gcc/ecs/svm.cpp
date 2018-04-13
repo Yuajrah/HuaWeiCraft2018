@@ -135,108 +135,147 @@ int Cache::get_data(const int index, float **data, int len)
 // the constructor of Kernel prepares to calculate the l*l kernel matrix
 // the member function get_Q is for getting one column from the Q Matrix
 //
-class QMatrix {
-public:
-	virtual float *get_Q(int column, int len) const = 0;
-	virtual double *get_QD() const = 0;
-	virtual void swap_index(int i, int j) const = 0;
-	virtual ~QMatrix() {}
-};
 
-class Kernel: public QMatrix {
-public:
-//	Kernel(int l, svm_node * const * x, const svm_parameter& param);
-	Kernel(int l, const std::vector<std::vector<svm_node>> &x, const svm_parameter& param);
-	virtual ~Kernel();
 
-	static double k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
-							 const svm_parameter& param);
-	virtual float *get_Q(int column, int len) const = 0;
-	virtual double *get_QD() const = 0;
-	virtual void swap_index(int i, int j)	// no so const...
-	{
-//		std::swap(x[i],x[j]);
-		std::vector<svm_node> tmp = x[i];
-		x[i] = x[j];
-		x[j] = tmp;
+class SVR_Q
+{
 
-		if(x_square) std::swap(x_square[i],x_square[j]);
-	}
-protected:
-
-	double (Kernel::*kernel_function)(int i, int j) const;
 
 private:
-//	const svm_node **x;
 	std::vector<std::vector<svm_node>> x;
 	double *x_square;
 
 	// svm_parameter
-	const int kernel_type;
-	const int degree;
-	const double gamma;
-	const double coef0;
+	int kernel_type;
+	int degree;
+	double gamma;
+	double coef0;
 
-	static double dot(const std::vector<svm_node> px, const std::vector<svm_node> py);
+public:
+	SVR_Q(const svm_problem& prob, const svm_parameter& param)
+	{
 
-	double kernel_linear(int i, int j) const
+		kernel_type = param.kernel_type;
+		degree = param.degree;
+		gamma = param.gamma;
+		coef0 = param.coef0;
+
+		x = prob.x;
+		x_square = 0;
+
+		l = prob.l;
+		cache = new Cache(l,(long int)(param.cache_size*(1<<20)));
+		QD = new double[2*l];
+		sign = new char[2*l];
+		index = new int[2*l];
+		for(int k=0;k<l;k++)
+		{
+			sign[k] = 1;
+			sign[k+l] = -1;
+			index[k] = k;
+			index[k+l] = k;
+			QD[k] = kernel_linear(k,k);
+			QD[k+l] = QD[k];
+		}
+		buffer[0] = new float[2*l];
+		buffer[1] = new float[2*l];
+		next_buffer = 0;
+	}
+
+	void swap_index(int i, int j) const
+	{
+		std::swap(sign[i],sign[j]);
+		std::swap(index[i],index[j]);
+		std::swap(QD[i],QD[j]);
+	}
+
+	float *get_Q(int i, int len)
+	{
+		float *data;
+		int j, real_i = index[i];
+		if(cache->get_data(real_i,&data,l) < l)
+		{
+			for(j=0;j<l;j++)
+				data[j] = (float)kernel_linear(real_i,j);
+		}
+
+		// reorder and copy
+		float *buf = buffer[next_buffer];
+		next_buffer = 1 - next_buffer;
+		char si = sign[i];
+		for(j=0;j<len;j++)
+			buf[j] = (float) si * (float) sign[j] * data[index[j]];
+		return buf;
+	}
+
+	double *get_QD() const
+	{
+		return QD;
+	}
+
+	static double k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
+							  const svm_parameter& param)
+	{
+		switch(param.kernel_type)
+		{
+			case LINEAR:
+				return dot(x,y);
+			default:
+				return 0;  // Unreachable
+		}
+	}
+
+	double kernel_linear(int i, int j)
 	{
 		return dot(x[i],x[j]);
 	}
+
+
+	static double dot(const std::vector<svm_node> px, const std::vector<svm_node> py)
+	{
+		double sum = 0;
+		int i = 0;
+		int j = 0;
+		while(px[i].index != -1 && py[j].index != -1)
+		{
+			if(px[i].index == py[j].index)
+			{
+				sum += px[i].value * py[j].value;
+				i++;
+				j++;
+			}
+			else
+			{
+				if(px[i].index > py[j].index)
+					j++;
+				else
+					i++;
+			}
+		}
+		return sum;
+	}
+
+	~SVR_Q()
+	{
+		delete cache;
+		delete[] sign;
+		delete[] index;
+		delete[] buffer[0];
+		delete[] buffer[1];
+		delete[] QD;
+
+		delete[] x_square;
+	}
+private:
+	int l;
+	Cache *cache;
+	char *sign;
+	int *index;
+	mutable int next_buffer;
+	float *buffer[2];
+	double *QD;
 };
 
-Kernel::Kernel(int l, const std::vector<std::vector<svm_node>> &x_, const svm_parameter& param)
-		:kernel_type(param.kernel_type), degree(param.degree),
-		 gamma(param.gamma), coef0(param.coef0)
-{
-	kernel_function = &Kernel::kernel_linear;
-	x = x_;
-	x_square = 0;
-}
-
-Kernel::~Kernel()
-{
-	delete[] x_square;
-}
-
-//double Kernel::dot(const svm_node *px, const svm_node *py)
-double Kernel::dot(const std::vector<svm_node> px, const std::vector<svm_node> py)
-{
-	double sum = 0;
-	int i = 0;
-	int j = 0;
-	while(px[i].index != -1 && py[j].index != -1)
-	{
-		if(px[i].index == py[j].index)
-		{
-			sum += px[i].value * py[j].value;
-			i++;
-			j++;
-		}
-		else
-		{
-			if(px[i].index > py[j].index)
-				j++;
-			else
-				i++;
-		}
-	}
-	return sum;
-}
-
-//double Kernel::k_function(const svm_node *x, const svm_node *y,
-//						  const svm_parameter& param)
-double Kernel::k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
-						  const svm_parameter& param)
-{
-	switch(param.kernel_type)
-	{
-		case LINEAR:
-			return dot(x,y);
-		default:
-			return 0;  // Unreachable
-	}
-}
 
 // An SMO algorithm in Fan et al., JMLR 6(2005), p. 1889--1918
 // Solves:
@@ -269,7 +308,7 @@ public:
 		double r;	// for Solver_NU
 	};
 
-	void Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const std::vector<char> &y_,
+	void Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
 			   std::vector<double> &alpha_, double Cp, double Cn, double eps,
 			   SolutionInfo &si, int shrinking);
 protected:
@@ -281,7 +320,7 @@ protected:
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
 //	double *alpha;
 	std::vector<double> alpha;
-	const QMatrix *Q;
+	SVR_Q *Q;
 	const double *QD;
 	double eps;
 	double Cp,Cn;
@@ -370,7 +409,7 @@ void Solver::reconstruct_gradient()
 	}
 }
 
-void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const std::vector<char> &y_,
+void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
 				   std::vector<double> &alpha_, double Cp, double Cn, double eps,
 				   SolutionInfo &si, int shrinking)
 {
@@ -882,7 +921,7 @@ class Solver_NU: public Solver
 {
 public:
 	Solver_NU() {}
-	void Solve(int l, const QMatrix& Q, const std::vector<double> &p, const std::vector<char> &y,
+	void Solve(int l, SVR_Q& Q, const std::vector<double> &p, const std::vector<char> &y,
 			   std::vector<double> &alpha, double Cp, double Cn, double eps,
 			   SolutionInfo &si, int shrinking)
 	{
@@ -1132,82 +1171,6 @@ double Solver_NU::calculate_rho()
 	return (r1-r2)/2;
 }
 
-
-class SVR_Q: public Kernel
-{
-public:
-	SVR_Q(const svm_problem& prob, const svm_parameter& param)
-			:Kernel(prob.l, prob.x, param)
-	{
-		l = prob.l;
-		cache = new Cache(l,(long int)(param.cache_size*(1<<20)));
-		QD = new double[2*l];
-		sign = new char[2*l];
-		index = new int[2*l];
-		for(int k=0;k<l;k++)
-		{
-			sign[k] = 1;
-			sign[k+l] = -1;
-			index[k] = k;
-			index[k+l] = k;
-			QD[k] = (this->*kernel_function)(k,k);
-			QD[k+l] = QD[k];
-		}
-		buffer[0] = new float[2*l];
-		buffer[1] = new float[2*l];
-		next_buffer = 0;
-	}
-
-	void swap_index(int i, int j) const
-	{
-		std::swap(sign[i],sign[j]);
-		std::swap(index[i],index[j]);
-		std::swap(QD[i],QD[j]);
-	}
-
-	float *get_Q(int i, int len) const
-	{
-		float *data;
-		int j, real_i = index[i];
-		if(cache->get_data(real_i,&data,l) < l)
-		{
-			for(j=0;j<l;j++)
-				data[j] = (float)(this->*kernel_function)(real_i,j);
-		}
-
-		// reorder and copy
-		float *buf = buffer[next_buffer];
-		next_buffer = 1 - next_buffer;
-		char si = sign[i];
-		for(j=0;j<len;j++)
-			buf[j] = (float) si * (float) sign[j] * data[index[j]];
-		return buf;
-	}
-
-	double *get_QD() const
-	{
-		return QD;
-	}
-
-	~SVR_Q()
-	{
-		delete cache;
-		delete[] sign;
-		delete[] index;
-		delete[] buffer[0];
-		delete[] buffer[1];
-		delete[] QD;
-	}
-private:
-	int l;
-	Cache *cache;
-	char *sign;
-	int *index;
-	mutable int next_buffer;
-	float *buffer[2];
-	double *QD;
-};
-
 static void solve_nu_svr(
 		const svm_problem &prob,
 		const svm_parameter &param,
@@ -1234,7 +1197,8 @@ static void solve_nu_svr(
 	}
 
 	Solver_NU s;
-	s.Solve(2*l, SVR_Q(prob, param), linear_term, y, alpha2, C, C, param.eps, si, param.shrinking);
+	SVR_Q svr_q(prob, param);
+	s.Solve(2*l, svr_q, linear_term, y, alpha2, C, C, param.eps, si, param.shrinking);
 
 	for(int i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
@@ -1425,7 +1389,7 @@ double svm_predict_values(const svm_model &model, const std::vector<svm_node> x,
 	double sum = 0;
 
 	for(int i=0;i<model.l;i++)
-		sum += sv_coef[i] * Kernel::k_function(x,model.SV[i],model.param);
+		sum += sv_coef[i] * SVR_Q::k_function(x, model.SV[i],model.param);
 
 	sum -= model.rho[0];
 	dec_values[0] = sum;
