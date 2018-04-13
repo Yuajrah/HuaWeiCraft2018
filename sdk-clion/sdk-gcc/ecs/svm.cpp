@@ -139,6 +139,14 @@ private:
 	double gamma;
 	double coef0;
 
+	int l;
+	Cache *cache;
+	char *sign;
+	int *index;
+	mutable int next_buffer;
+	float *buffer[2];
+	double *QD;
+
 public:
 	SVR_Q(const svm_problem& prob, const svm_parameter& param) {
 
@@ -251,14 +259,8 @@ public:
 		delete[] buffer[1];
 		delete[] QD;
 	}
-private:
-	int l;
-	Cache *cache;
-	char *sign;
-	int *index;
-	mutable int next_buffer;
-	float *buffer[2];
-	double *QD;
+
+
 };
 
 
@@ -281,7 +283,6 @@ public:
 protected:
 	int active_size;
 	std::vector<char> y;
-//	double *G;		// gradient of objective function
 	std::vector<double> G;
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
@@ -291,12 +292,10 @@ protected:
 	double eps;
 	double Cp,Cn;
 	std::vector<double> p;
-//	int *active_set;
 	std::vector<int> active_set;
-//	double *G_bar;		// gradient, if we treat free variables as 0
 	std::vector<double> G_bar;
 	int l;
-	bool unshrink;	// XXX
+	bool unshrink;
 
 	double get_C(int i)
 	{
