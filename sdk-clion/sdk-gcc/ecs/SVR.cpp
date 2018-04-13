@@ -2,18 +2,8 @@
 // Created by ruiy on 18-4-13.
 //
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <float.h>
-#include <string.h>
-#include <stdarg.h>
-#include <limits.h>
-#include <locale.h>
-
 #include "SVR.h"
-#include "type_def.h"
+
 
 SVR::SVR(svm_problem prob, svm_parameter param): prob(prob), param(param){}
 
@@ -24,7 +14,7 @@ void SVR::train() {
     model.nr_class = 2;
     model.sv_coef = std::vector<std::vector<double>>(1);
 
-    if(param.probability && param.svm_type == NU_SVR)
+    if(param.probability)
     {
         model.probA = std::vector<double>(1, svr_probability(prob, param));
     }

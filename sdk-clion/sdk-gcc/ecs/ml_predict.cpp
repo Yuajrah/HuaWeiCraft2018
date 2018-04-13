@@ -251,8 +251,6 @@ svm_parameter init_svm_parameter()
 //    param.nr_weight = 0;
 
     // default values
-    param.svm_type = NU_SVR;
-    param.kernel_type = LINEAR;
     param.degree = 3;
     param.gamma = 0.01;	// 1/num_features
     param.coef0 = 0;
@@ -263,9 +261,7 @@ svm_parameter init_svm_parameter()
     param.p = 0.1;
     param.shrinking = 1;
     param.probability = 0;
-    param.nr_weight = 0;
-    param.weight_label = NULL;
-    param.weight = NULL;
+
 
     return param;
 }

@@ -69,13 +69,7 @@ double * SVR_Q::get_QD() const
 double SVR_Q::k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
                          const svm_parameter& param)
 {
-    switch(param.kernel_type)
-    {
-        case LINEAR:
-            return dot(x,y);
-        default:
-            return 0;  // Unreachable
-    }
+    return dot(x,y);
 }
 
 double SVR_Q::kernel_linear(int i, int j)

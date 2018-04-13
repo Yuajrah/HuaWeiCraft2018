@@ -5,21 +5,16 @@
 #ifndef SDK_CLION_CACHE_H
 #define SDK_CLION_CACHE_H
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <float.h>
-#include <string.h>
-#include <stdarg.h>
-#include <limits.h>
-#include <locale.h>
+#include <cmath>
+#include <cctype>
+#include <cfloat>
+#include <cstring>
+#include <cstdarg>
+#include <climits>
+#include <clocale>
 
 #include "type_def.h"
 #include "Solver.h"
-
-#define INF HUGE_VAL
-#define TAU 1e-12
 
 //
 // Kernel Cache

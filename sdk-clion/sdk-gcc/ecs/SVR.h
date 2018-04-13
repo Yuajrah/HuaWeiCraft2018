@@ -5,7 +5,7 @@
 #ifndef SDK_CLION_SVR_H
 #define SDK_CLION_SVR_H
 
-
+#include <cmath>
 #include "Solver.h"
 
 class SVR {

@@ -5,6 +5,9 @@
 #ifndef SDK_GCC_TYPE_DEF_H
 #define SDK_GCC_TYPE_DEF_H
 
+#define INF HUGE_VAL
+#define TAU 1e-12
+
 #include <vector>
 
 struct Server {
@@ -70,12 +73,11 @@ struct svm_problem
     std::vector<std::vector<svm_node>> x;
 };
 
-enum { C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };	/* svm_type */
-enum { LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED }; /* kernel_type */
+//enum { C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };	/* svm_type */
+//enum { LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED }; /* kernel_type */
 
 struct svm_parameter
 {
-    int svm_type;
     int kernel_type;
     int degree;	/* for poly */
     double gamma;	/* for poly/rbf/sigmoid */
@@ -85,9 +87,7 @@ struct svm_parameter
     double cache_size; /* in MB */
     double eps;	/* stopping criteria */
     double C;	/* for C_SVC, EPSILON_SVR and NU_SVR */
-    int nr_weight;		/* for C_SVC */
-    int *weight_label;	/* for C_SVC */
-    double* weight;		/* for C_SVC */
+
     double nu;	/* for NU_SVC, ONE_CLASS, and NU_SVR */
     double p;	/* for EPSILON_SVR */
     int shrinking;	/* use the shrinking heuristics */
