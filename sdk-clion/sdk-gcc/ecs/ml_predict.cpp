@@ -176,7 +176,6 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
         std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
         LR lr(train, target);
-        //RandomForest rf(100,7,5,3,1.0, sqrt(train.size()));
         lr.train();
         double ecs_sum = 0.0;
         std::vector <double> predict_ecs_data;
@@ -192,7 +191,7 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
             predict_ecs_data.push_back(tmp_predict);
             ecs_sum += tmp_predict;
         }
-        result[t.first] = ecs_sum;
+        result[t.first] = std::round(ecs_sum);
         //result[t.first] = get_bigger_mean(predict_ecs_data, need_predict_day/2)*need_predict_day;
     }
 

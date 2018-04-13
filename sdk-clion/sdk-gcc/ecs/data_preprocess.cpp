@@ -47,7 +47,11 @@ std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<doubl
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-        used_data = ma(ecs_data,6);
+        used_data = ma(ecs_data,move_step);
+    }
+    if(split_high_flag)
+    {
+        used_data = split_high(used_data, split_rate);
     }
     if(split_choosed)
     {
@@ -81,7 +85,11 @@ std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<doubl
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-        used_data = ma(ecs_data,6);
+        used_data = ma(ecs_data,move_step);
+    }
+    if(split_high_flag)
+    {
+        used_data = split_high(used_data, split_rate);
     }
     if(split_choosed)
     {
@@ -114,7 +122,11 @@ std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-        used_data = ma(ecs_data,6);
+        used_data = ma(ecs_data,move_step);
+    }
+    if(split_high_flag)
+    {
+        used_data = split_high(used_data, split_rate);
     }
     if(split_choosed)
     {
@@ -143,7 +155,11 @@ std::vector<double>  get_frist_predict_data(std::vector<double>ecs_data, int spl
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-        used_data = ma(ecs_data,6);
+        used_data = ma(ecs_data,move_step);
+    }
+    if(split_high_flag)
+    {
+        used_data = split_high(used_data, split_rate);
     }
     if(split_choosed)
     {
@@ -258,6 +274,27 @@ std::vector<std::vector<double>>  get_vector_test_method2(std::vector<std::vecto
     for(int i =input.size()-predict_need_date; i<input.size(); i++)
     {
         result.push_back(input[i]);
+    }
+    return result;
+}
+
+std::vector<double> split_high(std::vector<double>data, double rate)
+{
+    double sum = 0.0;
+    double mean = 0.0;
+    std::vector<double> result;
+    for (int i = 0; i < data.size(); ++i) {
+        sum += data[i];
+    }
+    mean = sum/data.size();
+    double bias = mean*rate;
+    for (int j = 0; j <data.size() ; ++j) {
+        if(data[j] > bias)
+        {
+            result.push_back(bias);
+        } else{
+            result.push_back(data[j]);
+        }
     }
     return result;
 }
