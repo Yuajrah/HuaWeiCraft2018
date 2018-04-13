@@ -1648,59 +1648,51 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
 void svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fold, std::vector<double> target)
 {
 	int i;
-	int *fold_start;
 	int l = prob.l;
-	int *perm = Malloc(int,l);
-	int nr_class;
-	if (nr_fold > l)
-	{
-		nr_fold = l;
-		fprintf(stderr,"WARNING: # folds > # data. Will use # folds = # data instead (i.e., leave-one-out cross validation)\n");
-	}
-	fold_start = Malloc(int,nr_fold+1);
+
+	std::vector<int> perm(l);
+
+	nr_fold = std::max(nr_fold, l);
+	std::vector<int> fold_start(nr_fold+1);
+
 	// stratified cv may not give leave-one-out rate
 	// Each class to l folds -> some folds may have zero elements
 
-		for(i=0;i<l;i++) perm[i]=i;
-		for(i=0;i<l;i++)
-		{
-			int j = i+rand()%(l-i);
-			std::swap(perm[i],perm[j]);
-		}
-		for(i=0;i<=nr_fold;i++)
-			fold_start[i]=i*l/nr_fold;
-
+	for(i=0;i<l;i++) perm[i]=i;
+	for(i=0;i<l;i++) {
+		int j = i+rand()%(l-i);
+		std::swap(perm[i],perm[j]);
+	}
+	for(i=0;i<=nr_fold;i++)
+		fold_start[i]=i*l/nr_fold;
 
 	for(i=0;i<nr_fold;i++)
 	{
 		int begin = fold_start[i];
 		int end = fold_start[i+1];
-		int j,k;
 		svm_problem subprob;
 
 		subprob.l = l-(end-begin);
-//		subprob.x = Malloc(struct svm_node*,subprob.l);
 		subprob.x = std::vector<std::vector<svm_node>>(subprob.l);
-//		subprob.y = Malloc(double,subprob.l);
         subprob.y = std::vector<double>(subprob.l);
 
-		k=0;
-		for(j=0;j<begin;j++)
+		int k=0;
+		for(int j=0;j<begin;j++)
 		{
 			subprob.x[k] = prob.x[perm[j]];
 			subprob.y[k] = prob.y[perm[j]];
-			++k;
+			k++;
 		}
-		for(j=end;j<l;j++)
+		for(int j=end;j<l;j++)
 		{
 			subprob.x[k] = prob.x[perm[j]];
 			subprob.y[k] = prob.y[perm[j]];
-			++k;
+			k++;
 		}
 		svm_model submodel = svm_train(subprob, param);
 
-			for(j=begin;j<end;j++)
-				target[perm[j]] = svm_predict(&submodel,prob.x[perm[j]]);
+		for(int j=begin;j<end;j++)
+			target[perm[j]] = svm_predict(&submodel,prob.x[perm[j]]);
 	}
 }
 
