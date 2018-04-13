@@ -281,7 +281,8 @@ public:
 protected:
 	int active_size;
 	std::vector<char> y;
-	double *G;		// gradient of objective function
+//	double *G;		// gradient of objective function
+	std::vector<double> G;
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
 	std::vector<double> alpha;
@@ -290,7 +291,8 @@ protected:
 	double eps;
 	double Cp,Cn;
 	std::vector<double> p;
-	int *active_set;
+//	int *active_set;
+	std::vector<int> active_set;
 	double *G_bar;		// gradient, if we treat free variables as 0
 	int l;
 	bool unshrink;	// XXX
@@ -400,7 +402,7 @@ void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::ve
 
 	// initialize active set (for shrinking)
 	{
-		active_set = new int[l];
+		active_set = std::vector<int>(l);
 		for(int i=0;i<l;i++)
 			active_set[i] = i;
 		active_size = l;
@@ -408,7 +410,7 @@ void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::ve
 
 	// initialize gradient
 	{
-		G = new double[l];
+		G = std::vector<double>(l, 0.0);
 		G_bar = new double[l];
 		int i;
 		for(i=0;i<l;i++)
@@ -652,8 +654,8 @@ void Solver::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::ve
 //	delete[] y;
 //	delete[] alpha;
 	delete[] alpha_status;
-	delete[] active_set;
-	delete[] G;
+//	delete[] active_set;
+//	delete[] G;
 	delete[] G_bar;
 }
 
