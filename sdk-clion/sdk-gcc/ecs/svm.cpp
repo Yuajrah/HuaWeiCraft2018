@@ -128,22 +128,10 @@ int Cache::get_data(const int index, float **data, int len)
 }
 
 
-//
-// Kernel evaluation
-//
-// the static method k_function is for doing single kernel evaluation
-// the constructor of Kernel prepares to calculate the l*l kernel matrix
-// the member function get_Q is for getting one column from the Q Matrix
-//
-
-
 class SVR_Q
 {
-
-
 private:
 	std::vector<std::vector<svm_node>> x;
-	double *x_square;
 
 	// svm_parameter
 	int kernel_type;
@@ -152,24 +140,23 @@ private:
 	double coef0;
 
 public:
-	SVR_Q(const svm_problem& prob, const svm_parameter& param)
-	{
+	SVR_Q(const svm_problem& prob, const svm_parameter& param) {
 
-		kernel_type = param.kernel_type;
+        kernel_type = param.kernel_type;
 		degree = param.degree;
 		gamma = param.gamma;
 		coef0 = param.coef0;
 
 		x = prob.x;
-		x_square = 0;
-
 		l = prob.l;
+
 		cache = new Cache(l,(long int)(param.cache_size*(1<<20)));
+
 		QD = new double[2*l];
 		sign = new char[2*l];
 		index = new int[2*l];
-		for(int k=0;k<l;k++)
-		{
+
+		for(int k=0;k<l;k++) {
 			sign[k] = 1;
 			sign[k+l] = -1;
 			index[k] = k;
@@ -264,7 +251,7 @@ public:
 		delete[] buffer[1];
 		delete[] QD;
 
-		delete[] x_square;
+//		delete[] x_square;
 	}
 private:
 	int l;
