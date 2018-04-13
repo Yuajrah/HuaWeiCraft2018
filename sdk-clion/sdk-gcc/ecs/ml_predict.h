@@ -60,6 +60,6 @@ svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vect
  * @param test_x
  * @return
  */
-std::vector<svm_node> feature_to_svm_node(std::vector<double> test_x);
+std::vector<double> feature_to_svm_node(std::vector<double> test_x);
 
 #endif //SDK_CLION_ML_PREDICT_H

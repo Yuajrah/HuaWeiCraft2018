@@ -21,7 +21,7 @@ public:
     double svr_probability();
     std::pair<std::vector<double>, double> train_one(double Cp, double Cn);
     void solve_nu_svr(std::vector<double> &alpha, SolutionInfo &si);
-    double predict(const std::vector<svm_node> x);
+    double predict(const std::vector<double> x);
     void Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
                std::vector<double> &alpha_, double Cp, double Cn, double eps,
                SolutionInfo &si, int shrinking);

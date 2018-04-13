@@ -16,7 +16,7 @@ class Cache;
 class SVR_Q
 {
 private:
-    std::vector<std::vector<svm_node>> x;
+    std::vector<std::vector<double>> x;
 
     // svm_parameter
     int l;
@@ -37,7 +37,7 @@ public:
 
     double kernel_linear(int i, int j);
 
-    static double dot(const std::vector<svm_node> px, const std::vector<svm_node> py);
+    static double dot(const std::vector<double> px, const std::vector<double> py);
 
     ~SVR_Q();
 };

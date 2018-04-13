@@ -22,7 +22,7 @@ void SVR::train() {
     for(int i=0;i<prob.l;i++)
         if(fabs(alpha_rho.first[i]) > 0) model.l++;
 
-    model.SV = std::vector<std::vector<svm_node>>(model.l);
+    model.SV = std::vector<std::vector<double>>(model.l);
     model.sv_coef[0] = std::vector<double>(model.l, 0.0);
     model.sv_indices = std::vector<int>(model.l, 0);
 
@@ -126,7 +126,7 @@ void SVR::solve_nu_svr(std::vector<double> &alpha, SolutionInfo &si) {
 }
 
 
-double SVR::predict(const std::vector<svm_node> x)
+double SVR::predict(const std::vector<double> x)
 {
     svm_model model = this->model;
     double pred_result = -model.rho[0];

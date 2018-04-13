@@ -61,33 +61,18 @@ double * SVR_Q::get_QD() const
     return QD;
 }
 
-
-
 double SVR_Q::kernel_linear(int i, int j)
 {
     return dot(x[i],x[j]);
 }
 
-double SVR_Q::dot(const std::vector<svm_node> px, const std::vector<svm_node> py)
+double SVR_Q::dot(const std::vector<double> px, const std::vector<double> py)
 {
     double sum = 0;
     int i = 0;
-    int j = 0;
-    while(px[i].index != -1 && py[j].index != -1)
-    {
-        if(px[i].index == py[j].index)
-        {
-            sum += px[i].value * py[j].value;
-            i++;
-            j++;
-        }
-        else
-        {
-            if(px[i].index > py[j].index)
-                j++;
-            else
-                i++;
-        }
+    while(i < px.size()) {
+        sum += px[i] * py[i];
+        i++;
     }
     return sum;
 }
