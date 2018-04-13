@@ -329,7 +329,7 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
             std::vector<svm_node> node = feature_to_svm_node(frist_predict_data);
 //            double tmp_predict = svm_predict(model, node);
 
-            double tmp_predict = svr.svm_predict(node);
+            double tmp_predict = svr.predict(node);
 
             /* 6. 构造新的预测所需特征 */
             frist_predict_data.erase(frist_predict_data.begin());

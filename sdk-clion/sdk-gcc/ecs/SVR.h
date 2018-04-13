@@ -21,7 +21,7 @@ public:
     static decision_function svm_train_one(svm_problem prob, svm_parameter param, double Cp, double Cn);
     static void solve_nu_svr(const svm_problem &prob,const svm_parameter &param,std::vector<double> &alpha,Solver::SolutionInfo &si);
 
-    double svm_predict(const std::vector<svm_node> x);
+    double predict(const std::vector<svm_node> x);
     void svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fold, std::vector<double> target);
     double svm_predict_values(const svm_model &model, const std::vector<svm_node> x, std::vector<double> &dec_values);
 };

@@ -168,7 +168,7 @@ void SVR::solve_nu_svr(
 }
 
 
-double SVR::svm_predict(const std::vector<svm_node> x)
+double SVR::predict(const std::vector<svm_node> x)
 {
     svm_model model = this->model;
     std::vector<double> dec_values;
@@ -233,7 +233,7 @@ void SVR::svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fol
         svr.train();
 
         for(int j=begin;j<end;j++)
-            target[perm[j]] = svr.svm_predict(prob.x[perm[j]]);
+            target[perm[j]] = svr.predict(prob.x[perm[j]]);
     }
 }
 
