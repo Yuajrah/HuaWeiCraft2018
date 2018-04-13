@@ -170,16 +170,21 @@ public:
 
 class Kernel: public QMatrix {
 public:
-	Kernel(int l, svm_node * const * x, const svm_parameter& param);
+//	Kernel(int l, svm_node * const * x, const svm_parameter& param);
+	Kernel(int l, const std::vector<std::vector<svm_node>> &x, const svm_parameter& param);
 	virtual ~Kernel();
 
-	static double k_function(const svm_node *x, const svm_node *y,
+	static double k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
 							 const svm_parameter& param);
 	virtual Qfloat *get_Q(int column, int len) const = 0;
 	virtual double *get_QD() const = 0;
-	virtual void swap_index(int i, int j) const	// no so const...
+	virtual void swap_index(int i, int j)	// no so const...
 	{
-		swap(x[i],x[j]);
+//		std::swap(x[i],x[j]);
+		std::vector<svm_node> tmp = x[i];
+		x[i] = x[j];
+		x[j] = tmp;
+
 		if(x_square) swap(x_square[i],x_square[j]);
 	}
 protected:
@@ -187,7 +192,8 @@ protected:
 	double (Kernel::*kernel_function)(int i, int j) const;
 
 private:
-	const svm_node **x;
+//	const svm_node **x;
+	std::vector<std::vector<svm_node>> x;
 	double *x_square;
 
 	// svm_parameter
@@ -196,7 +202,10 @@ private:
 	const double gamma;
 	const double coef0;
 
-	static double dot(const svm_node *px, const svm_node *py);
+//	static double dot(const svm_node *px, const svm_node *py);
+
+	static double dot(const std::vector<svm_node> px, const std::vector<svm_node> py);
+
 	double kernel_linear(int i, int j) const
 	{
 		return dot(x[i],x[j]);
@@ -219,7 +228,7 @@ private:
 	}
 };
 
-Kernel::Kernel(int l, svm_node * const * x_, const svm_parameter& param)
+Kernel::Kernel(int l, const std::vector<std::vector<svm_node>> &x_, const svm_parameter& param)
 		:kernel_type(param.kernel_type), degree(param.degree),
 		 gamma(param.gamma), coef0(param.coef0)
 {
@@ -242,7 +251,9 @@ Kernel::Kernel(int l, svm_node * const * x_, const svm_parameter& param)
 			break;
 	}
 
-	clone(x,x_,l);
+//	clone(x,x_,l);
+
+	x = x_;
 
 	if(kernel_type == RBF)
 	{
@@ -256,86 +267,43 @@ Kernel::Kernel(int l, svm_node * const * x_, const svm_parameter& param)
 
 Kernel::~Kernel()
 {
-	delete[] x;
 	delete[] x_square;
 }
 
-double Kernel::dot(const svm_node *px, const svm_node *py)
+//double Kernel::dot(const svm_node *px, const svm_node *py)
+double Kernel::dot(const std::vector<svm_node> px, const std::vector<svm_node> py)
 {
 	double sum = 0;
-	while(px->index != -1 && py->index != -1)
+	int i = 0;
+	int j = 0;
+	while(px[i].index != -1 && py[j].index != -1)
 	{
-		if(px->index == py->index)
+		if(px[i].index == py[j].index)
 		{
-			sum += px->value * py->value;
-			++px;
-			++py;
+			sum += px[i].value * py[j].value;
+			i++;
+			j++;
 		}
 		else
 		{
-			if(px->index > py->index)
-				++py;
+			if(px[i].index > py[j].index)
+				j++;
 			else
-				++px;
+				i++;
 		}
 	}
 	return sum;
 }
 
-double Kernel::k_function(const svm_node *x, const svm_node *y,
+//double Kernel::k_function(const svm_node *x, const svm_node *y,
+//						  const svm_parameter& param)
+double Kernel::k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
 						  const svm_parameter& param)
 {
 	switch(param.kernel_type)
 	{
 		case LINEAR:
 			return dot(x,y);
-		case POLY:
-			return powi(param.gamma*dot(x,y)+param.coef0,param.degree);
-		case RBF:
-		{
-			double sum = 0;
-			while(x->index != -1 && y->index !=-1)
-			{
-				if(x->index == y->index)
-				{
-					double d = x->value - y->value;
-					sum += d*d;
-					++x;
-					++y;
-				}
-				else
-				{
-					if(x->index > y->index)
-					{
-						sum += y->value * y->value;
-						++y;
-					}
-					else
-					{
-						sum += x->value * x->value;
-						++x;
-					}
-				}
-			}
-
-			while(x->index != -1)
-			{
-				sum += x->value * x->value;
-				++x;
-			}
-
-			while(y->index != -1)
-			{
-				sum += y->value * y->value;
-				++y;
-			}
-
-			return exp(-param.gamma*sum);
-		}
-		case SIGMOID:
-			return tanh(param.gamma*dot(x,y)+param.coef0);
-		case PRECOMPUTED:  //x: test (validation), y: SV
-			return x[(int)(y->value)].value;
 		default:
 			return 0;  // Unreachable
 	}
@@ -1618,7 +1586,8 @@ static void svm_binary_svc_probability(
 		struct svm_problem subprob;
 
 		subprob.l = prob->l-(end-begin);
-		subprob.x = Malloc(struct svm_node*,subprob.l);
+//		subprob.x = Malloc(struct svm_node*,subprob.l);
+		subprob.x = std::vector<std::vector<svm_node>>(subprob.l);
 //		subprob.y = Malloc(double,subprob.l);
         subprob.y = std::vector<double>(subprob.l);
 
@@ -1676,7 +1645,7 @@ static void svm_binary_svc_probability(
 			svm_free_and_destroy_model(tt);
 			svm_destroy_param(&subparam);
 		}
-		free(subprob.x);
+//		free(subprob.x);
 //		free(subprob.y);
 	}
 	sigmoid_train(prob->l,dec_values,prob->y,probA,probB);
@@ -1827,8 +1796,8 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
     for(i=0;i<prob.l;i++)
         if(fabs(f.alpha[i]) > 0) ++nSV;
     model.l = nSV;
-    model.SV = Malloc(svm_node *,nSV);
-//	model.SV = std::vector<std::vector<svm_node>>(nSV);
+//    model.SV = Malloc(svm_node *,nSV);
+	model.SV = std::vector<std::vector<svm_node>>(nSV);
     model.sv_coef[0] = std::vector<double>(nSV, 0.0);
     model.sv_indices = std::vector<int>(nSV, 0);
     int j = 0;
@@ -1932,7 +1901,8 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		struct svm_problem subprob;
 
 		subprob.l = l-(end-begin);
-		subprob.x = Malloc(struct svm_node*,subprob.l);
+//		subprob.x = Malloc(struct svm_node*,subprob.l);
+		subprob.x = std::vector<std::vector<svm_node>>(subprob.l);
 //		subprob.y = Malloc(double,subprob.l);
         subprob.y = std::vector<double>(subprob.l);
 
@@ -1965,7 +1935,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		auto t = &submodel;
 		auto tt = &t;
 		svm_free_and_destroy_model(tt);
-		free(subprob.x);
+//		free(subprob.x);
 //		free(subprob.y);
 	}
 	free(fold_start);
@@ -1982,7 +1952,7 @@ int svm_get_nr_class(const svm_model *model)
 
 
 
-double svm_predict_values(const svm_model *model, const svm_node *x, double* dec_values)
+double svm_predict_values(const svm_model *model, const std::vector<svm_node> x, double* dec_values)
 {
 	int i;
 	if(model->param.svm_type == ONE_CLASS ||
@@ -2061,7 +2031,7 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 	}
 }
 
-double svm_predict(const svm_model *model, const svm_node *x)
+double svm_predict(const svm_model *model, const std::vector<svm_node> x)
 {
 	int nr_class = model->nr_class;
 	double *dec_values;
@@ -2077,7 +2047,7 @@ double svm_predict(const svm_model *model, const svm_node *x)
 }
 
 double svm_predict_probability(
-		const svm_model *model, const svm_node *x, double *prob_estimates)
+		const svm_model *model, const std::vector<svm_node> x, double *prob_estimates)
 {
 	if ((model->param.svm_type == C_SVC || model->param.svm_type == NU_SVC) &&
 		!model->probA.empty() && !model->probB.empty())
@@ -2280,16 +2250,16 @@ bool read_model_header(FILE *fp, svm_model* model)
 
 void svm_free_model_content(svm_model* model_ptr)
 {
-	if(model_ptr->free_sv && model_ptr->l > 0 && model_ptr->SV != NULL)
-		free((void *)(model_ptr->SV[0]));
+//	if(model_ptr->free_sv && model_ptr->l > 0 && !model_ptr->SV.empty())
+//		free((void *)(model_ptr->SV[0]));
 //	if(!model_ptr->sv_coef.empty())
 //	{
 //		for(int i=0;i<model_ptr->nr_class-1;i++)
 //			free(model_ptr->sv_coef[i]);
 //	}
 
-	free(model_ptr->SV);
-	model_ptr->SV = NULL;
+//	free(model_ptr->SV);
+//	model_ptr->SV = NULL;
 
 //	free(model_ptr->sv_coef);
 //	model_ptr->sv_coef = NULL;

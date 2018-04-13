@@ -14,7 +14,8 @@ struct svm_problem
 {
     int l;
     std::vector<double> y;
-    struct svm_node **x;
+//    struct svm_node **x;
+    std::vector<std::vector<svm_node>> x;
 };
 
 enum { C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };	/* svm_type */
@@ -49,8 +50,8 @@ struct svm_model
     svm_parameter param;	/* parameter */
     int nr_class;		/* number of classes, = 2 in regression/one class svm */
     int l;			/* total #SV */
-    struct svm_node **SV;		/* SVs (SV[l]) */
-//    std::vector<std::vector<svm_node>> SV;		/* SVs (SV[l]) */
+//    struct svm_node **SV;		/* SVs (SV[l]) */
+    std::vector<std::vector<svm_node>> SV;		/* SVs (SV[l]) */
     std::vector<std::vector<double>> sv_coef;	/* coefficients for SVs in decision functions (sv_coef[k-1][l]) */
     std::vector<double> rho;		/* constants in decision functions (rho[k*(k-1)/2]) */
     std::vector<double> probA;		/* pariwise probability information */
@@ -71,9 +72,9 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param);
 void svm_cross_validation(const struct svm_problem *prob, const struct svm_parameter *param, int nr_fold, double *target);
 
 
-double svm_predict_values(const struct svm_model *model, const struct svm_node *x, double* dec_values);
-double svm_predict(const struct svm_model *model, const struct svm_node *x);
-double svm_predict_probability(const struct svm_model *model, const struct svm_node *x, double* prob_estimates);
+double svm_predict_values(const struct svm_model *model, const std::vector<svm_node> x, double* dec_values);
+double svm_predict(const struct svm_model *model, const std::vector<svm_node> x);
+double svm_predict_probability(const struct svm_model *model, const std::vector<svm_node> x, double* prob_estimates);
 
 void svm_free_model_content(struct svm_model *model_ptr);
 void svm_free_and_destroy_model(struct svm_model **model_ptr_ptr);
