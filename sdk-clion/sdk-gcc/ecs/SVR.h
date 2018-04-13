@@ -31,7 +31,6 @@ protected:
     int active_size;
     std::vector<char> y;
     std::vector<double> G;
-    enum { LOWER_BOUND, UPPER_BOUND, FREE };
     char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
     std::vector<double> alpha;
     SVR_Q *Q;
@@ -45,19 +44,13 @@ protected:
     bool unshrink;
 
     inline double get_C(int i) { return (y[i] > 0)? Cp : Cn;}
-    void update_alpha_status(int i) {
-        if(alpha[i] >= get_C(i))
-            alpha_status[i] = UPPER_BOUND;
-        else if(alpha[i] <= 0)
-            alpha_status[i] = LOWER_BOUND;
-        else alpha_status[i] = FREE;
-    }
+    void update_alpha_status(int i);
     inline bool is_upper_bound(int i) { return alpha_status[i] == UPPER_BOUND; }
     inline bool is_lower_bound(int i) { return alpha_status[i] == LOWER_BOUND; }
     inline bool is_free(int i) { return alpha_status[i] == FREE; }
-    void reconstruct_gradient();
-    int select_working_set(int &i, int &j);
-    double calculate_rho();
+    void gradient();
+    int select_workset(int &i, int &j);
+    double calc_rho();
     void shrink();
 
     bool shrunk(int i, double Gmax1, double Gmax2);

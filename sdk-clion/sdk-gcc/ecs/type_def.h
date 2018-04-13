@@ -70,7 +70,6 @@ struct svm_parameter
 struct svm_model
 {
     svm_parameter param;
-    int nr_class;
     int l;
     std::vector<std::vector<double>> SV;
     std::vector<std::vector<double>> sv_coef;
@@ -80,8 +79,8 @@ struct svm_model
     std::vector<int> sv_indices;
     std::vector<int> label;
     std::vector<int> nSV;
-    int free_sv;
 };
 
+enum { LOWER_BOUND, UPPER_BOUND, FREE };
 
 #endif //SDK_GCC_TYPE_DEF_H

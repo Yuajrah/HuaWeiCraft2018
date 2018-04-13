@@ -9,8 +9,6 @@ SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_paramete
 void SVR::train() {
 
     model.param = param;
-    model.free_sv = 0;
-    model.nr_class = 2;
     model.sv_coef = std::vector<std::vector<double>>(1);
 
     if(param.probability) model.probA = std::vector<double>(1, svr_probability());
@@ -44,9 +42,7 @@ double SVR::svr_probability()
     std::vector<double> ymv(Y.size());
     double mae = 0;
 
-
-    for(int i=0;i<Y.size();i++)
-    {
+    for(int i=0;i<Y.size();i++) {
         ymv[i]=Y[i]-ymv[i];
         mae += fabs(ymv[i]);
     }
@@ -78,8 +74,7 @@ std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
 
     int nSV = 0;
     int nBSV = 0;
-    for(int i=0;i<Y.size();i++)
-    {
+    for(int i=0;i<Y.size();i++) {
         if(fabs(alpha[i]) > 0)
         {
             ++nSV;
@@ -126,8 +121,7 @@ void SVR::solve_nu_svr(std::vector<double> &alpha, SolverRes &si) {
 }
 
 
-double SVR::predict(const std::vector<double> x)
-{
+double SVR::predict(const std::vector<double> x) {
     svm_model model = this->model;
     double pred_result = -model.rho[0];
 
@@ -137,7 +131,7 @@ double SVR::predict(const std::vector<double> x)
     return pred_result;
 }
 
-void SVR::reconstruct_gradient() {
+void SVR::gradient() {
     if(active_size == l) return;
 
     int nr_free = 0;
@@ -232,17 +226,13 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
         }
 
         int i,j;
-        if(select_working_set(i,j)!=0)
-        {
-            // reconstruct the whole gradient
-            reconstruct_gradient();
-            // reset active set size and check
+        if(select_workset(i,j)!=0) {
+            gradient();
             active_size = l;
-//            info("*");
-            if(select_working_set(i,j)!=0)
+            if(select_workset(i,j)!=0)
                 break;
             else
-                counter = 1;	// do shrinking next iteration
+                counter = 1;
         }
 
         ++iter;
@@ -392,14 +382,14 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
         if(active_size < l)
         {
             // reconstruct the whole gradient to calculate objective value
-            reconstruct_gradient();
+            gradient();
             active_size = l;
         }
     }
 
     // calculate rho
 
-    si.rho = calculate_rho();
+    si.rho = calc_rho();
 
     // calculate objective value
     {
@@ -425,24 +415,17 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
 }
 
 // return 1 if already optimal, return 0 otherwise
-int SVR::select_working_set(int &out_i, int &out_j)
-{
-    // return i,j such that y_i = y_j and
-    // i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
-    // j: minimizes the decrease of obj value
-    //    (if quadratic coefficeint <= 0, replace it with tau)
-    //    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
-
-    double Gmaxp = -INF;
-    double Gmaxp2 = -INF;
+int SVR::select_workset(int &out_i, int &out_j) {
+    double Gmaxp = -DBL_MAX;
+    double Gmaxp2 = -DBL_MAX;
     int Gmaxp_idx = -1;
 
-    double Gmaxn = -INF;
-    double Gmaxn2 = -INF;
+    double Gmaxn = -DBL_MAX;
+    double Gmaxn2 = -DBL_MAX;
     int Gmaxn_idx = -1;
 
     int Gmin_idx = -1;
-    double obj_diff_min = INF;
+    double obj_diff_min = DBL_MAX;
 
     for(int t=0;t<active_size;t++)
         if(y[t]==+1)
@@ -557,17 +540,14 @@ bool SVR::shrunk(int i, double Gmax1, double Gmax2)
         return(false);
 }
 
-double SVR::calculate_rho()
-{
+double SVR::calc_rho() {
     int nr_free1 = 0,nr_free2 = 0;
     double ub1 = INF, ub2 = INF;
     double lb1 = -INF, lb2 = -INF;
     double sum_free1 = 0, sum_free2 = 0;
 
-    for(int i=0;i<active_size;i++)
-    {
-        if(y[i]==+1)
-        {
+    for(int i=0;i<active_size;i++) {
+        if(y[i]==+1) {
             if(is_upper_bound(i))
                 lb1 = std::max(lb1,G[i]);
             else if(is_lower_bound(i))
@@ -577,9 +557,7 @@ double SVR::calculate_rho()
                 ++nr_free1;
                 sum_free1 += G[i];
             }
-        }
-        else
-        {
+        } else {
             if(is_upper_bound(i))
                 lb2 = std::max(lb2,G[i]);
             else if(is_lower_bound(i))
@@ -606,8 +584,6 @@ double SVR::calculate_rho()
     si.r = (r1+r2)/2;
     return (r1-r2)/2;
 }
-
-
 
 bool SVR::shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4)
 {
@@ -658,10 +634,9 @@ void SVR::shrink()
         }
     }
 
-    if(unshrink == false && std::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10)
-    {
+    if(unshrink == false && std::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10) {
         unshrink = true;
-        reconstruct_gradient();
+        gradient();
         active_size = l;
     }
 
@@ -687,4 +662,12 @@ void SVR::shrink()
                 active_size--;
             }
         }
+}
+
+void SVR::update_alpha_status(int i) {
+    if(alpha[i] >= get_C(i))
+        alpha_status[i] = UPPER_BOUND;
+    else if(alpha[i] <= 0)
+        alpha_status[i] = LOWER_BOUND;
+    else alpha_status[i] = FREE;
 }

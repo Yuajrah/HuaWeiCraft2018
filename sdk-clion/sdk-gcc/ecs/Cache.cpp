@@ -4,8 +4,6 @@
 
 #include "Cache.h"
 
-
-
 Cache::Cache(int l_,long int size_):l(l_),size(size_)
 {
     head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
@@ -44,8 +42,7 @@ int Cache::get_data(const int index, float **data, int len)
     if(h->len) lru_delete(h);
     int more = len - h->len;
 
-    if(more > 0)
-    {
+    if(more > 0) {
         // free old space
         while(size < more)
         {
