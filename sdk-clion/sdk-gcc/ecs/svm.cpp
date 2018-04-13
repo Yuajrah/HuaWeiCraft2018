@@ -1216,7 +1216,7 @@ private:
 
 static void solve_nu_svr(
 		const svm_problem *prob, const svm_parameter *param,
-		double *alpha, Solver::SolutionInfo* si)
+		std::vector<double> &alpha, Solver::SolutionInfo* si)
 {
 	int l = prob->l;
 	double C = param->C;
@@ -1257,22 +1257,17 @@ static void solve_nu_svr(
 //
 struct decision_function
 {
-	double *alpha;
+	std::vector<double> alpha;
 	double rho;
 };
 
 static decision_function svm_train_one(svm_problem prob, svm_parameter param, double Cp, double Cn)
 {
-	double *alpha = Malloc(double,prob.l);
+//	double *alpha = Malloc(double,prob.l);
+	std::vector<double> alpha(prob.l, 0.0);
 	Solver::SolutionInfo si;
-//	switch(param->svm_type)
-//	{
-//		case NU_SVR:
-//
-//			break;
-//	}
 
-	solve_nu_svr(&prob, &param,alpha,&si);
+	solve_nu_svr(&prob, &param, alpha,&si);
 
 	info("obj = %f, rho = %f\n",si.obj,si.rho);
 
@@ -1626,26 +1621,23 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
     model.rho = std::vector<double>(1, f.rho);
 
     int nSV = 0;
-    int i;
-    for(i=0;i<prob.l;i++)
-        if(fabs(f.alpha[i]) > 0) ++nSV;
+    for(int i=0;i<prob.l;i++)
+        if(fabs(f.alpha[i]) > 0) nSV++;
+
     model.l = nSV;
-//    model.SV = Malloc(svm_node *,nSV);
 	model.SV = std::vector<std::vector<svm_node>>(nSV);
     model.sv_coef[0] = std::vector<double>(nSV, 0.0);
     model.sv_indices = std::vector<int>(nSV, 0);
+
     int j = 0;
-    for(i=0;i<prob.l;i++)
+    for(int i=0;i<prob.l;i++)
         if(fabs(f.alpha[i]) > 0)
         {
             model.SV[j] = prob.x[i];
             model.sv_coef[0][j] = f.alpha[i];
             model.sv_indices[j] = i+1;
-            ++j;
+            j++;
         }
-
-    free(f.alpha);
-
 
 	return model;
 }
