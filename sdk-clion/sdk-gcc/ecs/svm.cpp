@@ -152,36 +152,6 @@ int Cache::get_data(const int index, Qfloat **data, int len)
 	return len;
 }
 
-void Cache::swap_index(int i, int j)
-{
-	if(i==j) return;
-
-	if(head[i].len) lru_delete(&head[i]);
-	if(head[j].len) lru_delete(&head[j]);
-	swap(head[i].data,head[j].data);
-	swap(head[i].len,head[j].len);
-	if(head[i].len) lru_insert(&head[i]);
-	if(head[j].len) lru_insert(&head[j]);
-
-	if(i>j) swap(i,j);
-	for(head_t *h = lru_head.next; h!=&lru_head; h=h->next)
-	{
-		if(h->len > i)
-		{
-			if(h->len > j)
-				swap(h->data[i],h->data[j]);
-			else
-			{
-				// give up
-				lru_delete(h);
-				free(h->data);
-				size += h->len;
-				h->data = 0;
-				h->len = 0;
-			}
-		}
-	}
-}
 
 //
 // Kernel evaluation
@@ -1259,104 +1229,6 @@ double Solver_NU::calculate_rho()
 	return (r1-r2)/2;
 }
 
-//
-// Q matrices for various formulations
-//
-class SVC_Q: public Kernel
-{
-public:
-	SVC_Q(const svm_problem& prob, const svm_parameter& param, const schar *y_)
-			:Kernel(prob.l, prob.x, param)
-	{
-		clone(y,y_,prob.l);
-		cache = new Cache(prob.l,(long int)(param.cache_size*(1<<20)));
-		QD = new double[prob.l];
-		for(int i=0;i<prob.l;i++)
-			QD[i] = (this->*kernel_function)(i,i);
-	}
-
-	Qfloat *get_Q(int i, int len) const
-	{
-		Qfloat *data;
-		int start, j;
-		if((start = cache->get_data(i,&data,len)) < len)
-		{
-			for(j=start;j<len;j++)
-				data[j] = (Qfloat)(y[i]*y[j]*(this->*kernel_function)(i,j));
-		}
-		return data;
-	}
-
-	double *get_QD() const
-	{
-		return QD;
-	}
-
-	void swap_index(int i, int j) const
-	{
-		cache->swap_index(i,j);
-		Kernel::swap_index(i,j);
-		swap(y[i],y[j]);
-		swap(QD[i],QD[j]);
-	}
-
-	~SVC_Q()
-	{
-		delete[] y;
-		delete cache;
-		delete[] QD;
-	}
-private:
-	schar *y;
-	Cache *cache;
-	double *QD;
-};
-
-class ONE_CLASS_Q: public Kernel
-{
-public:
-	ONE_CLASS_Q(const svm_problem& prob, const svm_parameter& param)
-			:Kernel(prob.l, prob.x, param)
-	{
-		cache = new Cache(prob.l,(long int)(param.cache_size*(1<<20)));
-		QD = new double[prob.l];
-		for(int i=0;i<prob.l;i++)
-			QD[i] = (this->*kernel_function)(i,i);
-	}
-
-	Qfloat *get_Q(int i, int len) const
-	{
-		Qfloat *data;
-		int start, j;
-		if((start = cache->get_data(i,&data,len)) < len)
-		{
-			for(j=start;j<len;j++)
-				data[j] = (Qfloat)(this->*kernel_function)(i,j);
-		}
-		return data;
-	}
-
-	double *get_QD() const
-	{
-		return QD;
-	}
-
-	void swap_index(int i, int j) const
-	{
-		cache->swap_index(i,j);
-		Kernel::swap_index(i,j);
-		swap(QD[i],QD[j]);
-	}
-
-	~ONE_CLASS_Q()
-	{
-		delete cache;
-		delete[] QD;
-	}
-private:
-	Cache *cache;
-	double *QD;
-};
 
 class SVR_Q: public Kernel
 {
@@ -1433,168 +1305,11 @@ private:
 	double *QD;
 };
 
-//
-// construct and solve various formulations
-//
-static void solve_c_svc(
-		const svm_problem *prob, const svm_parameter* param,
-		double *alpha, Solver::SolutionInfo* si, double Cp, double Cn)
-{
-	int l = prob->l;
-	double *minus_ones = new double[l];
-	schar *y = new schar[l];
 
-	int i;
 
-	for(i=0;i<l;i++)
-	{
-		alpha[i] = 0;
-		minus_ones[i] = -1;
-		if(prob->y[i] > 0) y[i] = +1; else y[i] = -1;
-	}
 
-	Solver s;
-	s.Solve(l, SVC_Q(*prob,*param,y), minus_ones, y,
-			alpha, Cp, Cn, param->eps, si, param->shrinking);
 
-	double sum_alpha=0;
-	for(i=0;i<l;i++)
-		sum_alpha += alpha[i];
 
-	if (Cp==Cn)
-		info("nu = %f\n", sum_alpha/(Cp*prob->l));
-
-	for(i=0;i<l;i++)
-		alpha[i] *= y[i];
-
-	delete[] minus_ones;
-	delete[] y;
-}
-
-static void solve_nu_svc(
-		const svm_problem *prob, const svm_parameter *param,
-		double *alpha, Solver::SolutionInfo* si)
-{
-	int i;
-	int l = prob->l;
-	double nu = param->nu;
-
-	schar *y = new schar[l];
-
-	for(i=0;i<l;i++)
-		if(prob->y[i]>0)
-			y[i] = +1;
-		else
-			y[i] = -1;
-
-	double sum_pos = nu*l/2;
-	double sum_neg = nu*l/2;
-
-	for(i=0;i<l;i++)
-		if(y[i] == +1)
-		{
-			alpha[i] = min(1.0,sum_pos);
-			sum_pos -= alpha[i];
-		}
-		else
-		{
-			alpha[i] = min(1.0,sum_neg);
-			sum_neg -= alpha[i];
-		}
-
-	double *zeros = new double[l];
-
-	for(i=0;i<l;i++)
-		zeros[i] = 0;
-
-	Solver_NU s;
-	s.Solve(l, SVC_Q(*prob,*param,y), zeros, y,
-			alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
-	double r = si->r;
-
-	info("C = %f\n",1/r);
-
-	for(i=0;i<l;i++)
-		alpha[i] *= y[i]/r;
-
-	si->rho /= r;
-	si->obj /= (r*r);
-	si->upper_bound_p = 1/r;
-	si->upper_bound_n = 1/r;
-
-	delete[] y;
-	delete[] zeros;
-}
-
-static void solve_one_class(
-		const svm_problem *prob, const svm_parameter *param,
-		double *alpha, Solver::SolutionInfo* si)
-{
-	int l = prob->l;
-	double *zeros = new double[l];
-	schar *ones = new schar[l];
-	int i;
-
-	int n = (int)(param->nu*prob->l);	// # of alpha's at upper bound
-
-	for(i=0;i<n;i++)
-		alpha[i] = 1;
-	if(n<prob->l)
-		alpha[n] = param->nu * prob->l - n;
-	for(i=n+1;i<l;i++)
-		alpha[i] = 0;
-
-	for(i=0;i<l;i++)
-	{
-		zeros[i] = 0;
-		ones[i] = 1;
-	}
-
-	Solver s;
-	s.Solve(l, ONE_CLASS_Q(*prob,*param), zeros, ones,
-			alpha, 1.0, 1.0, param->eps, si, param->shrinking);
-
-	delete[] zeros;
-	delete[] ones;
-}
-
-static void solve_epsilon_svr(
-		const svm_problem *prob, const svm_parameter *param,
-		double *alpha, Solver::SolutionInfo* si)
-{
-	int l = prob->l;
-	double *alpha2 = new double[2*l];
-	double *linear_term = new double[2*l];
-	schar *y = new schar[2*l];
-	int i;
-
-	for(i=0;i<l;i++)
-	{
-		alpha2[i] = 0;
-		linear_term[i] = param->p - prob->y[i];
-		y[i] = 1;
-
-		alpha2[i+l] = 0;
-		linear_term[i+l] = param->p + prob->y[i];
-		y[i+l] = -1;
-	}
-
-	Solver s;
-	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
-			alpha2, param->C, param->C, param->eps, si, param->shrinking);
-
-	double sum_alpha = 0;
-	for(i=0;i<l;i++)
-	{
-		alpha[i] = alpha2[i] - alpha2[i+l];
-		sum_alpha += fabs(alpha[i]);
-	}
-	info("nu = %f\n",sum_alpha/(param->C*l));
-
-	delete[] alpha2;
-	delete[] linear_term;
-	delete[] y;
-}
 
 static void solve_nu_svr(
 		const svm_problem *prob, const svm_parameter *param,
@@ -1649,24 +1364,14 @@ static decision_function svm_train_one(
 {
 	double *alpha = Malloc(double,prob->l);
 	Solver::SolutionInfo si;
-	switch(param->svm_type)
-	{
-		case C_SVC:
-			solve_c_svc(prob,param,alpha,&si,Cp,Cn);
-			break;
-		case NU_SVC:
-			solve_nu_svc(prob,param,alpha,&si);
-			break;
-		case ONE_CLASS:
-			solve_one_class(prob,param,alpha,&si);
-			break;
-		case EPSILON_SVR:
-			solve_epsilon_svr(prob,param,alpha,&si);
-			break;
-		case NU_SVR:
-			solve_nu_svr(prob,param,alpha,&si);
-			break;
-	}
+//	switch(param->svm_type)
+//	{
+//		case NU_SVR:
+//
+//			break;
+//	}
+
+	solve_nu_svr(prob,param,alpha,&si);
 
 	info("obj = %f, rho = %f\n",si.obj,si.rho);
 
