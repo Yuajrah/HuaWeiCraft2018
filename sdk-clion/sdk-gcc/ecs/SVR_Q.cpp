@@ -9,7 +9,7 @@ SVR_Q::SVR_Q(std::vector<std::vector<double>> X, std::vector<double> Y, const sv
     this->X = X;
     l = Y.size();
 
-    cache = new Cache(l,(long int)(param.cache_size*(1<<20)));
+    buf = new Buf(l,(long int)(param.cache_size*(1<<20)));
 
     QD = new double[2*l];
     sign = new char[2*l];
@@ -40,8 +40,7 @@ float*  SVR_Q::get_Q(int i, int len)
 {
     float *data;
     int j, real_i = index[i];
-    if(cache->get_data(real_i,&data,l) < l)
-    {
+    if(buf->get_data(real_i,&data,l) < l) {
         for(j=0;j<l;j++)
             data[j] = (float)kernel_linear(real_i,j);
     }
@@ -77,9 +76,8 @@ double SVR_Q::dot(const std::vector<double> px, const std::vector<double> py)
     return sum;
 }
 
-SVR_Q::~SVR_Q()
-{
-    delete cache;
+SVR_Q::~SVR_Q() {
+    delete buf;
     delete[] sign;
     delete[] index;
     delete[] buffer[0];

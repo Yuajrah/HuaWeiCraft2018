@@ -10,7 +10,7 @@
 
 #include "type_def.h"
 
-#include "Cache.h"
+#include "Buf.h"
 class Cache;
 
 class SVR_Q
@@ -20,7 +20,7 @@ private:
 
     // svm_parameter
     int l;
-    Cache *cache;
+    Buf *buf;
     char *sign;
     int *index;
     mutable int next_buffer;

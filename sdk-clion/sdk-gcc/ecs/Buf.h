@@ -16,23 +16,12 @@
 
 #include "type_def.h"
 
-//
-// Kernel Cache
-//
-// l is the number of total data items
-// size is the cache size limit in bytes
-//
-
-
-class Cache
+class Buf
 {
 public:
-    Cache(int l,long int size);
-    ~Cache();
+    Buf(int l,long int size);
+    ~Buf();
 
-    // request data [0,len)
-    // return some position p where [p,len) need to be filled
-    // (p >= len if nothing needs to be filled)
     int get_data(const int index, float **data, int len);
 
 private:
