@@ -17,8 +17,12 @@
 #include "BasicInfo.h"
 #include <algorithm>
 #include <math.h>
+#include "linerRegression.h"
 
-const  int split_windows = 10;
+//训练集划分的标准
+const bool unchangale = false;
+
+int get_split_window(std::vector<double> data);
 
 
 //使用KNN进行预测
@@ -30,10 +34,12 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
 std::map<int, int> predict_by_randomForest_method2 (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 //使用SVM进行预测
 std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data);
-
+std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data, int step);
 //使用树回归进行预测
 std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 
+// 使用线性回归进行预测
+std::map<int, int> predict_by_LR(std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 //取结果前一半的平均值
 int get_bigger_mean(std::vector<double> data, int num);
 ///////////////////////////////////////////////////

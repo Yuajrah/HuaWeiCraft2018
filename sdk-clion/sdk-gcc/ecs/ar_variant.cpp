@@ -17,13 +17,14 @@ std::map<int, int> predict_by_ar_1th (std::map<int, Vm> vm_info, std::map<int, s
     std::map<int, int> predict_data;
     for (auto &t: vm_info) {
         std::vector<double> after_ma_data = ma(train_data[t.first], 6);
+        //after_ma_data = split_high(after_ma_data,4);
         AR ar_model(after_ma_data);
         ar_model.fit("none");
         // ar_model.fit("aic");
         ar_model.predict(need_predict_day);
         // ar_model.print_model_info();
         auto predict_res = ar_model.get_res();
-        predict_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), -0.5)), 0.0) * 1.1;
+        predict_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), 0.0)), 0.0);
     }
     return predict_data;
 }
@@ -256,3 +257,4 @@ std::map<int, int> predict_by_ar_7th(std::map<int, std::vector<double>> fit_trai
     }
     return predict_data;
 }
+

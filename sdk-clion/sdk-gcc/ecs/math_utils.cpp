@@ -462,7 +462,7 @@ int main()
 void print_predict_score (std::map<int, int> actual_data, std::map<int, int> predict_data) {
     float t1=0, t2=0, t3=0;
     for (auto &t: actual_data) {
-        printf("flavor%2d %4d %4d\n", t.first, t.second, predict_data[t.first]);
+//        printf("flavor%2d %4d %4d\n", t.first, t.second, predict_data[t.first]);
         t1 += pow(t.second - predict_data[t.first], 2);
         t2 += pow(t.second, 2);
         t3 += pow(predict_data[t.first], 2);

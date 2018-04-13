@@ -9,6 +9,7 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+
 double  knn_regresion_brust (std::map<std::vector<double>, double> train_data,std::vector<double> predict_data, int k =5 );
 double distance(std::vector<double> data1, std::vector<double> data2);
 double distance2(std::vector<double> data1, std::vector<double> data2);

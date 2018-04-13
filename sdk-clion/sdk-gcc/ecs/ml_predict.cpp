@@ -11,6 +11,7 @@ std::map<int, int> predict_by_knn (std::map<int, Vm> vm_info, std::map<int, std:
     for (auto &t: vm_info) {
         std::vector<double> ecs_data = train_data[t.first];
         bool mv_flag = true;
+        int split_windows = get_split_window(ecs_data);
         std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
         std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
 //        result[t.first] = 1;
@@ -37,6 +38,7 @@ std::map<int, int> predict_by_knn_method2 (std::map<int, Vm> vm_info, std::map<i
     for (auto &t: vm_info) {
         std::vector<double> ecs_data = train_data[t.first];
         bool mv_flag = true;
+        int split_windows = get_split_window(ecs_data);
         std::vector<std::vector<double>> train_serial = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
         std::vector<double> target_serial = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
         std::vector<std::vector<double>> train = get_vector_train_method2(train_serial,need_predict_day);
@@ -73,9 +75,7 @@ std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std
         std::vector<double> ecs_data = train_data[t.first];
         printf("训练第%d种服务器：\n",t.first);
         bool mv_flag = true;
-//        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
-//        std::vector<std::vector<double>> train = get_vector_train(train_data_need);
-//        std::vector<double> target = get_vector_target(train_data_need);
+        int split_windows = get_split_window(ecs_data);
         std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
         std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
         std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
@@ -104,6 +104,7 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
         std::vector<double> ecs_data = train_data[t.first];
         //printf("训练第%d种服务器：\n",t.first);
         bool mv_flag = true;
+        int split_windows = get_split_window(ecs_data);
 //        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
 //        std::vector<std::vector<double>> train = get_vector_train(train_data_need);
 //        std::vector<double> target = get_vector_target(train_data_need);
@@ -139,6 +140,7 @@ std::map<int, int> predict_by_randomForest_method2 (std::map<int, Vm> vm_info, s
         std::vector<double> ecs_data = train_data[t.first];
         //printf("训练第%d种服务器：\n",t.first);
         bool mv_flag = true;
+        int split_windows = get_split_window(ecs_data);
         std::vector<std::vector<double>> train_serial = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
         std::vector<double> target_serial = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
         std::vector<std::vector<double>> train = get_vector_train_method2(train_serial,need_predict_day);
@@ -165,6 +167,56 @@ std::map<int, int> predict_by_randomForest_method2 (std::map<int, Vm> vm_info, s
     return result;
 }
 
+//使用线性回归进行预测
+std::map<int, int> predict_by_LR(std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
+{
+
+    std::map<int,int>result;
+    for (auto &t: vm_info) {
+        std::vector<double> ecs_data = train_data[t.first];
+//        printf("训练第%d种服务器：\n",t.first);
+        bool mv_flag = true;
+        int split_windows = get_split_window(ecs_data);
+        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
+        std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
+        std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
+        LR liner(train, target);
+        //直接最小二乘训练
+        liner.train();
+        //岭回归训练
+//        liner.RidgeTrain(0.3);
+        std::vector <double> predict_ecs_data;
+        for(int i=0; i < need_predict_day; i++)
+        {
+            double tmp_predict = liner.predict(frist_predict_data);
+            if (tmp_predict < 0.0)
+            {
+                tmp_predict = 0.0;
+            }
+            frist_predict_data.erase(frist_predict_data.begin());
+            frist_predict_data.push_back(tmp_predict);
+            predict_ecs_data.push_back(tmp_predict);
+        }
+        result[t.first] =std::max(round(std::accumulate(predict_ecs_data.begin(), predict_ecs_data.end(), 0.0)), 0.0);
+//        result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day);
+    }
+
+    return result;
+}
+
+int get_split_window(std::vector<double> data)
+{
+    if (unchangale)
+    {
+        return 10;
+    }
+    else
+    {
+        int tmp;
+        tmp = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
+        return tmp;
+    }
+}
 int get_bigger_mean(std::vector<double> data, int num)
 {
     std::sort(data.begin(),data.end());
@@ -241,7 +293,8 @@ svm_parameter init_svm_parameter()
     param.coef0 = 0;
     param.nu = 0.5;
     param.cache_size = 100;
-    param.C = 0.13;
+//    param.C = 0.13;
+    param.C = 0.5;
     param.eps = 1e-3;
     param.p = 0.1;
     param.shrinking = 1;
@@ -279,9 +332,10 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
 
     for (auto &t: BasicInfo::vm_info) {
         std::vector<double> ecs_data = train_data[t.first];
-        printf("训练第%d种服务器：\n",t.first);
+//        printf("训练第%d种服务器：\n",t.first);
         /* 1. 准备训练集合*/
         bool mv_flag = true;
+        int split_windows = get_split_window(ecs_data);
         std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
         std::vector<std::vector<double>> train_x = get_vector_train(train_data_need);
         std::vector<double> train_y = get_vector_target(train_data_need);
@@ -318,5 +372,52 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
 
     return result;
 
-};
+}
+std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data, int step){
+
+    std::map<int,int> result;
+
+    for (auto &t: BasicInfo::vm_info) {
+        std::vector<double> ecs_data = train_data[t.first];
+//        printf("训练第%d种服务器：\n",t.first);
+        /* 1. 准备训练集合*/
+        bool mv_flag = true;
+        int split_windows = get_split_window(ecs_data);
+        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
+        std::vector<std::vector<double>> train_x = get_vector_train(train_data_need);
+        std::vector<double> train_y = get_vector_target(train_data_need);
+
+        /* 2. 初始化问题*/
+        svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
+        svm_parameter param = init_svm_parameter();   // 初始化训练参数
+        param.C =step *0.1;
+        /* 3. 训练模型 */
+        svm_model* model = svm_train(&prob, &param);
+
+        /* 4. 获取所需要的特征 */
+        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
+
+        /* 5. 开始预测 */
+        std::vector<double> predict_ecs_data;
+        for(int i=0; i < BasicInfo::need_predict_cnt; i++)
+        {
+            svm_node* node = feature_to_svm_node(frist_predict_data);
+            double tmp_predict = svm_predict(model, node);
+
+            /* 6. 构造新的预测所需特征 */
+            frist_predict_data.erase(frist_predict_data.begin());
+            frist_predict_data.push_back(tmp_predict);
+
+            /* 7. 存储预测结果 */
+            predict_ecs_data.push_back(tmp_predict);
+        }
+
+        double ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.end(), 0.0);
+        result[t.first] = round(std::max(0.0, ecs_sum));
+//        result[t.first] = (int)(predict_ecs_data[BasicInfo::need_predict_day-1]*BasicInfo::need_predict_day);
+    }
+
+    return result;
+
+}
 
