@@ -167,38 +167,37 @@ std::map<int, int> predict_by_randomForest_method2 (std::map<int, Vm> vm_info, s
     return result;
 }
 
-//使用线性回归进行预测
-std::map<int, int> predict_by_LR(std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
-{
 
+//使用线性回归进行预测
+
+std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
+{
     std::map<int,int>result;
     for (auto &t: vm_info) {
         std::vector<double> ecs_data = train_data[t.first];
-//        printf("训练第%d种服务器：\n",t.first);
+        //printf("训练第%d种服务器：\n",t.first);
         bool mv_flag = true;
         int split_windows = get_split_window(ecs_data);
-        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
         std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
         std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
-        LR liner(train, target);
-        //直接最小二乘训练
-        liner.train();
-        //岭回归训练
-//        liner.RidgeTrain(0.3);
+        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
+        LR lr(train, target);
+        lr.train();
+        double ecs_sum = 0.0;
         std::vector <double> predict_ecs_data;
         for(int i=0; i < need_predict_day; i++)
         {
-            double tmp_predict = liner.predict(frist_predict_data);
-            if (tmp_predict < 0.0)
+            double tmp_predict = lr.predict(frist_predict_data);
+            if(tmp_predict<0.0)
             {
                 tmp_predict = 0.0;
             }
             frist_predict_data.erase(frist_predict_data.begin());
             frist_predict_data.push_back(tmp_predict);
             predict_ecs_data.push_back(tmp_predict);
+            ecs_sum += tmp_predict;
         }
-        result[t.first] =std::max(round(std::accumulate(predict_ecs_data.begin(), predict_ecs_data.end(), 0.0)), 0.0);
-//        result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day);
+        result[t.first] = std::round(ecs_sum);
     }
 
     return result;
@@ -217,6 +216,7 @@ int get_split_window(std::vector<double> data)
         return tmp;
     }
 }
+
 int get_bigger_mean(std::vector<double> data, int num)
 {
     std::sort(data.begin(),data.end());

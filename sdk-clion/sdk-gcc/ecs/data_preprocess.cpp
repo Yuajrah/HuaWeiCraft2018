@@ -42,20 +42,31 @@ std::map<int, int> change_by_mean_vaule(std::map<int, std::vector<double>> trian
 }
 std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<double> ecs_data, int split_windows, bool mv )
 {
+    int tmp_split;
     std::map<std::vector<double>, double> result;
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-        if(split_choosed) {
-            used_data = ma(ecs_data, move_step);
-        } else
-        {
-            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-        }
+        used_data = ma(ecs_data,move_step);
     }
+
+    if(split_high_flag)
+    {
+        used_data = split_high(used_data, split_rate);
+    }
+
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
+    }
+
     std::vector<double> tmp_train;
     int index = 0;
-    while(index < split_windows) {
+    while(index < tmp_split) {
         tmp_train.push_back(used_data[index]);
         index++;
     }
@@ -72,21 +83,24 @@ std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<doubl
 
 std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<double> ecs_data, int split_windows, bool mv )
 {
-    int tmp_split = split_windows;
+    int tmp_split;
     std::vector<std::vector<double>> result;
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-        if(split_choosed) {
-            used_data = ma(ecs_data, move_step);
-        } else
-        {
-            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-        }
+        used_data = ma(ecs_data,move_step);
     }
-    if (split_high_flag)
+    if(split_high_flag)
     {
-        used_data = split_high(used_data,split_rate);
+        used_data = split_high(used_data, split_rate);
+    }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
     }
     std::vector<double> tmp_train;
     int index = 0;
@@ -106,21 +120,25 @@ std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<doubl
 
 std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data, int split_windows, bool mv)
 {
-    int tmp_split = split_windows;
+    int tmp_split;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-        if(split_choosed) {
-            used_data = ma(ecs_data, move_step);
-        } else
-        {
-            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-        }
+
+        used_data = ma(ecs_data,move_step);
     }
-    if (split_high_flag)
+    if(split_high_flag)
     {
-        used_data = split_high(used_data,split_rate);
+        used_data = split_high(used_data, split_rate);
+    }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
     }
     int index = 0;
     while(index < tmp_split) {
@@ -136,21 +154,25 @@ std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data
 }
 std::vector<double>  get_frist_predict_data(std::vector<double>ecs_data, int split_windows, bool mv )
 {
-    int tmp_split = split_windows;
+
+    int tmp_split;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-        if(split_choosed) {
-            used_data = ma(ecs_data, move_step);
-        } else
-        {
-            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-        }
+        used_data = ma(ecs_data,move_step);
     }
-    if (split_high_flag)
+    if(split_high_flag)
     {
-        used_data = split_high(used_data,split_rate);
+        used_data = split_high(used_data, split_rate);
+    }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
     }
     int n = used_data.size();
     for (int i = n - tmp_split; i < n; i++)
@@ -261,27 +283,22 @@ std::vector<std::vector<double>>  get_vector_test_method2(std::vector<std::vecto
     return result;
 }
 
-//削峰
+
 std::vector<double> split_high(std::vector<double>data, double rate)
 {
-    std::vector<double> result;
-    //和
     double sum = 0.0;
-    //均值
     double mean = 0.0;
+    std::vector<double> result;
     for (int i = 0; i < data.size(); ++i) {
         sum += data[i];
     }
-
     mean = sum/data.size();
-    double bais = mean * rate;
-    for (int j = 0; j < data.size(); ++j) {
-        if (data[j] > bais)
+    double bias = mean*rate;
+    for (int j = 0; j <data.size() ; ++j) {
+        if(data[j] > bias)
         {
-            result.push_back(bais);
-        }
-        else
-        {
+            result.push_back(bias);
+        } else{
             result.push_back(data[j]);
         }
     }
