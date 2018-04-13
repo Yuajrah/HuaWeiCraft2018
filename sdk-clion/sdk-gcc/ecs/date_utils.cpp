@@ -59,12 +59,12 @@ int get_hours(const char *from, const char *to)
 
 char* add_days(const char *from, int add_day)
 {
-    int year, month, day;
-    sscanf(from,"%d-%d-%d",&year,&month,&day);
-    time_t fromSecond = convert(year,month,day);
+    int year, month, day, hour, minute, second;
+    sscanf(from,"%d-%d-%d %d:%d:%d",&year,&month,&day,&hour,&minute,&second);
+    time_t fromSecond = convert(year,month,day, hour, minute, second);
     time_t toSecond = fromSecond + add_day * 24 * 3600;
     tm *tm = localtime(&toSecond);
-    char *s = new char[11];
-    sprintf(s, "%d-%.2d-%.2d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
+    char *s = new char[20];
+    sprintf(s, "%d-%.2d-%.2d %.2d:%.2d:%.2d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
     return s;
 }

@@ -14,13 +14,13 @@
 
 
 std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object);
-
+std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object, int value_type);
 Allocat_server allocate_oneserver(int id, int core, int mem, int target);
 
 void MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos);
 
 //计算分配资源得分函数
-void get_scores_p(std::map<int, int>, Server server, int number, int target, std::map<int, Vm>);
+double get_scores_p(std::map<int, int>, Server server, int number, int target, std::map<int, Vm>);
 
 std::vector<int> get_path(std::vector<std::vector<std::vector<int> > > &used, std::map<int,Vm> vminfo, int U, int V);
 

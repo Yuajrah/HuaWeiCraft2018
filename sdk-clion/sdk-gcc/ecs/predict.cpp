@@ -167,7 +167,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         // 拟合阶段所用的训练集合
         train_data = get_esc_data(data, date_start, "2016-01-21 00:00:00", data_num); // 用于最终训练模型的训练数据
 
-        char *test_start_date = add_days("2016-01-21", -need_predict_day); // 选取最后×天, x天为所需要预测的天数
+        char *test_start_date = add_days("2016-01-21 00:00:00", -need_predict_day); // 选取最后×天, x天为所需要预测的天数
         fit_train_data = get_esc_data(data, date_start, test_start_date, data_num);
         fit_test_data_everyday = get_esc_data(data, test_start_date, "2016-01-21 00:00:00", data_num);
         actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
@@ -229,12 +229,14 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::map<int, int> predict_data;
     predict_data = predict_by_svm(train_data);
     print_predict_score(actual_data, predict_data);
+
     /**
      * 用残差做预测
      */
 
 //    std::map<int, int> predict_data = predict_by_ar_7th(fit_train_data, fit_test_data_everyday, train_data);
 //    print_predict_score(actual_data, predict_data);
+
 
     /**
      * 使用单独线性模型做预测
@@ -253,6 +255,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    order = get_order(BasicInfo::vm_info, BasicInfo::server_info, BasicInfo::opt_object);
 //    std::vector<std::map<int,int>> allocate_result = frist_fit(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object,order );
 //    std::string result2 = format_allocate_res(allocate_result);
+
+
     /**
      * 第二版分配方式
      * 背包
@@ -271,8 +275,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
 //    std::vector<Vm> objects = serialize(predict_data);
 //    random_permutation(objects);
-//    std::vector<Bin> allocate_result = ff({}, objects, server_info);
+//    std::vector<Bin> allocate_result = ff({}, objects);
 //    std::string result2 = format_allocate_res(allocate_result);
+
     /**
      * 第四版分配方式
      * ffd+
