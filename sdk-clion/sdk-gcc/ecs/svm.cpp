@@ -1493,31 +1493,31 @@ static void multiclass_probability(int k, double **r, double *p)
 
 // Return parameter of a Laplace distribution
 static double svm_svr_probability(
-		const svm_problem *prob, const svm_parameter *param)
+		const svm_problem prob, const svm_parameter param)
 {
 	int i;
 	int nr_fold = 5;
-	double *ymv = Malloc(double,prob->l);
+	double *ymv = Malloc(double,prob.l);
 	double mae = 0;
 
-	svm_parameter newparam = *param;
+	svm_parameter newparam = param;
 	newparam.probability = 0;
-	svm_cross_validation(prob,&newparam,nr_fold,ymv);
-	for(i=0;i<prob->l;i++)
+	svm_cross_validation(&prob,&newparam,nr_fold,ymv);
+	for(i=0;i<prob.l;i++)
 	{
-		ymv[i]=prob->y[i]-ymv[i];
+		ymv[i]=prob.y[i]-ymv[i];
 		mae += fabs(ymv[i]);
 	}
-	mae /= prob->l;
+	mae /= prob.l;
 	double std=sqrt(2*mae*mae);
 	int count=0;
 	mae=0;
-	for(i=0;i<prob->l;i++)
+	for(i=0;i<prob.l;i++)
 		if (fabs(ymv[i]) > 5*std)
 			count=count+1;
 		else
 			mae+=fabs(ymv[i]);
-	mae /= (prob->l-count);
+	mae /= (prob.l-count);
 	info("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma= %g\n",mae);
 	free(ymv);
 	return mae;
@@ -1614,7 +1614,7 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
 
     if(param.probability && param.svm_type == NU_SVR)
     {
-        model.probA = std::vector<double>(1, svm_svr_probability(&prob, &param));
+        model.probA = std::vector<double>(1, svm_svr_probability(prob, param));
     }
 
     decision_function f = svm_train_one(prob, param,0,0);
