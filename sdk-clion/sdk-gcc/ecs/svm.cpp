@@ -272,7 +272,7 @@ public:
 		double rho;
 		double upper_bound_p;
 		double upper_bound_n;
-		double r;	// for Solver_NU
+		double r;
 	};
 
 	void Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
@@ -851,24 +851,7 @@ double Solver::calculate_rho()
 	return (r1-r2)/2;
 }
 
-class Solver_NU: public Solver
-{
-public:
-	Solver_NU() {}
-	void Solve(int l, SVR_Q& Q, const std::vector<double> &p, const std::vector<char> &y,
-			   std::vector<double> &alpha, double Cp, double Cn, double eps,
-			   SolutionInfo &si, int shrinking)
-	{
-		Solver::Solve(l,Q,p,y,alpha,Cp,Cn,eps,si,shrinking);
-	}
 
-};
-
-//// return 1 if already optimal, return 0 otherwise
-//int Solver_NU::select_working_set(int &out_i, int &out_j)
-//{
-//
-//}
 
 bool Solver::be_shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4)
 {
@@ -967,7 +950,7 @@ static void solve_nu_svr(
 		y[i+l] = -1;
 	}
 
-	Solver_NU s;
+	Solver s;
 	SVR_Q svr_q(prob, param);
 	s.Solve(2*l, svr_q, linear_term, y, alpha2, C, C, param.eps, si, param.shrinking);
 
