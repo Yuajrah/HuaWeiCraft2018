@@ -1712,16 +1712,13 @@ double svm_predict_values(const svm_model &model, const std::vector<svm_node> x,
 
 }
 
-double svm_predict(svm_model model, const std::vector<svm_node> x)
+double svm_predict(const svm_model &model, const std::vector<svm_node> x)
 {
-	int nr_class = model.nr_class;
     std::vector<double> dec_values;
-	if(model.param.svm_type == NU_SVR)
-        dec_values.assign(1, 0.0);
-	else
-        dec_values.assign(nr_class*(nr_class-1)/2, 0.0);
+
+    dec_values.assign(1, 0.0);
 
 	double pred_result = svm_predict_values(model, x, dec_values);
-//	free(dec_values);
+
 	return pred_result;
 }
