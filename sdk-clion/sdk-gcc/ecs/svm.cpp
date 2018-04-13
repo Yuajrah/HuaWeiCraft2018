@@ -1261,11 +1261,9 @@ struct decision_function
 	double rho;
 };
 
-static decision_function svm_train_one(
-		const svm_problem *prob, const svm_parameter *param,
-		double Cp, double Cn)
+static decision_function svm_train_one(svm_problem prob, svm_parameter param, double Cp, double Cn)
 {
-	double *alpha = Malloc(double,prob->l);
+	double *alpha = Malloc(double,prob.l);
 	Solver::SolutionInfo si;
 //	switch(param->svm_type)
 //	{
@@ -1274,7 +1272,7 @@ static decision_function svm_train_one(
 //			break;
 //	}
 
-	solve_nu_svr(prob,param,alpha,&si);
+	solve_nu_svr(&prob, &param,alpha,&si);
 
 	info("obj = %f, rho = %f\n",si.obj,si.rho);
 
@@ -1282,12 +1280,12 @@ static decision_function svm_train_one(
 
 	int nSV = 0;
 	int nBSV = 0;
-	for(int i=0;i<prob->l;i++)
+	for(int i=0;i<prob.l;i++)
 	{
 		if(fabs(alpha[i]) > 0)
 		{
 			++nSV;
-			if(prob->y[i] > 0)
+			if(prob.y[i] > 0)
 			{
 				if(fabs(alpha[i]) >= si.upper_bound_p)
 					++nBSV;
@@ -1615,25 +1613,16 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
 {
 	svm_model model;
 	model.param = param;
-	model.free_sv = 0;	// XXX
-
-
-    // regression or one-class-svm
-    model.nr_class = 2;
-//    model.label = NULL;
-//    model.nSV = NULL;
-//    model.probA = NULL;
-//	model.probB = NULL;
+	model.free_sv = 0;
+	model.nr_class = 2;
     model.sv_coef = std::vector<std::vector<double>>(1);
 
-    if(param.probability &&
-       (param.svm_type == EPSILON_SVR ||
-        param.svm_type == NU_SVR))
+    if(param.probability && param.svm_type == NU_SVR)
     {
         model.probA = std::vector<double>(1, svm_svr_probability(&prob, &param));
     }
 
-    decision_function f = svm_train_one(&prob, &param,0,0);
+    decision_function f = svm_train_one(prob, param,0,0);
     model.rho = std::vector<double>(1, f.rho);
 
     int nSV = 0;

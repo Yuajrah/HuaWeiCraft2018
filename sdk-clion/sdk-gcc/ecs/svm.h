@@ -76,10 +76,4 @@ double svm_predict_values(const struct svm_model *model, const std::vector<svm_n
 double svm_predict(const struct svm_model *model, const std::vector<svm_node> x);
 double svm_predict_probability(const struct svm_model *model, const std::vector<svm_node> x, double* prob_estimates);
 
-void svm_free_and_destroy_model(struct svm_model **model_ptr_ptr);
-
-
-
-
-
 #endif /* _LIBSVM_H */
