@@ -250,8 +250,6 @@ public:
 		delete[] buffer[0];
 		delete[] buffer[1];
 		delete[] QD;
-
-//		delete[] x_square;
 	}
 private:
 	int l;
@@ -264,24 +262,6 @@ private:
 };
 
 
-// An SMO algorithm in Fan et al., JMLR 6(2005), p. 1889--1918
-// Solves:
-//
-//	min 0.5(\alpha^T Q \alpha) + p^T \alpha
-//
-//		y^T \alpha = \delta
-//		y_i = +1 or -1
-//		0 <= alpha_i <= Cp for y_i = 1
-//		0 <= alpha_i <= Cn for y_i = -1
-//
-// Given:
-//
-//	Q, p, y, Cp, Cn, and an initial feasible point \alpha
-//	l is the size of vectors and matrices
-//	eps is the stopping tolerance
-//
-// solution will be put in \alpha, objective value will be put in obj
-//
 class Solver {
 public:
 	Solver() {};
@@ -300,19 +280,16 @@ public:
 			   SolutionInfo &si, int shrinking);
 protected:
 	int active_size;
-//	char *y;
 	std::vector<char> y;
 	double *G;		// gradient of objective function
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
-//	double *alpha;
 	std::vector<double> alpha;
 	SVR_Q *Q;
 	const double *QD;
 	double eps;
 	double Cp,Cn;
 	std::vector<double> p;
-//	double *p;
 	int *active_set;
 	double *G_bar;		// gradient, if we treat free variables as 0
 	int l;
