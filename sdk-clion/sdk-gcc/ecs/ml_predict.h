@@ -17,6 +17,7 @@
 #include "BasicInfo.h"
 #include <algorithm>
 #include <math.h>
+#include "LinerRegression.h"
 
 const  int split_windows = 10;
 
@@ -33,6 +34,8 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
 
 //使用树回归进行预测
 std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
+
+std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 
 //取结果前一半的平均值
 int get_bigger_mean(std::vector<double> data, int num);

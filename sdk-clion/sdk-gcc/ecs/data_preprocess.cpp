@@ -42,15 +42,24 @@ std::map<int, int> change_by_mean_vaule(std::map<int, std::vector<double>> trian
 }
 std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<double> ecs_data, int split_windows, bool mv )
 {
+    int tmp_split;
     std::map<std::vector<double>, double> result;
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
         used_data = ma(ecs_data,6);
     }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
+    }
     std::vector<double> tmp_train;
     int index = 0;
-    while(index < split_windows) {
+    while(index < tmp_split) {
         tmp_train.push_back(used_data[index]);
         index++;
     }
@@ -67,15 +76,24 @@ std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<doubl
 
 std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<double> ecs_data, int split_windows, bool mv )
 {
+    int tmp_split;
     std::vector<std::vector<double>> result;
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
         used_data = ma(ecs_data,6);
     }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
+    }
     std::vector<double> tmp_train;
     int index = 0;
-    while(index < split_windows) {
+    while(index < tmp_split) {
         tmp_train.push_back(used_data[index]);
         index++;
     }
@@ -91,14 +109,23 @@ std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<doubl
 
 std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data, int split_windows, bool mv)
 {
+    int tmp_split;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
         used_data = ma(ecs_data,6);
     }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
+    }
     int index = 0;
-    while(index < split_windows) {
+    while(index < tmp_split) {
         index++;
     }
     while(index < used_data.size())
@@ -111,14 +138,23 @@ std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data
 }
 std::vector<double>  get_frist_predict_data(std::vector<double>ecs_data, int split_windows, bool mv )
 {
+    int tmp_split;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
         used_data = ma(ecs_data,6);
     }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
+    }
     int n = used_data.size();
-    for (int i = n - split_windows; i < n; i++)
+    for (int i = n - tmp_split; i < n; i++)
     {
         result.push_back(used_data[i]);
     }

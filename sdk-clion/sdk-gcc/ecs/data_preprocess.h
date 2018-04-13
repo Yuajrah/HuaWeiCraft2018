@@ -9,7 +9,14 @@
 #include <vector>
 #include <map>
 #include "ma.h"
+#include "BasicInfo.h"
+#include <math.h>
+#include "BasicInfo.h"
 //对于低频计算计算平均值
+const bool split_choosed = true;
+const bool split_high_flag = true;
+const int split_rate = 3;
+const int move_step = 6 ;
 double get_mean(std::vector<double> train_data, double rate);
 std::map<int, int> change_by_mean_vaule(std::map<int, std::vector<double>> train_data, std::map<int, Vm> vm_info, double rate, int need_predict_day,
                                         std::map<int, int> predict_data);
@@ -26,7 +33,7 @@ std::vector<std::vector<double >> get_vector_train(std::map<std::vector<double>,
 std::vector<double>  get_vector_target(std::map<std::vector<double>, double> input);
 
 //直接使用vector返回
-std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<double> ecs_data, int split_windows, bool mv );
+std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<double> ecs_data, int split_windows, bool mv);
 std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data, int split_windows, bool mv);
 
 
@@ -35,4 +42,6 @@ std::vector<std::vector<double >> get_vector_train_method2(std::vector<std::vect
 std::vector<double>  get_vector_target_method2(std::vector<double> input, int predict_need_date);
 std::vector<std::vector<double>>  get_vector_test_method2(std::vector<std::vector<double>> input, int predict_need_date);
 
+//利用平均值削去高峰
+std::vector<double> split_high(std::vector<double>, double rate);
 #endif //SDK_CLION_DATA_PREPROCESS_H
