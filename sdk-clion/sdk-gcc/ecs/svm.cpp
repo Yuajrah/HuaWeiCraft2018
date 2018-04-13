@@ -278,12 +278,13 @@ public:
 		double r;	// for Solver_NU
 	};
 
-	void Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const schar *y_,
+	void Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const std::vector<schar> &y_,
 			   std::vector<double> &alpha_, double Cp, double Cn, double eps,
-			   SolutionInfo* si, int shrinking);
+			   SolutionInfo &si, int shrinking);
 protected:
 	int active_size;
-	schar *y;
+//	schar *y;
+	std::vector<schar> y;
 	double *G;		// gradient of objective function
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
@@ -378,9 +379,9 @@ void Solver::reconstruct_gradient()
 	}
 }
 
-void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const schar *y_,
+void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const std::vector<schar> &y_,
 				   std::vector<double> &alpha_, double Cp, double Cn, double eps,
-				   SolutionInfo* si, int shrinking)
+				   SolutionInfo &si, int shrinking)
 {
 	this->l = l;
 	this->Q = &Q;
@@ -389,7 +390,7 @@ void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const
 
 //	clone(p, p_,l);
 	p = p_;
-	clone(y, y_,l);
+	y = y_;
 	alpha = alpha_;
 	this->Cp = Cp;
 	this->Cn = Cn;
@@ -622,7 +623,7 @@ void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const
 
 	// calculate rho
 
-	si->rho = calculate_rho();
+	si.rho = calculate_rho();
 
 	// calculate objective value
 	{
@@ -631,7 +632,7 @@ void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const
 		for(i=0;i<l;i++)
 			v += alpha[i] * (G[i] + p[i]);
 
-		si->obj = v/2;
+		si.obj = v/2;
 	}
 
 	// put back the solution
@@ -648,13 +649,13 @@ void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const
 				// or Q.swap_index(i,active_set[i]);
 	}*/
 
-	si->upper_bound_p = Cp;
-	si->upper_bound_n = Cn;
+	si.upper_bound_p = Cp;
+	si.upper_bound_n = Cn;
 
 	info("\noptimization finished, #iter = %d\n",iter);
 
 //	delete[] p;
-	delete[] y;
+//	delete[] y;
 //	delete[] alpha;
 	delete[] alpha_status;
 	delete[] active_set;
@@ -890,15 +891,15 @@ class Solver_NU: public Solver
 {
 public:
 	Solver_NU() {}
-	void Solve(int l, const QMatrix& Q, const std::vector<double> &p, const schar *y,
+	void Solve(int l, const QMatrix& Q, const std::vector<double> &p, const std::vector<schar> &y,
 			   std::vector<double> &alpha, double Cp, double Cn, double eps,
-			   SolutionInfo* si, int shrinking)
+			   SolutionInfo &si, int shrinking)
 	{
 		this->si = si;
 		Solver::Solve(l,Q,p,y,alpha,Cp,Cn,eps,si,shrinking);
 	}
 private:
-	SolutionInfo *si;
+	SolutionInfo si;
 	int select_working_set(int &i, int &j);
 	double calculate_rho();
 	bool be_shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4);
@@ -1136,7 +1137,7 @@ double Solver_NU::calculate_rho()
 	else
 		r2 = (ub2+lb2)/2;
 
-	si->r = (r1+r2)/2;
+	si.r = (r1+r2)/2;
 	return (r1-r2)/2;
 }
 
@@ -1226,12 +1227,10 @@ static void solve_nu_svr(
 	double C = param.C;
 	std::vector<double> alpha2(2*l);
 	std::vector<double> linear_term(2*l);
-
-	schar *y = new schar[2*l];
-	int i;
+	std::vector<schar> y(2*l);
 
 	double sum = C * param.nu * l / 2;
-	for(i=0;i<l;i++)
+	for(int i=0;i<l;i++)
 	{
 		alpha2[i] = alpha2[i+l] = std::min(sum,C);
 		sum -= alpha2[i];
@@ -1244,16 +1243,10 @@ static void solve_nu_svr(
 	}
 
 	Solver_NU s;
-	s.Solve(2*l, SVR_Q(prob, param), linear_term, y,
-			alpha2, C, C, param.eps, &si, param.shrinking);
+	s.Solve(2*l, SVR_Q(prob, param), linear_term, y, alpha2, C, C, param.eps, si, param.shrinking);
 
-
-	for(i=0;i<l;i++)
+	for(int i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
-
-//	delete[] alpha2;
-//	delete[] linear_term;
-	delete[] y;
 }
 
 //
