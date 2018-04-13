@@ -49,12 +49,10 @@ std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<doubl
     {
         used_data = ma(ecs_data,move_step);
     }
-
     if(split_high_flag)
     {
         used_data = split_high(used_data, split_rate);
     }
-
     if(split_choosed)
     {
         tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
@@ -125,7 +123,6 @@ std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data
     std::vector<double> used_data = ecs_data;
     if (mv)
     {
-
         used_data = ma(ecs_data,move_step);
     }
     if(split_high_flag)
@@ -154,7 +151,6 @@ std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data
 }
 std::vector<double>  get_frist_predict_data(std::vector<double>ecs_data, int split_windows, bool mv )
 {
-
     int tmp_split;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
@@ -282,7 +278,6 @@ std::vector<std::vector<double>>  get_vector_test_method2(std::vector<std::vecto
     }
     return result;
 }
-
 
 std::vector<double> split_high(std::vector<double>data, double rate)
 {

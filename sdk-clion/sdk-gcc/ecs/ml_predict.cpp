@@ -204,6 +204,7 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
     return result;
 }
 
+
 int get_split_window(std::vector<double> data)
 {
     if (unchangale)
@@ -217,6 +218,7 @@ int get_split_window(std::vector<double> data)
         return tmp;
     }
 }
+
 
 int get_bigger_mean(std::vector<double> data, int num)
 {
