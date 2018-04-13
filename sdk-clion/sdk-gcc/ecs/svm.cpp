@@ -1702,7 +1702,7 @@ static decision_function svm_train_one(
 
 // Platt's binary SVM Probablistic Output: an improvement from Lin et al.
 static void sigmoid_train(
-		int l, const double *dec_values, const double *labels,
+		int l, const double *dec_values, const std::vector<double> labels,
 		double& A, double& B)
 {
 	double prior1=0, prior0 = 0;
@@ -1914,7 +1914,8 @@ static void svm_binary_svc_probability(
 
 		subprob.l = prob->l-(end-begin);
 		subprob.x = Malloc(struct svm_node*,subprob.l);
-		subprob.y = Malloc(double,subprob.l);
+//		subprob.y = Malloc(double,subprob.l);
+        subprob.y = std::vector<double>(subprob.l);
 
 		k=0;
 		for(j=0;j<begin;j++)
@@ -1971,7 +1972,7 @@ static void svm_binary_svc_probability(
 			svm_destroy_param(&subparam);
 		}
 		free(subprob.x);
-		free(subprob.y);
+//		free(subprob.y);
 	}
 	sigmoid_train(prob->l,dec_values,prob->y,probA,probB);
 	free(dec_values);
@@ -2122,6 +2123,7 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
         if(fabs(f.alpha[i]) > 0) ++nSV;
     model.l = nSV;
     model.SV = Malloc(svm_node *,nSV);
+//	model.SV = std::vector<std::vector<svm_node>>(nSV);
     model.sv_coef[0] = std::vector<double>(nSV, 0.0);
     model.sv_indices = std::vector<int>(nSV, 0);
     int j = 0;
@@ -2226,7 +2228,8 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 
 		subprob.l = l-(end-begin);
 		subprob.x = Malloc(struct svm_node*,subprob.l);
-		subprob.y = Malloc(double,subprob.l);
+//		subprob.y = Malloc(double,subprob.l);
+        subprob.y = std::vector<double>(subprob.l);
 
 		k=0;
 		for(j=0;j<begin;j++)
@@ -2258,7 +2261,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		auto tt = &t;
 		svm_free_and_destroy_model(tt);
 		free(subprob.x);
-		free(subprob.y);
+//		free(subprob.y);
 	}
 	free(fold_start);
 	free(perm);

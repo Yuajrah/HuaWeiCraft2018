@@ -13,7 +13,7 @@ struct svm_node
 struct svm_problem
 {
     int l;
-    double *y;
+    std::vector<double> y;
     struct svm_node **x;
 };
 
@@ -50,6 +50,7 @@ struct svm_model
     int nr_class;		/* number of classes, = 2 in regression/one class svm */
     int l;			/* total #SV */
     struct svm_node **SV;		/* SVs (SV[l]) */
+//    std::vector<std::vector<svm_node>> SV;		/* SVs (SV[l]) */
     std::vector<std::vector<double>> sv_coef;	/* coefficients for SVs in decision functions (sv_coef[k-1][l]) */
     std::vector<double> rho;		/* constants in decision functions (rho[k*(k-1)/2]) */
     std::vector<double> probA;		/* pariwise probability information */

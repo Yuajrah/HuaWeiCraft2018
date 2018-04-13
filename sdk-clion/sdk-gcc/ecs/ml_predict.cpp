@@ -191,11 +191,12 @@ svm_problem init_svm_problem(std::vector<std::vector<double>> train_x, std::vect
     int feature_size = train_x[0].size();
 
     prob.l = train_size;        // 训练样本数
-    prob.y = new double[train_size];
+//    prob.y = new double[train_size];
+    prob.y = train_y;
     prob.x = new svm_node*[train_size];
     svm_node* node = new svm_node[train_size*(1 + feature_size)];
 
-    memcpy(prob.y, &train_y[0], train_y.size()*sizeof(double));
+//    memcpy(prob.y, &train_y[0], train_y.size()*sizeof(double));
 
 //    prob.y = vec2arr(train_y);
 
