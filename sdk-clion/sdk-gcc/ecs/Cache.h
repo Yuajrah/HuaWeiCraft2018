@@ -12,9 +12,9 @@
 #include <cstdarg>
 #include <climits>
 #include <clocale>
+#include <cstdlib>
 
 #include "type_def.h"
-#include "Solver.h"
 
 //
 // Kernel Cache

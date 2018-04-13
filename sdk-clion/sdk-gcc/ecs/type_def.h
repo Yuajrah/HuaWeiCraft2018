@@ -48,6 +48,14 @@ bool operator< (const Node_index &index1, const Node_index &index);
  * svm type
  */
 
+struct SolutionInfo {
+    double obj;
+    double rho;
+    double upper_bound_p;
+    double upper_bound_n;
+    double r;
+};
+
 
 struct svm_node
 {
