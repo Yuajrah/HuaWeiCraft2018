@@ -8,15 +8,6 @@
 #include <limits.h>
 #include <locale.h>
 #include "svm.h"
-typedef float Qfloat;
-typedef signed char schar;
-
-
-template <class S, class T> static inline void clone(T*& dst, S* src, int n)
-{
-	dst = new T[n];
-	memcpy((void *)dst,(void *)src,sizeof(T)*n);
-}
 
 #define INF HUGE_VAL
 #define TAU 1e-12
@@ -56,7 +47,7 @@ public:
 	// request data [0,len)
 	// return some position p where [p,len) need to be filled
 	// (p >= len if nothing needs to be filled)
-	int get_data(const int index, Qfloat **data, int len);
+	int get_data(const int index, float **data, int len);
 	void swap_index(int i, int j);
 private:
 	int l;
@@ -64,7 +55,7 @@ private:
 	struct head_t
 	{
 		head_t *prev, *next;	// a circular list
-		Qfloat *data;
+		float *data;
 		int len;		// data[0,len) is cached in this entry
 	};
 
@@ -77,8 +68,8 @@ private:
 Cache::Cache(int l_,long int size_):l(l_),size(size_)
 {
 	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
-	size /= sizeof(Qfloat);
-	size -= l * sizeof(head_t) / sizeof(Qfloat);
+	size /= sizeof(float);
+	size -= l * sizeof(head_t) / sizeof(float);
 	size = std::max(size, 2 * (long int) l);	// cache must be large enough for two columns
 	lru_head.next = lru_head.prev = &lru_head;
 }
@@ -106,7 +97,7 @@ void Cache::lru_insert(head_t *h)
 	h->next->prev = h;
 }
 
-int Cache::get_data(const int index, Qfloat **data, int len)
+int Cache::get_data(const int index, float **data, int len)
 {
 	head_t *h = &head[index];
 	if(h->len) lru_delete(h);
@@ -126,7 +117,7 @@ int Cache::get_data(const int index, Qfloat **data, int len)
 		}
 
 		// allocate new space
-		h->data = (Qfloat *)realloc(h->data,sizeof(Qfloat)*len);
+		h->data = (float *)realloc(h->data,sizeof(float)*len);
 		size -= more;
 		std::swap(h->len,len);
 	}
@@ -146,7 +137,7 @@ int Cache::get_data(const int index, Qfloat **data, int len)
 //
 class QMatrix {
 public:
-	virtual Qfloat *get_Q(int column, int len) const = 0;
+	virtual float *get_Q(int column, int len) const = 0;
 	virtual double *get_QD() const = 0;
 	virtual void swap_index(int i, int j) const = 0;
 	virtual ~QMatrix() {}
@@ -160,7 +151,7 @@ public:
 
 	static double k_function(const std::vector<svm_node> x, const std::vector<svm_node> y,
 							 const svm_parameter& param);
-	virtual Qfloat *get_Q(int column, int len) const = 0;
+	virtual float *get_Q(int column, int len) const = 0;
 	virtual double *get_QD() const = 0;
 	virtual void swap_index(int i, int j)	// no so const...
 	{
@@ -278,13 +269,13 @@ public:
 		double r;	// for Solver_NU
 	};
 
-	void Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const std::vector<schar> &y_,
+	void Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const std::vector<char> &y_,
 			   std::vector<double> &alpha_, double Cp, double Cn, double eps,
 			   SolutionInfo &si, int shrinking);
 protected:
 	int active_size;
-//	schar *y;
-	std::vector<schar> y;
+//	char *y;
+	std::vector<char> y;
 	double *G;		// gradient of objective function
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
@@ -360,7 +351,7 @@ void Solver::reconstruct_gradient()
 	{
 		for(i=active_size;i<l;i++)
 		{
-			const Qfloat *Q_i = Q->get_Q(i,active_size);
+			const float *Q_i = Q->get_Q(i,active_size);
 			for(j=0;j<active_size;j++)
 				if(is_free(j))
 					G[i] += alpha[j] * Q_i[j];
@@ -371,7 +362,7 @@ void Solver::reconstruct_gradient()
 		for(i=0;i<active_size;i++)
 			if(is_free(i))
 			{
-				const Qfloat *Q_i = Q->get_Q(i,l);
+				const float *Q_i = Q->get_Q(i,l);
 				double alpha_i = alpha[i];
 				for(j=active_size;j<l;j++)
 					G[j] += alpha_i * Q_i[j];
@@ -379,7 +370,7 @@ void Solver::reconstruct_gradient()
 	}
 }
 
-void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const std::vector<schar> &y_,
+void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const std::vector<char> &y_,
 				   std::vector<double> &alpha_, double Cp, double Cn, double eps,
 				   SolutionInfo &si, int shrinking)
 {
@@ -425,7 +416,7 @@ void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const
 		for(i=0;i<l;i++)
 			if(!is_lower_bound(i))
 			{
-				const Qfloat *Q_i = Q.get_Q(i,l);
+				const float *Q_i = Q.get_Q(i,l);
 				double alpha_i = alpha[i];
 				int j;
 				for(j=0;j<l;j++)
@@ -471,8 +462,8 @@ void Solver::Solve(int l, const QMatrix& Q, const std::vector<double> &p_, const
 
 		// update alpha[i] and alpha[j], handle bounds carefully
 
-		const Qfloat *Q_i = Q.get_Q(i,active_size);
-		const Qfloat *Q_j = Q.get_Q(j,active_size);
+		const float *Q_i = Q.get_Q(i,active_size);
+		const float *Q_j = Q.get_Q(j,active_size);
 
 		double C_i = get_C(i);
 		double C_j = get_C(j);
@@ -699,7 +690,7 @@ int Solver::select_working_set(int &out_i, int &out_j)
 		}
 
 	int i = Gmax_idx;
-	const Qfloat *Q_i = NULL;
+	const float *Q_i = NULL;
 	if(i != -1) // NULL Q_i not accessed: Gmax=-INF if i=-1
 		Q_i = Q->get_Q(i,active_size);
 
@@ -891,7 +882,7 @@ class Solver_NU: public Solver
 {
 public:
 	Solver_NU() {}
-	void Solve(int l, const QMatrix& Q, const std::vector<double> &p, const std::vector<schar> &y,
+	void Solve(int l, const QMatrix& Q, const std::vector<double> &p, const std::vector<char> &y,
 			   std::vector<double> &alpha, double Cp, double Cn, double eps,
 			   SolutionInfo &si, int shrinking)
 	{
@@ -948,8 +939,8 @@ int Solver_NU::select_working_set(int &out_i, int &out_j)
 
 	int ip = Gmaxp_idx;
 	int in = Gmaxn_idx;
-	const Qfloat *Q_ip = NULL;
-	const Qfloat *Q_in = NULL;
+	const float *Q_ip = NULL;
+	const float *Q_in = NULL;
 	if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
 		Q_ip = Q->get_Q(ip,active_size);
 	if(in != -1)
@@ -1151,7 +1142,7 @@ public:
 		l = prob.l;
 		cache = new Cache(l,(long int)(param.cache_size*(1<<20)));
 		QD = new double[2*l];
-		sign = new schar[2*l];
+		sign = new char[2*l];
 		index = new int[2*l];
 		for(int k=0;k<l;k++)
 		{
@@ -1162,8 +1153,8 @@ public:
 			QD[k] = (this->*kernel_function)(k,k);
 			QD[k+l] = QD[k];
 		}
-		buffer[0] = new Qfloat[2*l];
-		buffer[1] = new Qfloat[2*l];
+		buffer[0] = new float[2*l];
+		buffer[1] = new float[2*l];
 		next_buffer = 0;
 	}
 
@@ -1174,22 +1165,22 @@ public:
 		std::swap(QD[i],QD[j]);
 	}
 
-	Qfloat *get_Q(int i, int len) const
+	float *get_Q(int i, int len) const
 	{
-		Qfloat *data;
+		float *data;
 		int j, real_i = index[i];
 		if(cache->get_data(real_i,&data,l) < l)
 		{
 			for(j=0;j<l;j++)
-				data[j] = (Qfloat)(this->*kernel_function)(real_i,j);
+				data[j] = (float)(this->*kernel_function)(real_i,j);
 		}
 
 		// reorder and copy
-		Qfloat *buf = buffer[next_buffer];
+		float *buf = buffer[next_buffer];
 		next_buffer = 1 - next_buffer;
-		schar si = sign[i];
+		char si = sign[i];
 		for(j=0;j<len;j++)
-			buf[j] = (Qfloat) si * (Qfloat) sign[j] * data[index[j]];
+			buf[j] = (float) si * (float) sign[j] * data[index[j]];
 		return buf;
 	}
 
@@ -1210,10 +1201,10 @@ public:
 private:
 	int l;
 	Cache *cache;
-	schar *sign;
+	char *sign;
 	int *index;
 	mutable int next_buffer;
-	Qfloat *buffer[2];
+	float *buffer[2];
 	double *QD;
 };
 
@@ -1227,7 +1218,7 @@ static void solve_nu_svr(
 	double C = param.C;
 	std::vector<double> alpha2(2*l);
 	std::vector<double> linear_term(2*l);
-	std::vector<schar> y(2*l);
+	std::vector<char> y(2*l);
 
 	double sum = C * param.nu * l / 2;
 	for(int i=0;i<l;i++)
