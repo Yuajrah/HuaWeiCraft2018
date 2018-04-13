@@ -79,44 +79,44 @@ void gen_sample(std::vector<std::vector<double>> &x, std::vector<double>& y, lon
 
 
 
-/**
- * 测试svm功能是否正常
- */
-void test_svm(){
-
-    /* 1. 准备训练数据*/
-    std::vector<std::vector<double>> train_x; // 训练集
-    std::vector<double> train_y; // 训练类别集
-    gen_sample(train_x, train_y, 200, 10, 1);
-
-    /* 2. 准备测试数据*/
-    std::vector<std::vector<double>> test_x;    // 测试集
-    std::vector<double> test_y; // 测试类别集
-    gen_sample(test_x, test_y, 200, 10, 1);
-
-    /* 3. 初始化问题*/
-    svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
-    svm_parameter param = init_svm_parameter();   // 初始化训练参数
-
-    /* 4. 训练模型 */
-    svm_model* model = svm_train(&prob, &param);
-    svm_save_model("model", model);     // 保存训练好的模型，下次使用时就可直接导入
-
-    /* 5. 观察精度*/
-    int acc_num = 0;        // 分类正确数
-    
-//    svm_model* model = svm_load_model("model");
-    for (int i = 0; i < test_x.size(); i++)
-    {
-        svm_node* node = feature_to_svm_node(test_x[i]);
-        double pred = svm_predict(model, node);
-        if (pred == test_y[i])
-            acc_num++;
-    }
-
-    printf("accuracy: %f percent", acc_num*100.0 / test_x.size());
-    printf("classification: %d / %d", acc_num, test_x.size());
-}
+///**
+// * 测试svm功能是否正常
+// */
+//void test_svm(){
+//
+//    /* 1. 准备训练数据*/
+//    std::vector<std::vector<double>> train_x; // 训练集
+//    std::vector<double> train_y; // 训练类别集
+//    gen_sample(train_x, train_y, 200, 10, 1);
+//
+//    /* 2. 准备测试数据*/
+//    std::vector<std::vector<double>> test_x;    // 测试集
+//    std::vector<double> test_y; // 测试类别集
+//    gen_sample(test_x, test_y, 200, 10, 1);
+//
+//    /* 3. 初始化问题*/
+//    svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
+//    svm_parameter param = init_svm_parameter();   // 初始化训练参数
+//
+//    /* 4. 训练模型 */
+//    svm_model* model = svm_train(&prob, &param);
+//    svm_save_model("model", model);     // 保存训练好的模型，下次使用时就可直接导入
+//
+//    /* 5. 观察精度*/
+//    int acc_num = 0;        // 分类正确数
+//
+////    svm_model* model = svm_load_model("model");
+//    for (int i = 0; i < test_x.size(); i++)
+//    {
+//        svm_node* node = feature_to_svm_node(test_x[i]);
+//        double pred = svm_predict(model, node);
+//        if (pred == test_y[i])
+//            acc_num++;
+//    }
+//
+//    printf("accuracy: %f percent", acc_num*100.0 / test_x.size());
+//    printf("classification: %d / %d", acc_num, test_x.size());
+//}
 
 void test_get_hours(){
     int hours = get_hours("2015-12-01 00:17:03", "2015-12-01 03:20:55");

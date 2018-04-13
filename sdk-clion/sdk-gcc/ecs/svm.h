@@ -65,7 +65,7 @@ struct svm_model
     /* 0 if svm_model is created by svm_train */
 };
 
-struct svm_model *svm_train(const struct svm_problem *prob, const struct svm_parameter *param);
+svm_model svm_train(const struct svm_problem *prob, const struct svm_parameter *param);
 void svm_cross_validation(const struct svm_problem *prob, const struct svm_parameter *param, int nr_fold, double *target);
 
 

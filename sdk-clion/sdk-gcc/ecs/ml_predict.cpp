@@ -309,7 +309,7 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
 
 
         /* 3. 训练模型 */
-        svm_model* model = svm_train(&prob, &param);
+        svm_model model = svm_train(&prob, &param);
 
         /* 4. 获取所需要的特征 */
         std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
@@ -319,7 +319,7 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
         for(int i=0; i < BasicInfo::need_predict_cnt; i++)
         {
             svm_node* node = feature_to_svm_node(frist_predict_data);
-            double tmp_predict = svm_predict(model, node);
+            double tmp_predict = svm_predict(&model, node);
 
             /* 6. 构造新的预测所需特征 */
             frist_predict_data.erase(frist_predict_data.begin());

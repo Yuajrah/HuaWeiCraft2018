@@ -120,7 +120,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     BasicInfo::need_predict_day = need_predict_day;
     BasicInfo::need_predict_cnt = BasicInfo::need_predict_day * 24 / BasicInfo::split_hour;
 
-    int debug = 0;
+    int debug = 2;
 
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据

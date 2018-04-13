@@ -193,71 +193,71 @@ std::map<int, int> predict_by_ar_6th(std::map<int, std::vector<double>> train_da
  * @param need_predict_day
  * @return
  */
-std::map<int, int> predict_by_ar_7th(std::map<int, std::vector<double>> fit_train_data, std::map<int, std::vector<double>> fit_test_data_every, std::map<int, std::vector<double>> train_data){
-
-    std::map<int, double> predict_residual_sum;
-    for (auto &t: BasicInfo::vm_info) {
-
-        // 训练集训练模型
-        std::vector<double> after_ma_data = fit_train_data[t.first];
-        AR ar_model(after_ma_data);
-        ar_model.fit("none");
-        // ar_model.fit("aic");
-        ar_model.predict(fit_test_data_every[t.first].size());
-        // ar_model.print_model_info();
-        auto predict_res = ar_model.get_res();
-
-        for (int i=0;i<predict_res.size();i++) {
-            predict_res[i] = fit_test_data_every[t.first][i] - predict_res[i];
-        }
-
-        int split_windows = 4;
-        bool mv_flag = false;
-        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(predict_res, split_windows, mv_flag);
-        std::vector<std::vector<double>> train_x = get_vector_train(train_data_need);
-        std::vector<double> train_y = get_vector_target(train_data_need);
-
-        /* 2. 初始化问题*/
-        svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
-        svm_parameter param = init_svm_parameter();   // 初始化训练参数
-
-        /* 3. 训练模型 */
-        svm_model* model = svm_train(&prob, &param);
-
-        /* 4. 获取所需要的特征 */
-        std::vector<double> first_predict_data = get_frist_predict_data(predict_res, split_windows, mv_flag);
-
-        /* 5. 开始预测残差 */
-        std::vector<double> predict_residual_data;
-        for(int i=0; i < BasicInfo::need_predict_cnt; i++)
-        {
-            svm_node* node = feature_to_svm_node(first_predict_data);
-            double tmp_predict = svm_predict(model, node);
-
-            /* 6. 构造新的预测所需特征 */
-            first_predict_data.erase(first_predict_data.begin());
-            first_predict_data.push_back(tmp_predict);
-
-            /* 7. 存储预测结果 */
-            predict_residual_data.push_back(tmp_predict);
-        }
-
-        // predict_residual_sum[t.first] = std::max(round(accumulate(predict_residual_data.begin(), predict_residual_data.end(), 0.0)), 0.0);
-
-        predict_residual_sum[t.first] = accumulate(predict_residual_data.begin(), predict_residual_data.end(), 0.0);
-    }
-
-
-    std::map<int, int> predict_ecs_sum;
-    for (auto &t: BasicInfo::vm_info) {
-        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
-        AR ar_model(after_ma_data);
-        ar_model.fit("none");
-        // ar_model.fit("aic");
-        ar_model.predict(BasicInfo::need_predict_cnt);
-        // ar_model.print_model_info();
-        auto predict_res = ar_model.get_res();
-        predict_ecs_sum[t.first] = round(std::max(accumulate(predict_res.begin(), predict_res.end(), 0.0) + predict_residual_sum[t.first], 0.0));
-    }
-    return predict_ecs_sum;
-}
+//std::map<int, int> predict_by_ar_7th(std::map<int, std::vector<double>> fit_train_data, std::map<int, std::vector<double>> fit_test_data_every, std::map<int, std::vector<double>> train_data){
+//
+//    std::map<int, double> predict_residual_sum;
+//    for (auto &t: BasicInfo::vm_info) {
+//
+//        // 训练集训练模型
+//        std::vector<double> after_ma_data = fit_train_data[t.first];
+//        AR ar_model(after_ma_data);
+//        ar_model.fit("none");
+//        // ar_model.fit("aic");
+//        ar_model.predict(fit_test_data_every[t.first].size());
+//        // ar_model.print_model_info();
+//        auto predict_res = ar_model.get_res();
+//
+//        for (int i=0;i<predict_res.size();i++) {
+//            predict_res[i] = fit_test_data_every[t.first][i] - predict_res[i];
+//        }
+//
+//        int split_windows = 4;
+//        bool mv_flag = false;
+//        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(predict_res, split_windows, mv_flag);
+//        std::vector<std::vector<double>> train_x = get_vector_train(train_data_need);
+//        std::vector<double> train_y = get_vector_target(train_data_need);
+//
+//        /* 2. 初始化问题*/
+//        svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
+//        svm_parameter param = init_svm_parameter();   // 初始化训练参数
+//
+//        /* 3. 训练模型 */
+//        svm_model* model = svm_train(&prob, &param);
+//
+//        /* 4. 获取所需要的特征 */
+//        std::vector<double> first_predict_data = get_frist_predict_data(predict_res, split_windows, mv_flag);
+//
+//        /* 5. 开始预测残差 */
+//        std::vector<double> predict_residual_data;
+//        for(int i=0; i < BasicInfo::need_predict_cnt; i++)
+//        {
+//            svm_node* node = feature_to_svm_node(first_predict_data);
+//            double tmp_predict = svm_predict(model, node);
+//
+//            /* 6. 构造新的预测所需特征 */
+//            first_predict_data.erase(first_predict_data.begin());
+//            first_predict_data.push_back(tmp_predict);
+//
+//            /* 7. 存储预测结果 */
+//            predict_residual_data.push_back(tmp_predict);
+//        }
+//
+//        // predict_residual_sum[t.first] = std::max(round(accumulate(predict_residual_data.begin(), predict_residual_data.end(), 0.0)), 0.0);
+//
+//        predict_residual_sum[t.first] = accumulate(predict_residual_data.begin(), predict_residual_data.end(), 0.0);
+//    }
+//
+//
+//    std::map<int, int> predict_ecs_sum;
+//    for (auto &t: BasicInfo::vm_info) {
+//        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
+//        AR ar_model(after_ma_data);
+//        ar_model.fit("none");
+//        // ar_model.fit("aic");
+//        ar_model.predict(BasicInfo::need_predict_cnt);
+//        // ar_model.print_model_info();
+//        auto predict_res = ar_model.get_res();
+//        predict_ecs_sum[t.first] = round(std::max(accumulate(predict_res.begin(), predict_res.end(), 0.0) + predict_residual_sum[t.first], 0.0));
+//    }
+//    return predict_ecs_sum;
+//}
