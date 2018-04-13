@@ -26,7 +26,7 @@ void SVR::train() {
 
     if(param.probability && param.svm_type == NU_SVR)
     {
-        model.probA = std::vector<double>(1, svm_svr_probability(prob, param));
+        model.probA = std::vector<double>(1, svr_probability(prob, param));
     }
 
     decision_function f = svm_train_one(prob, param,0,0);
@@ -55,7 +55,7 @@ void SVR::train() {
 }
 
 // Return parameter of a Laplace distribution
-double SVR::svm_svr_probability(
+double SVR::svr_probability(
         const svm_problem prob, const svm_parameter param)
 {
     int nr_fold = 5;
@@ -64,7 +64,7 @@ double SVR::svm_svr_probability(
 
     svm_parameter newparam(param);
     newparam.probability = 0;
-    svm_cross_validation(prob, newparam, nr_fold, ymv);
+    cross_validation(prob, newparam, nr_fold, ymv);
 
     for(int i=0;i<prob.l;i++)
     {
@@ -175,7 +175,7 @@ double SVR::predict(const std::vector<svm_node> x)
 
     dec_values.assign(1, 0.0);
 
-    double pred_result = svm_predict_values(model, x, dec_values);
+    double pred_result = predict_values(model, x, dec_values);
 
     return pred_result;
 }
@@ -184,7 +184,7 @@ double SVR::predict(const std::vector<svm_node> x)
 
 
 // Stratified cross validation
-void SVR::svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fold, std::vector<double> target)
+void SVR::cross_validation(svm_problem prob, svm_parameter param, int nr_fold, std::vector<double> target)
 {
     int i;
     int l = prob.l;
@@ -238,7 +238,7 @@ void SVR::svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fol
 }
 
 
-double SVR::svm_predict_values(const svm_model &model, const std::vector<svm_node> x, std::vector<double> &dec_values)
+double SVR::predict_values(const svm_model &model, const std::vector<svm_node> x, std::vector<double> &dec_values)
 {
     std::vector<double> sv_coef = model.sv_coef[0];
     double sum = 0;
