@@ -2098,44 +2098,43 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
 	model.free_sv = 0;	// XXX
 
 
-		// regression or one-class-svm
-		model.nr_class = 2;
-		model.label = NULL;
-		model.nSV = NULL;
-		model.probA = NULL; model.probB = NULL;
-		model.sv_coef = Malloc(double *,1);
+    // regression or one-class-svm
+    model.nr_class = 2;
+//    model.label = NULL;
+//    model.nSV = NULL;
+//    model.probA = NULL;
+//	model.probB = NULL;
+    model.sv_coef = std::vector<std::vector<double>>(1);
 
-		if(param.probability &&
-		   (param.svm_type == EPSILON_SVR ||
-			param.svm_type == NU_SVR))
-		{
-			model.probA = Malloc(double,1);
-			model.probA[0] = svm_svr_probability(&prob, &param);
-		}
+    if(param.probability &&
+       (param.svm_type == EPSILON_SVR ||
+        param.svm_type == NU_SVR))
+    {
+        model.probA = std::vector<double>(1, svm_svr_probability(&prob, &param));
+    }
 
-		decision_function f = svm_train_one(&prob, &param,0,0);
-		model.rho = Malloc(double,1);
-		model.rho[0] = f.rho;
+    decision_function f = svm_train_one(&prob, &param,0,0);
+    model.rho = std::vector<double>(1, f.rho);
 
-		int nSV = 0;
-		int i;
-		for(i=0;i<prob.l;i++)
-			if(fabs(f.alpha[i]) > 0) ++nSV;
-		model.l = nSV;
-		model.SV = Malloc(svm_node *,nSV);
-		model.sv_coef[0] = Malloc(double,nSV);
-		model.sv_indices = Malloc(int,nSV);
-		int j = 0;
-		for(i=0;i<prob.l;i++)
-			if(fabs(f.alpha[i]) > 0)
-			{
-				model.SV[j] = prob.x[i];
-				model.sv_coef[0][j] = f.alpha[i];
-				model.sv_indices[j] = i+1;
-				++j;
-			}
+    int nSV = 0;
+    int i;
+    for(i=0;i<prob.l;i++)
+        if(fabs(f.alpha[i]) > 0) ++nSV;
+    model.l = nSV;
+    model.SV = Malloc(svm_node *,nSV);
+    model.sv_coef[0] = std::vector<double>(nSV, 0.0);
+    model.sv_indices = std::vector<int>(nSV, 0);
+    int j = 0;
+    for(i=0;i<prob.l;i++)
+        if(fabs(f.alpha[i]) > 0)
+        {
+            model.SV[j] = prob.x[i];
+            model.sv_coef[0][j] = f.alpha[i];
+            model.sv_indices[j] = i+1;
+            ++j;
+        }
 
-		free(f.alpha);
+    free(f.alpha);
 
 
 	return model;
@@ -2282,7 +2281,8 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 	   model->param.svm_type == EPSILON_SVR ||
 	   model->param.svm_type == NU_SVR)
 	{
-		double *sv_coef = model->sv_coef[0];
+		std::vector<double> sv_coef = model->sv_coef[0];
+//		double *sv_coef = model->sv_coef[0];
 		double sum = 0;
 		for(i=0;i<model->l;i++)
 			sum += sv_coef[i] * Kernel::k_function(x,model->SV[i],model->param);
@@ -2323,8 +2323,10 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 				int cj = model->nSV[j];
 
 				int k;
-				double *coef1 = model->sv_coef[j-1];
-				double *coef2 = model->sv_coef[i];
+//				double *coef1 = model->sv_coef[j-1];
+//				double *coef2 = model->sv_coef[i];
+				std::vector<double> coef1 = model->sv_coef[j-1];
+				std::vector<double> coef2 = model->sv_coef[i];
 				for(k=0;k<ci;k++)
 					sum += coef1[si+k] * kvalue[si+k];
 				for(k=0;k<cj;k++)
@@ -2370,7 +2372,7 @@ double svm_predict_probability(
 		const svm_model *model, const svm_node *x, double *prob_estimates)
 {
 	if ((model->param.svm_type == C_SVC || model->param.svm_type == NU_SVC) &&
-		model->probA!=NULL && model->probB!=NULL)
+		!model->probA.empty() && !model->probB.empty())
 	{
 		int i;
 		int nr_class = model->nr_class;
@@ -2514,35 +2516,35 @@ bool read_model_header(FILE *fp, svm_model* model)
 		else if(strcmp(cmd,"rho")==0)
 		{
 			int n = model->nr_class * (model->nr_class-1)/2;
-			model->rho = Malloc(double,n);
+			model->rho = std::vector<double>(n, 0.0);
 			for(int i=0;i<n;i++)
 				FSCANF(fp,"%lf",&model->rho[i]);
 		}
 		else if(strcmp(cmd,"label")==0)
 		{
 			int n = model->nr_class;
-			model->label = Malloc(int,n);
+			model->label = std::vector<int>(n, 0);
 			for(int i=0;i<n;i++)
 				FSCANF(fp,"%d",&model->label[i]);
 		}
 		else if(strcmp(cmd,"probA")==0)
 		{
 			int n = model->nr_class * (model->nr_class-1)/2;
-			model->probA = Malloc(double,n);
+			model->probA = std::vector<double>(n, 0.0);
 			for(int i=0;i<n;i++)
 				FSCANF(fp,"%lf",&model->probA[i]);
 		}
 		else if(strcmp(cmd,"probB")==0)
 		{
 			int n = model->nr_class * (model->nr_class-1)/2;
-			model->probB = Malloc(double,n);
+			model->probB = std::vector<double>(n, 0.0);
 			for(int i=0;i<n;i++)
 				FSCANF(fp,"%lf",&model->probB[i]);
 		}
 		else if(strcmp(cmd,"nr_sv")==0)
 		{
 			int n = model->nr_class;
-			model->nSV = Malloc(int,n);
+			model->nSV = std::vector<int>(n);
 			for(int i=0;i<n;i++)
 				FSCANF(fp,"%d",&model->nSV[i]);
 		}
@@ -2572,35 +2574,35 @@ void svm_free_model_content(svm_model* model_ptr)
 {
 	if(model_ptr->free_sv && model_ptr->l > 0 && model_ptr->SV != NULL)
 		free((void *)(model_ptr->SV[0]));
-	if(model_ptr->sv_coef)
-	{
-		for(int i=0;i<model_ptr->nr_class-1;i++)
-			free(model_ptr->sv_coef[i]);
-	}
+//	if(!model_ptr->sv_coef.empty())
+//	{
+//		for(int i=0;i<model_ptr->nr_class-1;i++)
+//			free(model_ptr->sv_coef[i]);
+//	}
 
 	free(model_ptr->SV);
 	model_ptr->SV = NULL;
 
-	free(model_ptr->sv_coef);
-	model_ptr->sv_coef = NULL;
+//	free(model_ptr->sv_coef);
+//	model_ptr->sv_coef = NULL;
 
-	free(model_ptr->rho);
-	model_ptr->rho = NULL;
+//	free(model_ptr->rho);
+//	model_ptr->rho = NULL;
 
-	free(model_ptr->label);
-	model_ptr->label= NULL;
+//	free(model_ptr->label);
+//	model_ptr->label= NULL;
+//
+//	free(model_ptr->probA);
+//	model_ptr->probA = NULL;
 
-	free(model_ptr->probA);
-	model_ptr->probA = NULL;
+//	free(model_ptr->probB);
+//	model_ptr->probB= NULL;
 
-	free(model_ptr->probB);
-	model_ptr->probB= NULL;
+//	free(model_ptr->sv_indices);
+//	model_ptr->sv_indices = NULL;
 
-	free(model_ptr->sv_indices);
-	model_ptr->sv_indices = NULL;
-
-	free(model_ptr->nSV);
-	model_ptr->nSV = NULL;
+//	free(model_ptr->nSV);
+//	model_ptr->nSV = NULL;
 }
 
 void svm_free_and_destroy_model(svm_model** model_ptr_ptr)

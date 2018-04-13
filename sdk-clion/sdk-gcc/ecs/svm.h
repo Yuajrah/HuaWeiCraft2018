@@ -2,6 +2,7 @@
 #define _LIBSVM_H
 
 
+#include <vector>
 
 struct svm_node
 {
@@ -45,20 +46,20 @@ struct svm_parameter
 //
 struct svm_model
 {
-    struct svm_parameter param;	/* parameter */
+    svm_parameter param;	/* parameter */
     int nr_class;		/* number of classes, = 2 in regression/one class svm */
     int l;			/* total #SV */
     struct svm_node **SV;		/* SVs (SV[l]) */
-    double **sv_coef;	/* coefficients for SVs in decision functions (sv_coef[k-1][l]) */
-    double *rho;		/* constants in decision functions (rho[k*(k-1)/2]) */
-    double *probA;		/* pariwise probability information */
-    double *probB;
-    int *sv_indices;        /* sv_indices[0,...,nSV-1] are values in [1,...,num_traning_data] to indicate SVs in the training set */
+    std::vector<std::vector<double>> sv_coef;	/* coefficients for SVs in decision functions (sv_coef[k-1][l]) */
+    std::vector<double> rho;		/* constants in decision functions (rho[k*(k-1)/2]) */
+    std::vector<double> probA;		/* pariwise probability information */
+    std::vector<double> probB;
+    std::vector<int> sv_indices;        /* sv_indices[0,...,nSV-1] are values in [1,...,num_traning_data] to indicate SVs in the training set */
 
     /* for classification only */
 
-    int *label;		/* label of each class (label[k]) */
-    int *nSV;		/* number of SVs for each class (nSV[k]) */
+    std::vector<int> label;		/* label of each class (label[k]) */
+    std::vector<int> nSV;		/* number of SVs for each class (nSV[k]) */
     /* nSV[0] + nSV[1] + ... + nSV[k-1] = l */
     /* XXX */
     int free_sv;		/* 1 if svm_model is created by svm_load_model*/
