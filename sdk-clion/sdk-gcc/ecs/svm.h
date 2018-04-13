@@ -69,7 +69,7 @@ struct svm_model
 };
 
 svm_model svm_train(const svm_problem &prob, const svm_parameter &param);
-void svm_cross_validation(const struct svm_problem *prob, const struct svm_parameter *param, int nr_fold, double *target);
+void svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fold, std::vector<double> target);
 
 
 double svm_predict_values(const struct svm_model *model, const std::vector<svm_node> x, double* dec_values);

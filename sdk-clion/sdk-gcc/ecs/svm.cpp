@@ -1495,31 +1495,33 @@ static void multiclass_probability(int k, double **r, double *p)
 static double svm_svr_probability(
 		const svm_problem prob, const svm_parameter param)
 {
-	int i;
 	int nr_fold = 5;
-	double *ymv = Malloc(double,prob.l);
+	std::vector<double> ymv(prob.l);
 	double mae = 0;
 
-	svm_parameter newparam = param;
+	svm_parameter newparam(param);
 	newparam.probability = 0;
-	svm_cross_validation(&prob,&newparam,nr_fold,ymv);
-	for(i=0;i<prob.l;i++)
+	svm_cross_validation(prob, newparam, nr_fold, ymv);
+
+	for(int i=0;i<prob.l;i++)
 	{
 		ymv[i]=prob.y[i]-ymv[i];
 		mae += fabs(ymv[i]);
 	}
+
 	mae /= prob.l;
 	double std=sqrt(2*mae*mae);
 	int count=0;
+
 	mae=0;
-	for(i=0;i<prob.l;i++)
+	for(int i=0;i<prob.l;i++)
 		if (fabs(ymv[i]) > 5*std)
 			count=count+1;
 		else
 			mae+=fabs(ymv[i]);
+
 	mae /= (prob.l-count);
 	info("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma= %g\n",mae);
-	free(ymv);
 	return mae;
 }
 
@@ -1643,11 +1645,11 @@ svm_model svm_train(const svm_problem &prob, const svm_parameter &param)
 }
 
 // Stratified cross validation
-void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, int nr_fold, double *target)
+void svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fold, std::vector<double> target)
 {
 	int i;
 	int *fold_start;
-	int l = prob->l;
+	int l = prob.l;
 	int *perm = Malloc(int,l);
 	int nr_class;
 	if (nr_fold > l)
@@ -1658,57 +1660,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 	fold_start = Malloc(int,nr_fold+1);
 	// stratified cv may not give leave-one-out rate
 	// Each class to l folds -> some folds may have zero elements
-	if((param->svm_type == C_SVC ||
-		param->svm_type == NU_SVC) && nr_fold < l)
-	{
-		int *start = NULL;
-		int *label = NULL;
-		int *count = NULL;
-		svm_group_classes(prob,&nr_class,&label,&start,&count,perm);
 
-		// random shuffle and then data grouped by fold using the array perm
-		int *fold_count = Malloc(int,nr_fold);
-		int c;
-		int *index = Malloc(int,l);
-		for(i=0;i<l;i++)
-			index[i]=perm[i];
-		for (c=0; c<nr_class; c++)
-			for(i=0;i<count[c];i++)
-			{
-				int j = i+rand()%(count[c]-i);
-				std::swap(index[start[c]+j],index[start[c]+i]);
-			}
-		for(i=0;i<nr_fold;i++)
-		{
-			fold_count[i] = 0;
-			for (c=0; c<nr_class;c++)
-				fold_count[i]+=(i+1)*count[c]/nr_fold-i*count[c]/nr_fold;
-		}
-		fold_start[0]=0;
-		for (i=1;i<=nr_fold;i++)
-			fold_start[i] = fold_start[i-1]+fold_count[i-1];
-		for (c=0; c<nr_class;c++)
-			for(i=0;i<nr_fold;i++)
-			{
-				int begin = start[c]+i*count[c]/nr_fold;
-				int end = start[c]+(i+1)*count[c]/nr_fold;
-				for(int j=begin;j<end;j++)
-				{
-					perm[fold_start[i]] = index[j];
-					fold_start[i]++;
-				}
-			}
-		fold_start[0]=0;
-		for (i=1;i<=nr_fold;i++)
-			fold_start[i] = fold_start[i-1]+fold_count[i-1];
-		free(start);
-		free(label);
-		free(count);
-		free(index);
-		free(fold_count);
-	}
-	else
-	{
 		for(i=0;i<l;i++) perm[i]=i;
 		for(i=0;i<l;i++)
 		{
@@ -1717,7 +1669,7 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		}
 		for(i=0;i<=nr_fold;i++)
 			fold_start[i]=i*l/nr_fold;
-	}
+
 
 	for(i=0;i<nr_fold;i++)
 	{
@@ -1735,28 +1687,20 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 		k=0;
 		for(j=0;j<begin;j++)
 		{
-			subprob.x[k] = prob->x[perm[j]];
-			subprob.y[k] = prob->y[perm[j]];
+			subprob.x[k] = prob.x[perm[j]];
+			subprob.y[k] = prob.y[perm[j]];
 			++k;
 		}
 		for(j=end;j<l;j++)
 		{
-			subprob.x[k] = prob->x[perm[j]];
-			subprob.y[k] = prob->y[perm[j]];
+			subprob.x[k] = prob.x[perm[j]];
+			subprob.y[k] = prob.y[perm[j]];
 			++k;
 		}
-		svm_model submodel = svm_train(subprob, *param);
-		if(param->probability &&
-		   (param->svm_type == C_SVC || param->svm_type == NU_SVC))
-		{
-			double *prob_estimates=Malloc(double, submodel.nr_class);
+		svm_model submodel = svm_train(subprob, param);
+
 			for(j=begin;j<end;j++)
-				target[perm[j]] = svm_predict_probability(&submodel,prob->x[perm[j]],prob_estimates);
-			free(prob_estimates);
-		}
-		else
-			for(j=begin;j<end;j++)
-				target[perm[j]] = svm_predict(&submodel,prob->x[perm[j]]);
+				target[perm[j]] = svm_predict(&submodel,prob.x[perm[j]]);
 	}
 }
 
