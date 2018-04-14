@@ -62,7 +62,6 @@ struct svm_parameter
     double eps;
     double C;
     double nu;
-    int shrinking;
 };
 
 struct svm_model

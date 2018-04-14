@@ -241,7 +241,6 @@ svm_parameter init_svm_parameter()
     param.nu = 0.5;
     param.C = 0.13;
     param.eps = 1e-3;
-    param.shrinking = 1;
 
 
     return param;

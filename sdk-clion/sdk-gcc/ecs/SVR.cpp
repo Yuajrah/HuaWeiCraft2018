@@ -27,21 +27,17 @@ void SVR::train() {
 }
 
 std::pair<std::vector<double>, double> SVR::train_one() {
-    std::vector<double> alpha(Y.size(), 0.0);
-
-    SolverRes si;
+    std::vector<double> res_alpha(Y.size(), 0.0);
 
     // nu_svr 求解
     std::vector<double> t_alpha;
-    std::vector<double> linear_term;
-    std::vector<char> y;
 
     // 处理前半段的数据
     double sum = param.C * param.nu * Y.size() / 2;
     for(int i=0;i<Y.size();i++) {
         t_alpha.push_back(std::min(param.C, sum));
-        linear_term.push_back(-Y[i]);
-        y.push_back(1);
+        this->p.push_back(-Y[i]);
+        this->y.push_back(1);
 
         sum -= t_alpha[i];
     }
@@ -49,18 +45,62 @@ std::pair<std::vector<double>, double> SVR::train_one() {
     // 处理后半段的数据
     for(int i=0;i<Y.size();i++) {
         t_alpha.push_back(t_alpha[i]);
-        linear_term.push_back(Y[i]);
-        y.push_back(-1);
+        this->p.push_back(Y[i]);
+        this->y.push_back(-1);
     }
 
+
     // 求解得到t_alpha, 进一步得到alpha
-    SVR_Q svr_q(X, Y, param);
-    Solve(2 * Y.size(), svr_q, linear_term, y, t_alpha, param.C, param.C, param.eps, si, param.shrinking);
+
+    this->Q = new SVR_Q(X, Y, param);
+
+    this->alpha = t_alpha;
+    this->QD=Q->get_QD();
+
+    this->Cp = param.C;
+    this->Cn = param.C;
+    this->eps = param.eps;
+
+    unshrink = false;
+
+    int l =  2 * Y.size();
+
+    alpha_status = std::vector<char>(l);
+    for(int i=0;i<l;i++)
+        update_alpha_status(i);
+
+    active_set = std::vector<int>(l);
+    for(int i=0;i<l;i++)
+        active_set[i] = i;
+
+    active_size = l;
+
+    for(double &t: p) {
+        G.push_back(t);
+        G_bar.push_back(0);
+    }
+
+    for(int i=0;i<l;i++)
+        if (alpha[i] >= 0) {
+            const float *Q_i = Q->get_Q(i,l);
+            for(int j=0;j<l;j++)
+                G[j] += alpha[i]*Q_i[j];
+
+            if(alpha[i] >= get_C(i))
+                for(int j=0;j<l;j++)
+                    G_bar[j] += get_C(i) * Q_i[j];
+        }
+
+
+    Solve();
+
+    for(int i=0;i<2 * Y.size();i++)
+        t_alpha[active_set[i]] = alpha[i];
 
     for(int i=0;i<Y.size();i++)
-        alpha[i] = t_alpha[i] - t_alpha[i+Y.size()];
+        res_alpha[i] = t_alpha[i] - t_alpha[i+Y.size()];
 
-    return {alpha, si.rho};
+    return {res_alpha, si.rho};
 }
 
 double SVR::predict(const std::vector<double> x) {
@@ -72,7 +112,7 @@ double SVR::predict(const std::vector<double> x) {
     return pred_result;
 }
 
-void SVR::gradient() {
+void SVR::gradient(int l) {
     if(active_size == l) return;
 
     int nr_free = 0;
@@ -97,60 +137,9 @@ void SVR::gradient() {
     }
 }
 
-void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
-                   std::vector<double> &alpha_, double Cp, double Cn, double eps,
-                SolverRes &si, int shrinking) {
+void SVR::Solve() {
 
-
-//    Solve(2 * Y.size(), svr_q, linear_term, y, t_alpha, param.C, param.C, param.eps, si, param.shrinking);
-
-    this->si = si;
-
-    this->l = l;
-    this->Q = &Q;
-
-    QD=Q.get_QD();
-
-    p = p_;
-    y = y_;
-    alpha = alpha_;
-    this->Cp = Cp;
-    this->Cn = Cn;
-    this->eps = eps;
-    unshrink = false;
-
-    alpha_status = new char[l];
-    for(int i=0;i<l;i++)
-        update_alpha_status(i);
-
-    active_set = std::vector<int>(l);
-    for(int i=0;i<l;i++)
-        active_set[i] = i;
-    active_size = l;
-
-
-
-    G = std::vector<double>(l, 0.0);
-    G_bar = std::vector<double>(l, 0.0);
-    int i;
-    for(i=0;i<l;i++)
-    {
-        G[i] = p[i];
-        G_bar[i] = 0;
-    }
-    for(i=0;i<l;i++)
-        if(!is_lower_bound(i))
-        {
-            const float *Q_i = Q.get_Q(i,l);
-            double alpha_i = alpha[i];
-            int j;
-            for(j=0;j<l;j++)
-                G[j] += alpha_i*Q_i[j];
-            if(is_upper_bound(i))
-                for(j=0;j<l;j++)
-                    G_bar[j] += get_C(i) * Q_i[j];
-        }
-
+    int l = 2 * Y.size();
 
     // optimization step
 
@@ -165,13 +154,12 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
         if(--counter == 0)
         {
             counter = std::min(l,1000);
-            if(shrinking) shrink();
-//            info(".");
+            shrink(l);
         }
 
         int i,j;
         if(select_workset(i,j)!=0) {
-            gradient();
+            gradient(l);
             active_size = l;
             if(select_workset(i,j)!=0)
                 break;
@@ -183,8 +171,8 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
 
         // update alpha[i] and alpha[j], handle bounds carefully
 
-        const float *Q_i = Q.get_Q(i,active_size);
-        const float *Q_j = Q.get_Q(j,active_size);
+        const float *Q_i = Q->get_Q(i,active_size);
+        const float *Q_j = Q->get_Q(j,active_size);
 
         double C_i = get_C(i);
         double C_j = get_C(j);
@@ -299,7 +287,7 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
             int k;
             if(ui != is_upper_bound(i))
             {
-                Q_i = Q.get_Q(i,l);
+                Q_i = Q->get_Q(i,l);
                 if(ui)
                     for(k=0;k<l;k++)
                         G_bar[k] -= C_i * Q_i[k];
@@ -310,7 +298,7 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
 
             if(uj != is_upper_bound(j))
             {
-                Q_j = Q.get_Q(j,l);
+                Q_j = Q->get_Q(j,l);
                 if(uj)
                     for(k=0;k<l;k++)
                         G_bar[k] -= C_j * Q_j[k];
@@ -326,7 +314,7 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
         if(active_size < l)
         {
             // reconstruct the whole gradient to calculate objective value
-            gradient();
+            gradient(l);
             active_size = l;
         }
     }
@@ -345,16 +333,9 @@ void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vecto
         si.obj = v/2;
     }
 
-    // put back the solution
-    {
-        for(int i=0;i<l;i++)
-            alpha_[active_set[i]] = alpha[i];
-    }
-
     si.upper_bound_p = Cp;
     si.upper_bound_n = Cn;
 
-    delete[] alpha_status;
 
 }
 
@@ -464,26 +445,6 @@ int SVR::select_workset(int &out_i, int &out_j) {
     return 0;
 }
 
-bool SVR::shrunk(int i, double Gmax1, double Gmax2)
-{
-    if(is_upper_bound(i))
-    {
-        if(y[i]==+1)
-            return(-G[i] > Gmax1);
-        else
-            return(-G[i] > Gmax2);
-    }
-    else if(is_lower_bound(i))
-    {
-        if(y[i]==+1)
-            return(G[i] > Gmax2);
-        else
-            return(G[i] > Gmax1);
-    }
-    else
-        return(false);
-}
-
 double SVR::calc_rho() {
     int nr_free1 = 0,nr_free2 = 0;
     double ub1 = INF, ub2 = INF;
@@ -549,7 +510,7 @@ bool SVR::shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4)
         return(false);
 }
 
-void SVR::shrink()
+void SVR::shrink(int l)
 {
     double Gmax1 = -INF;	// max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
     double Gmax2 = -INF;	// max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
@@ -580,7 +541,7 @@ void SVR::shrink()
 
     if(unshrink == false && std::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10) {
         unshrink = true;
-        gradient();
+        gradient(l);
         active_size = l;
     }
 
