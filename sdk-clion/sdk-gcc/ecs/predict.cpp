@@ -341,7 +341,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     gga.initial(bins, 100);
 //    gga.initial({}, 0);
     gga.start();
-    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
+    std::vector<Bin> allocate_result = gga.get_best_solution().get_bin();
 
     std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
     std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
