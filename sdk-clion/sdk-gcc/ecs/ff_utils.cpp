@@ -355,3 +355,29 @@ int get_max_size_bin(const std::vector<Bin> &bins){
     return index;
 }
 
+/**
+ * 判断一个箱子序列是否为可行解
+ * @param bins
+ * @return
+ */
+bool is_feasible(std::vector<Bin> &bins){
+    for (Bin &bin: bins) {
+        if (!bin.is_feasible()) return false;
+    }
+    return true;
+}
+
+/**
+ * 清理箱子序列中的空箱子
+ * @param bins
+ * @return
+ */
+std::vector<Bin> clear_empty_bin(std::vector<Bin> bins){
+    std::vector<Bin> res;
+    for (auto &bin: bins) {
+        if (!bin.objects.empty()) {
+            res.push_back(bin);
+        }
+    }
+    return res;
+}

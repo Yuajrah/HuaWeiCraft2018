@@ -27,7 +27,8 @@ std::vector<Bin> alloc_by_ffod (std::vector<Vm> objects)
             //计算MeM的得分
             double mem_rate = allocateVm[0].mem/BasicInfo::server_infos[k].mem;
             double resouce_rate = std::min(cpu_rate, mem_rate);
-            if ()
+            if (true)
+            {}
         }
     }
     return result;
