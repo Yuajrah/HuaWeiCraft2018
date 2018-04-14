@@ -14,7 +14,6 @@
 #include <cstdarg>
 #include <climits>
 #include "type_def.h"
-#include "SVR_Q.h"
 
 class SVR {
 public:
@@ -26,6 +25,7 @@ public:
     svm_model model;
 
     SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param);
+    ~SVR();
     void train();
     std::pair<std::vector<double>, double> train_one();
     double predict(const std::vector<double> x);
@@ -35,8 +35,7 @@ protected:
     std::vector<double> G;
     std::vector<char> alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
     std::vector<double> alpha;
-    SVR_Q Q;
-    const double *QD;
+//    SVR_Q Q;
     double eps;
     double Cp,Cn;
     std::vector<double> p;
@@ -58,6 +57,29 @@ protected:
 
 private:
     SolverRes si;
+
+private:
+
+    // svm_parameter
+    int l;
+    std::vector<char> sign;
+    std::vector<int> index;
+    mutable int next_buffer;
+    std::vector<std::vector<float>> buffer;
+    double *QD;
+
+
+public:
+//    SVR_Q(std::vector<std::vector<double>> X, std::vector<double> Y, const svm_parameter& param);
+//    void swap_index(int i, int j);
+
+    std::vector<float> get_Q(int i, int len);
+
+    double *get_QD() const;
+
+    double kernel_linear(int i, int j);
+
+    static double dot(const std::vector<double> px, const std::vector<double> py);
 };
 
 #endif //SDK_CLION_SVR_H

@@ -5,7 +5,29 @@
 #include "SVR.h"
 
 SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param):
-        X(X), Y(Y), param(param), Q(SVR_Q(X, Y, param)){}
+//        X(X), Y(Y), param(param), Q(SVR_Q(X, Y, param)){}
+    X(X), Y(Y), param(param)
+{
+    l = Y.size();
+
+    QD = new double[2*l];
+    sign = std::vector<char>(2*l);
+    index = std::vector<int>(2*l);
+
+    for(int k=0;k<l;k++) {
+        sign[k] = 1;
+        sign[k+l] = -1;
+        index[k] = k;
+        index[k+l] = k;
+        QD[k] = kernel_linear(k,k);
+        QD[k+l] = QD[k];
+    }
+
+    buffer.push_back(std::vector<float>(2*l));
+    buffer.push_back(std::vector<float>(2*l));
+
+    next_buffer = 0;
+}
 
 void SVR::train() {
 
@@ -55,7 +77,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
 
     this->alpha = t_alpha;
-    this->QD = Q.get_QD();
+//    this->QD = Q.get_QD();
 
     this->Cp = param.C;
     this->Cn = param.C;
@@ -80,7 +102,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
     for(int i=0;i<l;i++)
         if (alpha[i] >= 0) {
 //            const float *Q_i = Q->get_Q(i,l);
-            const std::vector<float> Q_i = Q.get_Q(i, l);
+            const std::vector<float> Q_i = get_Q(i, l);
             for(int j=0;j<l;j++)
                 G[j] += alpha[i]*Q_i[j];
 
@@ -119,8 +141,8 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
         // update alpha[i] and alpha[j], handle bounds carefully
 
-        std::vector<float> Q_i = Q.get_Q(i,active_size);
-        std::vector<float> Q_j = Q.get_Q(j,active_size);
+        std::vector<float> Q_i = get_Q(i,active_size);
+        std::vector<float> Q_j = get_Q(j,active_size);
 
         double C_i = get_C(i);
         double C_j = get_C(j);
@@ -130,7 +152,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
         if(y[i]!=y[j])
         {
-            double quad_coef = QD[i]+QD[j]+2*Q_i[j];
+            double quad_coef = get_QD()[i]+get_QD()[j]+2*Q_i[j];
             if (quad_coef <= 0)
                 quad_coef = TAU;
             double delta = (-G[i]-G[j])/quad_coef;
@@ -173,7 +195,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
         }
         else
         {
-            double quad_coef = QD[i]+QD[j]-2*Q_i[j];
+            double quad_coef = get_QD()[i]+get_QD()[j]-2*Q_i[j];
             if (quad_coef <= 0)
                 quad_coef = TAU;
             double delta = (G[i]-G[j])/quad_coef;
@@ -235,7 +257,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
             int k;
             if(ui != is_upper_bound(i))
             {
-                Q_i = Q.get_Q(i,l);
+                Q_i = get_Q(i,l);
                 if(ui)
                     for(k=0;k<l;k++)
                         G_bar[k] -= C_i * Q_i[k];
@@ -246,7 +268,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
             if(uj != is_upper_bound(j))
             {
-                Q_j = Q.get_Q(j,l);
+                Q_j = get_Q(j,l);
                 if(uj)
                     for(k=0;k<l;k++)
                         G_bar[k] -= C_j * Q_j[k];
@@ -298,7 +320,7 @@ double SVR::predict(const std::vector<double> x) {
     double pred_result = -model.rho;
 
     for(int i=0;i<model.l;i++)
-        pred_result += model.sv_coef[i] * SVR_Q::dot(x, model.SV[i]);
+        pred_result += model.sv_coef[i] * dot(x, model.SV[i]);
 
     return pred_result;
 }
@@ -314,13 +336,13 @@ void SVR::gradient(int l) {
 
     if (nr_free*l > 2*active_size*(l-active_size)) {
         for(int i=active_size;i<l;i++) {
-            const std::vector<float> Q_i = Q.get_Q(i,active_size);
+            const std::vector<float> Q_i = get_Q(i,active_size);
             for(int j=0;j<active_size;j++) if(is_free(j))G[i] += alpha[j] * Q_i[j];
         }
     } else {
         for(int i=0;i<active_size;i++)
             if(is_free(i)) {
-                const std::vector<float> Q_i = Q.get_Q(i,l);
+                const std::vector<float> Q_i = get_Q(i,l);
                 double alpha_i = alpha[i];
                 for(int j=active_size;j<l;j++)
                     G[j] += alpha_i * Q_i[j];
@@ -372,8 +394,8 @@ int SVR::select_workset(int &res_i, int &res_j) {
     std::vector<float> Q_in;
 
     // 空Q_ip无法被访问: 如果ip = -1, 则g_max_p = -INF;
-    if(g_map_p_index != -1) Q_ip = Q.get_Q(g_map_p_index,active_size);
-    if(g_max_n_index != -1) Q_in = Q.get_Q(g_max_n_index,active_size);
+    if(g_map_p_index != -1) Q_ip = get_Q(g_map_p_index,active_size);
+    if(g_max_n_index != -1) Q_in = get_Q(g_max_n_index,active_size);
 
     for (int j=0;j<active_size;j++) {
         if(y[j]==+1) {
@@ -384,7 +406,7 @@ int SVR::select_workset(int &res_i, int &res_j) {
                 if (grad_diff > 0)
                 {
                     double obj_diff;
-                    double quad_coef = QD[g_map_p_index]+QD[j]-2*Q_ip[j];
+                    double quad_coef = get_QD()[g_map_p_index]+get_QD()[j]-2*Q_ip[j];
                     if (quad_coef > 0)
                         obj_diff = -(grad_diff*grad_diff)/quad_coef;
                     else
@@ -403,7 +425,7 @@ int SVR::select_workset(int &res_i, int &res_j) {
                 if (-G[j] >= g_max_n2) g_max_n2 = -G[j];
                 if (grad_diff > 0) {
                     double obj_diff;
-                    double quad_coef = QD[g_max_n_index]+QD[j]-2*Q_in[j];
+                    double quad_coef = get_QD()[g_max_n_index]+get_QD()[j]-2*Q_in[j];
                     if (quad_coef > 0) obj_diff = -(grad_diff*grad_diff)/quad_coef;
                     else obj_diff = -(grad_diff*grad_diff)/TAU;
 
@@ -535,7 +557,10 @@ void SVR::shrink(int l)
                 if (!shrunk(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
                 {
 
-                    Q.swap_index(i, active_size);
+                    std::swap(sign[i],sign[active_size]);
+                    std::swap(index[i],index[active_size]);
+                    std::swap(QD[i],QD[active_size]);
+//                    Q.swap_index(i, active_size);
                     std::swap(y[i],y[active_size]);
                     std::swap(G[i],G[active_size]);
                     std::swap(alpha_status[i],alpha_status[active_size]);
@@ -556,4 +581,52 @@ void SVR::update_alpha_status(int i) {
     else if(alpha[i] <= 0)
         alpha_status[i] = LOWER_BOUND;
     else alpha_status[i] = FREE;
+}
+
+
+
+// SVR_Q.cpp
+
+std::vector<float> SVR::get_Q(int i, int len)
+{
+    float *data = new float[l];
+    int j, real_i = index[i];
+
+    for(j=0;j<l;j++) data[j] = (float)kernel_linear(real_i,j);
+
+    std::vector<float> buf = buffer[next_buffer];
+
+    next_buffer = 1 - next_buffer;
+    char si = sign[i];
+    for(j=0;j<len;j++)
+        buf[j] = (float) si * (float) sign[j] * data[index[j]];
+    return buf;
+}
+
+
+double * SVR::get_QD() const
+{
+    return QD;
+}
+
+double SVR::kernel_linear(int i, int j)
+{
+    return dot(X[i],X[j]);
+}
+
+double SVR::dot(const std::vector<double> px, const std::vector<double> py)
+{
+    double sum = 0;
+    int i = 0;
+    while(i < px.size()) {
+        sum += px[i] * py[i];
+        i++;
+    }
+    return sum;
+}
+
+SVR::~SVR() {
+//    delete[] sign;
+//    delete[] index;
+    delete[] QD;
 }
