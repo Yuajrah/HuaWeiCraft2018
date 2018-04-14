@@ -4,7 +4,8 @@
 
 #include "SVR.h"
 
-SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param): X(X), Y(Y), param(param){}
+SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param):
+        X(X), Y(Y), param(param), Q(SVR_Q(X, Y, param)){}
 
 void SVR::train() {
 
@@ -52,10 +53,9 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
     // 求解得到t_alpha, 进一步得到alpha
 
-    this->Q = new SVR_Q(X, Y, param);
 
     this->alpha = t_alpha;
-    this->QD=Q->get_QD();
+    this->QD = Q.get_QD();
 
     this->Cp = param.C;
     this->Cn = param.C;
@@ -80,7 +80,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
     for(int i=0;i<l;i++)
         if (alpha[i] >= 0) {
 //            const float *Q_i = Q->get_Q(i,l);
-            const std::vector<float> Q_i = Q->get_Q(i, l);
+            const std::vector<float> Q_i = Q.get_Q(i, l);
             for(int j=0;j<l;j++)
                 G[j] += alpha[i]*Q_i[j];
 
@@ -119,8 +119,8 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
         // update alpha[i] and alpha[j], handle bounds carefully
 
-        std::vector<float> Q_i = Q->get_Q(i,active_size);
-        std::vector<float> Q_j = Q->get_Q(j,active_size);
+        std::vector<float> Q_i = Q.get_Q(i,active_size);
+        std::vector<float> Q_j = Q.get_Q(j,active_size);
 
         double C_i = get_C(i);
         double C_j = get_C(j);
@@ -235,7 +235,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
             int k;
             if(ui != is_upper_bound(i))
             {
-                Q_i = Q->get_Q(i,l);
+                Q_i = Q.get_Q(i,l);
                 if(ui)
                     for(k=0;k<l;k++)
                         G_bar[k] -= C_i * Q_i[k];
@@ -246,7 +246,7 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
             if(uj != is_upper_bound(j))
             {
-                Q_j = Q->get_Q(j,l);
+                Q_j = Q.get_Q(j,l);
                 if(uj)
                     for(k=0;k<l;k++)
                         G_bar[k] -= C_j * Q_j[k];
@@ -314,13 +314,13 @@ void SVR::gradient(int l) {
 
     if (nr_free*l > 2*active_size*(l-active_size)) {
         for(int i=active_size;i<l;i++) {
-            const std::vector<float> Q_i = Q->get_Q(i,active_size);
+            const std::vector<float> Q_i = Q.get_Q(i,active_size);
             for(int j=0;j<active_size;j++) if(is_free(j))G[i] += alpha[j] * Q_i[j];
         }
     } else {
         for(int i=0;i<active_size;i++)
             if(is_free(i)) {
-                const std::vector<float> Q_i = Q->get_Q(i,l);
+                const std::vector<float> Q_i = Q.get_Q(i,l);
                 double alpha_i = alpha[i];
                 for(int j=active_size;j<l;j++)
                     G[j] += alpha_i * Q_i[j];
@@ -372,8 +372,8 @@ int SVR::select_workset(int &res_i, int &res_j) {
     std::vector<float> Q_in;
 
     // 空Q_ip无法被访问: 如果ip = -1, 则g_max_p = -INF;
-    if(g_map_p_index != -1) Q_ip = Q->get_Q(g_map_p_index,active_size);
-    if(g_max_n_index != -1) Q_in = Q->get_Q(g_max_n_index,active_size);
+    if(g_map_p_index != -1) Q_ip = Q.get_Q(g_map_p_index,active_size);
+    if(g_max_n_index != -1) Q_in = Q.get_Q(g_max_n_index,active_size);
 
     for (int j=0;j<active_size;j++) {
         if(y[j]==+1) {
@@ -535,7 +535,7 @@ void SVR::shrink(int l)
                 if (!shrunk(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
                 {
 
-                    Q->swap_index(i, active_size);
+                    Q.swap_index(i, active_size);
                     std::swap(y[i],y[active_size]);
                     std::swap(G[i],G[active_size]);
                     std::swap(alpha_status[i],alpha_status[active_size]);

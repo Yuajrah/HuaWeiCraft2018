@@ -35,7 +35,7 @@ protected:
     std::vector<double> G;
     std::vector<char> alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
     std::vector<double> alpha;
-    SVR_Q *Q;
+    SVR_Q Q;
     const double *QD;
     double eps;
     double Cp,Cn;
