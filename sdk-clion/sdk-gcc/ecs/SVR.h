@@ -28,9 +28,7 @@ public:
     SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param);
     void train();
     std::pair<std::vector<double>, double> train_one();
-    void solve_nu_svr(std::vector<double> &alpha, SolverRes &si);
     double predict(const std::vector<double> x);
-    void Solve();
 protected:
     int active_size;
     std::vector<char> y;

@@ -66,12 +66,9 @@ std::pair<std::vector<double>, double> SVR::train_one() {
     int l =  2 * Y.size();
 
     alpha_status = std::vector<char>(l);
-    for(int i=0;i<l;i++)
-        update_alpha_status(i);
+    for(int i=0;i<l;i++) update_alpha_status(i);
 
-    active_set = std::vector<int>(l);
-    for(int i=0;i<l;i++)
-        active_set[i] = i;
+    for(int i=0;i<l;i++) active_set.push_back(i);
 
     active_size = l;
 
@@ -90,56 +87,6 @@ std::pair<std::vector<double>, double> SVR::train_one() {
                 for(int j=0;j<l;j++)
                     G_bar[j] += get_C(i) * Q_i[j];
         }
-
-
-    Solve();
-
-    for(int i=0;i<2 * Y.size();i++)
-        t_alpha[active_set[i]] = alpha[i];
-
-    for(int i=0;i<Y.size();i++)
-        res_alpha[i] = t_alpha[i] - t_alpha[i+Y.size()];
-
-    return {res_alpha, si.rho};
-}
-
-double SVR::predict(const std::vector<double> x) {
-    double pred_result = -model.rho;
-
-    for(int i=0;i<model.l;i++)
-        pred_result += model.sv_coef[i] * SVR_Q::dot(x, model.SV[i]);
-
-    return pred_result;
-}
-
-void SVR::gradient(int l) {
-    if(active_size == l) return;
-
-    int nr_free = 0;
-
-    for(int j=active_size;j<l;j++) G[j] = G_bar[j] + p[j];
-
-    for(int j=0;j<active_size;j++) if(is_free(j)) nr_free++;
-
-    if (nr_free*l > 2*active_size*(l-active_size)) {
-        for(int i=active_size;i<l;i++) {
-            const float *Q_i = Q->get_Q(i,active_size);
-            for(int j=0;j<active_size;j++) if(is_free(j))G[i] += alpha[j] * Q_i[j];
-        }
-    } else {
-        for(int i=0;i<active_size;i++)
-            if(is_free(i)) {
-                const float *Q_i = Q->get_Q(i,l);
-                double alpha_i = alpha[i];
-                for(int j=active_size;j<l;j++)
-                    G[j] += alpha_i * Q_i[j];
-            }
-    }
-}
-
-void SVR::Solve() {
-
-    int l = 2 * Y.size();
 
     // optimization step
 
@@ -336,8 +283,52 @@ void SVR::Solve() {
     si.upper_bound_p = Cp;
     si.upper_bound_n = Cn;
 
+    // 求解结束
 
+    for(int i=0;i<2 * Y.size();i++)
+        t_alpha[active_set[i]] = alpha[i];
+
+    for(int i=0;i<Y.size();i++)
+        res_alpha[i] = t_alpha[i] - t_alpha[i+Y.size()];
+
+    return {res_alpha, si.rho};
 }
+
+double SVR::predict(const std::vector<double> x) {
+    double pred_result = -model.rho;
+
+    for(int i=0;i<model.l;i++)
+        pred_result += model.sv_coef[i] * SVR_Q::dot(x, model.SV[i]);
+
+    return pred_result;
+}
+
+void SVR::gradient(int l) {
+    if(active_size == l) return;
+
+    int nr_free = 0;
+
+    for(int j=active_size;j<l;j++) G[j] = G_bar[j] + p[j];
+
+    for(int j=0;j<active_size;j++) if(is_free(j)) nr_free++;
+
+    if (nr_free*l > 2*active_size*(l-active_size)) {
+        for(int i=active_size;i<l;i++) {
+            const float *Q_i = Q->get_Q(i,active_size);
+            for(int j=0;j<active_size;j++) if(is_free(j))G[i] += alpha[j] * Q_i[j];
+        }
+    } else {
+        for(int i=0;i<active_size;i++)
+            if(is_free(i)) {
+                const float *Q_i = Q->get_Q(i,l);
+                double alpha_i = alpha[i];
+                for(int j=active_size;j<l;j++)
+                    G[j] += alpha_i * Q_i[j];
+            }
+    }
+}
+
+
 
 // return 1 if already optimal, return 0 otherwise
 int SVR::select_workset(int &out_i, int &out_j) {
