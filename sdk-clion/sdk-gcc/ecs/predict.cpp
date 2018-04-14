@@ -26,6 +26,7 @@
 #include "math_utils.h"
 #include "noise.h"
 #include "ff_utils.h"
+#include "FFOD.h"
 
 
 /*
@@ -172,7 +173,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 复赛对应的inputfile为 input_file_semi.txt
      *
      */
-    int debug = 0;
+    int debug = 2;
 
     if (debug == 0) { // 上传所用
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
@@ -269,17 +270,24 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     *****  复赛分配  **************************************************************
     **************************************************************************/
 
+//    std::vector<Vm> objects = serialize(predict_data);
+//    std::vector<Bin> allocate_result;
+////    allocate_result = ff({}, objects);
+//    allocate_result = alloc_by_ff_variant_1th(objects);
+//    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
+
+    /*
+     * 使用FFOD进行分配
+     */
     std::vector<Vm> objects = serialize(predict_data);
     std::vector<Bin> allocate_result;
-//    allocate_result = ff({}, objects);
-    allocate_result = alloc_by_ff_variant_1th(objects);
-    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
-    std::string result2 = format_allocate_res(allocate_result);
+    allocate_result = alloc_by_ffod(objects);
+
     /**
      * 将预测结果, 格式化为字符串
      */
-
     std::string result1 = format_predict_res(predict_data);
+    std::string result2 = format_allocate_res(allocate_result);
     std::string result = result1+result2;
 
     // 需要输出的内容
