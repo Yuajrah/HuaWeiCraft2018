@@ -232,9 +232,9 @@ int get_bigger_mean(std::vector<double> data, int num)
 }
 
 
-svm_parameter init_svm_parameter()
+SvmParam init_svm_parameter()
 {
-    svm_parameter param;
+    SvmParam param;
 
     // default values
 
@@ -270,13 +270,11 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
         std::vector<double> train_y = get_vector_target(train_data_need);
 
         /* 2. 初始化问题*/
-//        svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
-        svm_parameter param = init_svm_parameter();   // 初始化训练参数
+        SvmParam param = init_svm_parameter();   // 初始化训练参数
 
         param.C = 0.13;
 
         /* 3. 训练模型 */
-//        svm_model model = svm_train(prob, param);
         SVR svr(train_x, train_y, param);
         svr.train();
 

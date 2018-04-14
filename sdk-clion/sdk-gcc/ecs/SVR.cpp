@@ -4,354 +4,311 @@
 
 #include "SVR.h"
 
-SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param):
-//        X(X), Y(Y), param(param), Q(SVR_Q(X, Y, param)){}
-    X(X), Y(Y), param(param)
-{
-    l = Y.size();
+SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, SvmParam param): X(X), Y(Y), param(param) {
 
-//    QD = new double[2*l];
-    QD = std::vector<double>(2*l);
-    sign = std::vector<char>(2*l);
-    index = std::vector<int>(2*l);
 
-    for(int k=0;k<l;k++) {
-        sign[k] = 1;
-        sign[k+l] = -1;
-        index[k] = k;
-        index[k+l] = k;
-        QD[k] = kernel_linear(k,k);
-        QD[k+l] = QD[k];
+    // 生成前半段
+    for (int i = 0;i < Y.size(); i++) {
+        sign.push_back(1);
+        index.push_back(i);
+        qd.push_back(kernel_linear(i, i));
     }
 
-    buffer.push_back(std::vector<float>(2*l));
-    buffer.push_back(std::vector<float>(2*l));
+    // 生成后半段
+    for (int i = 0;i < Y.size(); i++) {
+        sign.push_back(-1);
+        index.push_back(i);
+        qd.push_back(qd[i]);
+    }
+
+    buffer.push_back(std::vector<float>(2*Y.size()));
+    buffer.push_back(std::vector<float>(2*Y.size()));
 
     next_buffer = 0;
 }
 
 void SVR::train() {
 
-    model.param = param;
+    // 计算a和ro
+    std::vector<double> a = calc_a();
 
-    // 计算alpha和ro
-    std::pair<std::vector<double>, double> alpha_rho = train_one();
-
-    model.rho = alpha_rho.second;
-
-    model.l = 0;
+    model_l = 0;
     for(int i=0;i<Y.size();i++) {
-        if (fabs(alpha_rho.first[i]) > 0) {
-            model.SV.push_back(X[i]);
-            model.sv_coef.push_back(alpha_rho.first[i]);
-            model.sv_indices.push_back(i + 1);
-            model.l++;
+        if (fabs(a[i]) > 0) {
+            sv.push_back(X[i]);
+            sv_coef.push_back(a[i]);
+            sv_indices.push_back(i + 1);
+            model_l++;
         }
     }
 }
 
-std::pair<std::vector<double>, double> SVR::train_one() {
-    std::vector<double> res_alpha(Y.size(), 0.0);
+std::vector<double> SVR::calc_a() {
+    std::vector<double> res_a(Y.size(), 0.0);
 
     // nu_svr 求解
-    std::vector<double> t_alpha;
+    std::vector<double> t_a;
 
     // 处理前半段的数据
     double sum = param.C * param.nu * Y.size() / 2;
     for(int i=0;i<Y.size();i++) {
-        t_alpha.push_back(std::min(param.C, sum));
+        t_a.push_back(std::min(param.C, sum));
         this->p.push_back(-Y[i]);
         this->y.push_back(1);
 
-        sum -= t_alpha[i];
+        sum -= t_a[i];
     }
 
     // 处理后半段的数据
     for(int i=0;i<Y.size();i++) {
-        t_alpha.push_back(t_alpha[i]);
+        t_a.push_back(t_a[i]);
         this->p.push_back(Y[i]);
         this->y.push_back(-1);
     }
 
 
-    // 求解得到t_alpha, 进一步得到alpha
+    // 求解得到t_a, 进一步得到a
 
-
-    this->alpha = t_alpha;
-//    this->QD = Q.get_QD();
-
-    this->Cp = param.C;
-    this->Cn = param.C;
+    this->a = t_a;
+//    this->Cp = param.C;
+//    this->Cn = param.C;
     this->eps = param.eps;
 
-    unshrink = false;
+    not_constricted = false;
 
-    int l =  2 * Y.size();
+    int tmp_l =  2 * Y.size();
 
-    alpha_status = std::vector<char>(l);
-    for(int i=0;i<l;i++) update_alpha_status(i);
+    status = std::vector<char>(tmp_l);
+    for(int i=0;i<tmp_l;i++) update_a_status(i);
 
-    for(int i=0;i<l;i++) active_set.push_back(i);
+    for(int i=0;i<tmp_l;i++) lives.push_back(i);
 
-    active_size = l;
+    lives_size = tmp_l;
 
     for(double &t: p) {
-        G.push_back(t);
-        G_bar.push_back(0);
+        g.push_back(t);
+        g_bar.push_back(0);
     }
 
-    for(int i=0;i<l;i++)
-        if (alpha[i] >= 0) {
-//            const float *Q_i = Q->get_Q(i,l);
-            const std::vector<float> Q_i = get_Q(i, l);
-            for(int j=0;j<l;j++)
-                G[j] += alpha[i]*Q_i[j];
+    for(int i=0;i<tmp_l;i++)
+        if (a[i] >= 0) {
+            const std::vector<float> Q_i = calc_q(i, tmp_l);
+            for(int j=0;j<tmp_l;j++)
+                g[j] += a[i]*Q_i[j];
 
-            if(alpha[i] >= get_C(i))
-                for(int j=0;j<l;j++)
-                    G_bar[j] += get_C(i) * Q_i[j];
+            if(a[i] >= param.C)
+                for(int j=0;j<tmp_l;j++)
+                    g_bar[j] += param.C * Q_i[j];
         }
 
 
     // 优化
 
     int iter = 0;
-    int max_iter = std::max(10000000, l>INT_MAX/100? INT_MAX: 100*l);
-    int counter = std::min(l,1000)+1;
+    int max_iter = std::max(10000000, tmp_l>INT_MAX/100? INT_MAX: 100*tmp_l);
+    int counter = std::min(tmp_l,1000)+1;
 
     while (iter < max_iter) {
         // 松弛
         if (--counter == 0) {
-            counter = std::min(l,1000);
-            shrink(l);
+            counter = std::min(tmp_l,1000);
+            constriction(tmp_l);
         }
 
         int i,j;
-        if(select_workset(i,j) != 0) {
+        if(calc_ws(i,j) != 0) {
 
-            gradient(l);
-            active_size = l;
+            calc_gradient(tmp_l);
+            lives_size = tmp_l;
 
-            if(select_workset(i,j)!=0)
-                break;
-            else
-                counter = 1;
+            if(calc_ws(i,j)!=0) break;
+            else counter = 1;
         }
 
-        ++iter;
+        iter++;
 
-        // update alpha[i] and alpha[j], handle bounds carefully
+        // update a[i] and a[j], handle bounds carefully
 
-        std::vector<float> Q_i = get_Q(i,active_size);
-        std::vector<float> Q_j = get_Q(j,active_size);
+        // 更新a[i] 和 a[j]
+        std::vector<float> Q_i = calc_q(i,lives_size);
+        std::vector<float> Q_j = calc_q(j,lives_size);
 
-        double C_i = get_C(i);
-        double C_j = get_C(j);
+        double C_i = param.C;
+        double C_j = param.C;
 
-        double old_alpha_i = alpha[i];
-        double old_alpha_j = alpha[j];
+        double old_a_i = a[i];
+        double old_a_j = a[j];
 
-        if(y[i]!=y[j])
-        {
-            double quad_coef = get_QD()[i]+get_QD()[j]+2*Q_i[j];
+        if(y[i]!=y[j]) {
+            double quad_coef = calc_qd()[i]+calc_qd()[j]+2*Q_i[j];
+            if (quad_coef <= 0) quad_coef = TAU;
+            double delta = (-g[i]-g[j]) / quad_coef;
+            double diff = a[i] - a[j];
+            a[i] += delta;
+            a[j] += delta;
+
+            if(diff > 0) {
+                if(a[j] < 0) {
+                    a[j] = 0;
+                    a[i] = diff;
+                }
+            } else {
+                if(a[i] < 0) {
+                    a[i] = 0;
+                    a[j] = -diff;
+                }
+            }
+
+            if(diff > C_i - C_j) {
+                if(a[i] > C_i) {
+                    a[i] = C_i;
+                    a[j] = C_i - diff;
+                }
+            } else {
+                if(a[j] > C_j) {
+                    a[j] = C_j;
+                    a[i] = C_j + diff;
+                }
+            }
+        }
+        else {
+            double quad_coef = calc_qd()[i]+calc_qd()[j]-2*Q_i[j];
             if (quad_coef <= 0)
                 quad_coef = TAU;
-            double delta = (-G[i]-G[j])/quad_coef;
-            double diff = alpha[i] - alpha[j];
-            alpha[i] += delta;
-            alpha[j] += delta;
+            double delta = (g[i]-g[j])/quad_coef;
+            double sum = a[i] + a[j];
+            a[i] -= delta;
+            a[j] += delta;
 
-            if(diff > 0)
-            {
-                if(alpha[j] < 0)
-                {
-                    alpha[j] = 0;
-                    alpha[i] = diff;
+            if(sum > C_i) {
+                if(a[i] > C_i) {
+                    a[i] = C_i;
+                    a[j] = sum - C_i;
+                }
+            } else {
+                if(a[j] < 0){
+                    a[j] = 0;
+                    a[i] = sum;
                 }
             }
-            else
-            {
-                if(alpha[i] < 0)
-                {
-                    alpha[i] = 0;
-                    alpha[j] = -diff;
+
+            if(sum > C_j) {
+                if(a[j] > C_j) {
+                    a[j] = C_j;
+                    a[i] = sum - C_j;
                 }
-            }
-            if(diff > C_i - C_j)
-            {
-                if(alpha[i] > C_i)
-                {
-                    alpha[i] = C_i;
-                    alpha[j] = C_i - diff;
-                }
-            }
-            else
-            {
-                if(alpha[j] > C_j)
-                {
-                    alpha[j] = C_j;
-                    alpha[i] = C_j + diff;
+            } else {
+                if(a[i] < 0) {
+                    a[i] = 0;
+                    a[j] = sum;
                 }
             }
         }
-        else
+
+        // 更新 g
+
+        double delta_a_i = a[i] - old_a_i;
+        double delta_a_j = a[j] - old_a_j;
+
+        for(int k=0;k<lives_size;k++) {
+            g[k] += Q_i[k]*delta_a_i + Q_j[k]*delta_a_j;
+        }
+
+        // 更新a的状态和G_bar
+
+
+        bool ui = is_upper_bound(i);
+        bool uj = is_upper_bound(j);
+        update_a_status(i);
+        update_a_status(j);
+        int k;
+        if(ui != is_upper_bound(i))
         {
-            double quad_coef = get_QD()[i]+get_QD()[j]-2*Q_i[j];
-            if (quad_coef <= 0)
-                quad_coef = TAU;
-            double delta = (G[i]-G[j])/quad_coef;
-            double sum = alpha[i] + alpha[j];
-            alpha[i] -= delta;
-            alpha[j] += delta;
-
-            if(sum > C_i)
-            {
-                if(alpha[i] > C_i)
-                {
-                    alpha[i] = C_i;
-                    alpha[j] = sum - C_i;
-                }
-            }
+            Q_i = calc_q(i,tmp_l);
+            if(ui)
+                for(k=0;k<tmp_l;k++)
+                    g_bar[k] -= C_i * Q_i[k];
             else
-            {
-                if(alpha[j] < 0)
-                {
-                    alpha[j] = 0;
-                    alpha[i] = sum;
-                }
-            }
-            if(sum > C_j)
-            {
-                if(alpha[j] > C_j)
-                {
-                    alpha[j] = C_j;
-                    alpha[i] = sum - C_j;
-                }
-            }
+                for(k=0;k<tmp_l;k++)
+                    g_bar[k] += C_i * Q_i[k];
+        }
+
+        if(uj != is_upper_bound(j))
+        {
+            Q_j = calc_q(j,tmp_l);
+            if(uj)
+                for(k=0;k<tmp_l;k++)
+                    g_bar[k] -= C_j * Q_j[k];
             else
-            {
-                if(alpha[i] < 0)
-                {
-                    alpha[i] = 0;
-                    alpha[j] = sum;
-                }
-            }
+                for(k=0;k<tmp_l;k++)
+                    g_bar[k] += C_j * Q_j[k];
         }
 
-        // update G
-
-        double delta_alpha_i = alpha[i] - old_alpha_i;
-        double delta_alpha_j = alpha[j] - old_alpha_j;
-
-        for(int k=0;k<active_size;k++)
-        {
-            G[k] += Q_i[k]*delta_alpha_i + Q_j[k]*delta_alpha_j;
-        }
-
-        // update alpha_status and G_bar
-
-        {
-            bool ui = is_upper_bound(i);
-            bool uj = is_upper_bound(j);
-            update_alpha_status(i);
-            update_alpha_status(j);
-            int k;
-            if(ui != is_upper_bound(i))
-            {
-                Q_i = get_Q(i,l);
-                if(ui)
-                    for(k=0;k<l;k++)
-                        G_bar[k] -= C_i * Q_i[k];
-                else
-                    for(k=0;k<l;k++)
-                        G_bar[k] += C_i * Q_i[k];
-            }
-
-            if(uj != is_upper_bound(j))
-            {
-                Q_j = get_Q(j,l);
-                if(uj)
-                    for(k=0;k<l;k++)
-                        G_bar[k] -= C_j * Q_j[k];
-                else
-                    for(k=0;k<l;k++)
-                        G_bar[k] += C_j * Q_j[k];
-            }
-        }
     }
 
     if(iter >= max_iter)
     {
-        if(active_size < l)
+        if(lives_size < tmp_l)
         {
-            // reconstruct the whole gradient to calculate objective value
-            gradient(l);
-            active_size = l;
+            // reconstruct the whole calc_gradient to calculate objective value
+            calc_gradient(tmp_l);
+            lives_size = tmp_l;
         }
     }
 
-    // calculate rho
+    // 计算 rho
 
-    si.rho = calc_rho();
+    rho = calc_rho();
 
-    // calculate objective value
-    {
-        double v = 0;
-        int i;
-        for(i=0;i<l;i++)
-            v += alpha[i] * (G[i] + p[i]);
-        si.obj = v/2;
-    }
-
-    si.upper_bound_p = Cp;
-    si.upper_bound_n = Cn;
+    // 计算obj
+    double v = 0;
+    for(int i=0;i<tmp_l;i++) v += a[i] * (g[i] + p[i]);
+    obj = v/2;
 
     // 求解结束
 
-    for(int i=0;i<2 * Y.size();i++)
-        t_alpha[active_set[i]] = alpha[i];
+    for(int i=0;i<tmp_l;i++)
+        t_a[lives[i]] = a[i];
 
     for(int i=0;i<Y.size();i++)
-        res_alpha[i] = t_alpha[i] - t_alpha[i+Y.size()];
+        res_a[i] = t_a[i] - t_a[i+Y.size()];
 
-    return {res_alpha, si.rho};
+    return res_a;
 }
 
 double SVR::predict(const std::vector<double> x) {
-    double pred_result = -model.rho;
+    double pred_result = -rho;
 
-    for(int i=0;i<model.l;i++)
-        pred_result += model.sv_coef[i] * dot(x, model.SV[i]);
+    for(int i=0;i<model_l;i++)
+        pred_result += sv_coef[i] * dot(x, sv[i]);
 
     return pred_result;
 }
 
-void SVR::gradient(int l) {
-    if(active_size == l) return;
+void SVR::calc_gradient(int l) {
+    if(lives_size == l) return;
 
     int nr_free = 0;
 
-    for(int j=active_size;j<l;j++) G[j] = G_bar[j] + p[j];
+    for(int j=lives_size;j<l;j++) g[j] = g_bar[j] + p[j];
 
-    for(int j=0;j<active_size;j++) if(is_free(j)) nr_free++;
+    for(int j=0;j<lives_size;j++) if(is_free(j)) nr_free++;
 
-    if (nr_free*l > 2*active_size*(l-active_size)) {
-        for(int i=active_size;i<l;i++) {
-            const std::vector<float> Q_i = get_Q(i,active_size);
-            for(int j=0;j<active_size;j++) if(is_free(j))G[i] += alpha[j] * Q_i[j];
+    if (nr_free*l > 2*lives_size*(l-lives_size)) {
+        for(int i=lives_size;i<l;i++) {
+            const std::vector<float> Q_i = calc_q(i,lives_size);
+            for(int j=0;j<lives_size;j++) if(is_free(j))g[i] += a[j] * Q_i[j];
         }
     } else {
-        for(int i=0;i<active_size;i++)
+        for(int i=0;i<lives_size;i++)
             if(is_free(i)) {
-                const std::vector<float> Q_i = get_Q(i,l);
-                double alpha_i = alpha[i];
-                for(int j=active_size;j<l;j++)
-                    G[j] += alpha_i * Q_i[j];
+                const std::vector<float> Q_i = calc_q(i,l);
+                double a_i = a[i];
+                for(int j=lives_size;j<l;j++)
+                    g[j] += a_i * Q_i[j];
             }
     }
 }
-
-
 
 // return 1 if already optimal, return 0 otherwise
 
@@ -361,7 +318,7 @@ void SVR::gradient(int l) {
  * @param out_j
  * @return 返回1表示已经最优, 返回0表示其他
  */
-int SVR::select_workset(int &res_i, int &res_j) {
+int SVR::calc_ws(int &res_i, int &res_j) {
 
     double g_map_p = -DBL_MAX;
     double g_map_p2 = -DBL_MAX;
@@ -374,19 +331,19 @@ int SVR::select_workset(int &res_i, int &res_j) {
     int g_min_index = -1;
     double obj_diff_min = DBL_MAX;
 
-    for(int t=0;t<active_size;t++)
+    for(int t=0;t<lives_size;t++)
         if(y[t] == 1) {
             if(!is_upper_bound(t))
-                if(-G[t] >= g_map_p) {
-                    g_map_p = -G[t];
+                if(-g[t] >= g_map_p) {
+                    g_map_p = -g[t];
                     g_map_p_index = t;
                 }
 
         } else {
             if(!is_lower_bound(t))
-                if(G[t] >= g_max_n)
+                if(g[t] >= g_max_n)
                 {
-                    g_max_n = G[t];
+                    g_max_n = g[t];
                     g_max_n_index = t;
                 }
         }
@@ -395,19 +352,19 @@ int SVR::select_workset(int &res_i, int &res_j) {
     std::vector<float> Q_in;
 
     // 空Q_ip无法被访问: 如果ip = -1, 则g_max_p = -INF;
-    if(g_map_p_index != -1) Q_ip = get_Q(g_map_p_index,active_size);
-    if(g_max_n_index != -1) Q_in = get_Q(g_max_n_index,active_size);
+    if(g_map_p_index != -1) Q_ip = calc_q(g_map_p_index,lives_size);
+    if(g_max_n_index != -1) Q_in = calc_q(g_max_n_index,lives_size);
 
-    for (int j=0;j<active_size;j++) {
+    for (int j=0;j<lives_size;j++) {
         if(y[j]==+1) {
             if (!is_lower_bound(j)) {
-                double grad_diff=g_map_p+G[j];
-                if (G[j] >= g_map_p2)
-                    g_map_p2 = G[j];
+                double grad_diff=g_map_p+g[j];
+                if (g[j] >= g_map_p2)
+                    g_map_p2 = g[j];
                 if (grad_diff > 0)
                 {
                     double obj_diff;
-                    double quad_coef = get_QD()[g_map_p_index]+get_QD()[j]-2*Q_ip[j];
+                    double quad_coef = calc_qd()[g_map_p_index]+calc_qd()[j]-2*Q_ip[j];
                     if (quad_coef > 0)
                         obj_diff = -(grad_diff*grad_diff)/quad_coef;
                     else
@@ -422,11 +379,11 @@ int SVR::select_workset(int &res_i, int &res_j) {
             }
         } else {
             if (!is_upper_bound(j)) {
-                double grad_diff=g_max_n-G[j];
-                if (-G[j] >= g_max_n2) g_max_n2 = -G[j];
+                double grad_diff=g_max_n-g[j];
+                if (-g[j] >= g_max_n2) g_max_n2 = -g[j];
                 if (grad_diff > 0) {
                     double obj_diff;
-                    double quad_coef = get_QD()[g_max_n_index]+get_QD()[j]-2*Q_in[j];
+                    double quad_coef = calc_qd()[g_max_n_index]+calc_qd()[j]-2*Q_in[j];
                     if (quad_coef > 0) obj_diff = -(grad_diff*grad_diff)/quad_coef;
                     else obj_diff = -(grad_diff*grad_diff)/TAU;
 
@@ -451,169 +408,129 @@ int SVR::select_workset(int &res_i, int &res_j) {
 
 double SVR::calc_rho() {
     int nr_free1 = 0,nr_free2 = 0;
-    double ub1 = INF, ub2 = INF;
-    double lb1 = -INF, lb2 = -INF;
+    double ub1 = DBL_MAX, ub2 = DBL_MAX;
+    double lb1 = -DBL_MAX, lb2 = -DBL_MAX;
     double sum_free1 = 0, sum_free2 = 0;
 
-    for(int i=0;i<active_size;i++) {
-        if(y[i]==+1) {
-            if(is_upper_bound(i))
-                lb1 = std::max(lb1,G[i]);
-            else if(is_lower_bound(i))
-                ub1 = std::min(ub1,G[i]);
-            else
-            {
-                ++nr_free1;
-                sum_free1 += G[i];
+    for(int i=0; i<lives_size; i++) {
+        if(y[i] == 1) {
+            if(is_upper_bound(i)) lb1 = std::max(lb1,g[i]);
+            else if(is_lower_bound(i)) ub1 = std::min(ub1,g[i]);
+            else {
+                nr_free1++;
+                sum_free1 += g[i];
             }
         } else {
-            if(is_upper_bound(i))
-                lb2 = std::max(lb2,G[i]);
-            else if(is_lower_bound(i))
-                ub2 = std::min(ub2,G[i]);
-            else
-            {
-                ++nr_free2;
-                sum_free2 += G[i];
+            if(is_upper_bound(i)) lb2 = std::max(lb2,g[i]);
+            else if(is_lower_bound(i)) ub2 = std::min(ub2,g[i]);
+            else {
+                nr_free2++;
+                sum_free2 += g[i];
             }
         }
     }
 
     double r1,r2;
-    if(nr_free1 > 0)
-        r1 = sum_free1/nr_free1;
-    else
-        r1 = (ub1+lb1)/2;
+    if(nr_free1 > 0) r1 = sum_free1/nr_free1;
+    else r1 = (ub1+lb1)/2;
 
-    if(nr_free2 > 0)
-        r2 = sum_free2/nr_free2;
-    else
-        r2 = (ub2+lb2)/2;
+    if(nr_free2 > 0) r2 = sum_free2/nr_free2;
+    else r2 = (ub2+lb2)/2;
 
-    si.r = (r1+r2)/2;
+    r = (r1+r2)/2;
     return (r1-r2)/2;
 }
 
-bool SVR::shrunk(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4)
+bool SVR::constricted(int i, double g_max1, double g_max2, double g_max3, double g_max4)
 {
-    if(is_upper_bound(i))
-    {
-        if(y[i]==+1)
-            return(-G[i] > Gmax1);
-        else
-            return(-G[i] > Gmax4);
-    }
-    else if(is_lower_bound(i))
-    {
-        if(y[i]==+1)
-            return(G[i] > Gmax2);
-        else
-            return(G[i] > Gmax3);
-    }
-    else
-        return(false);
+    if (is_upper_bound(i)) {
+        if(y[i]==+1) return(-g[i] > g_max1);
+        else return(-g[i] > g_max4);
+    } else if(is_lower_bound(i)) {
+        if(y[i]==+1) return(g[i] > g_max2);
+        else return(g[i] > g_max3);
+    } else return(false);
 }
 
-void SVR::shrink(int l)
+void SVR::constriction(int l)
 {
-    double Gmax1 = -INF;	// max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
-    double Gmax2 = -INF;	// max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
-    double Gmax3 = -INF;	// max { -y_i * grad(f)_i | y_i = -1, i in I_up(\alpha) }
-    double Gmax4 = -INF;	// max { y_i * grad(f)_i | y_i = -1, i in I_low(\alpha) }
+    double g_max1 = -DBL_MAX;	// max { -y_i * grad(f)_i | y_i = +1, i in I_up(\a) }
+    double g_max2 = -DBL_MAX;	// max { y_i * grad(f)_i | y_i = +1, i in I_low(\a) }
+    double g_max3 = -DBL_MAX;	// max { -y_i * grad(f)_i | y_i = -1, i in I_up(\a) }
+    double g_max4 = -DBL_MAX;	// max { y_i * grad(f)_i | y_i = -1, i in I_low(\a) }
 
-    // find maximal violating pair first
-    int i;
-    for(i=0;i<active_size;i++)
-    {
-        if(!is_upper_bound(i))
-        {
-            if(y[i]==+1)
-            {
-                if(-G[i] > Gmax1) Gmax1 = -G[i];
-            }
-            else	if(-G[i] > Gmax4) Gmax4 = -G[i];
+
+    // 找出最先的错误的一对
+    for(int i=0;i<lives_size;i++) {
+
+        if (!is_upper_bound(i)) {
+            if(y[i] == 1) {
+                if(-g[i] > g_max1) g_max2 = -g[i];
+            } else if(-g[i] > g_max4) g_max4 = -g[i];
         }
-        if(!is_lower_bound(i))
-        {
-            if(y[i]==+1)
-            {
-                if(G[i] > Gmax2) Gmax2 = G[i];
+
+        if(!is_lower_bound(i)) {
+            if(y[i] == 1) {
+                if(g[i] > g_max2) g_max2 = g[i];
             }
-            else	if(G[i] > Gmax3) Gmax3 = G[i];
+            else if(g[i] > g_max3) g_max3= g[i];
         }
     }
 
-    if(unshrink == false && std::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10) {
-        unshrink = true;
-        gradient(l);
-        active_size = l;
+    if(not_constricted == false && std::max(g_max1 + g_max2, g_max3 + g_max4) <= eps*10) {
+        not_constricted = true;
+        calc_gradient(l);
+        lives_size = l;
     }
 
-    for(i=0;i<active_size;i++)
-        if (shrunk(i, Gmax1, Gmax2, Gmax3, Gmax4))
-        {
-            active_size--;
-            while (active_size > i)
-            {
-                if (!shrunk(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
-                {
+    for(int i=0;i<lives_size;i++)
+        if (constricted(i, g_max1, g_max2, g_max3, g_max4)) {
+            lives_size--;
+            while (lives_size > i) {
+                if (!constricted(lives_size, g_max1, g_max2, g_max3, g_max4)) {
 
-                    std::swap(sign[i],sign[active_size]);
-                    std::swap(index[i],index[active_size]);
-                    std::swap(QD[i],QD[active_size]);
-//                    Q.swap_index(i, active_size);
-                    std::swap(y[i],y[active_size]);
-                    std::swap(G[i],G[active_size]);
-                    std::swap(alpha_status[i],alpha_status[active_size]);
-                    std::swap(alpha[i],alpha[active_size]);
-                    std::swap(p[i],p[active_size]);
-                    std::swap(active_set[i],active_set[active_size]);
-                    std::swap(G_bar[i],G_bar[active_size]);
+                    std::swap(sign[i],sign[lives_size]);
+                    std::swap(index[i],index[lives_size]);
+                    std::swap(qd[i],qd[lives_size]);
+                    std::swap(y[i],y[lives_size]);
+                    std::swap(g[i],g[lives_size]);
+                    std::swap(status[i],status[lives_size]);
+                    std::swap(a[i],a[lives_size]);
+                    std::swap(p[i],p[lives_size]);
+                    std::swap(lives[i],lives[lives_size]);
+                    std::swap(g_bar[i],g_bar[lives_size]);
                     break;
                 }
-                active_size--;
+                lives_size--;
             }
         }
 }
 
-void SVR::update_alpha_status(int i) {
-    if(alpha[i] >= get_C(i))
-        alpha_status[i] = UPPER_BOUND;
-    else if(alpha[i] <= 0)
-        alpha_status[i] = LOWER_BOUND;
-    else alpha_status[i] = FREE;
+void SVR::update_a_status(int i) {
+    if(a[i] >= param.C)
+        status[i] = STATUS_UPPER_BOUND;
+    else if(a[i] <= 0)
+        status[i] = STATUS_LOWER_BOUND;
+    else status[i] = STATUS_FREE;
 }
 
 
+std::vector<float> SVR::calc_q(int i, int len) {
 
-// SVR_Q.cpp
+    std::vector<float> data;
+    int real_i = index[i];
 
-std::vector<float> SVR::get_Q(int i, int len)
-{
-    float *data = new float[l];
-    int j, real_i = index[i];
-
-    for(j=0;j<l;j++) data[j] = (float)kernel_linear(real_i,j);
+    for(int j=0;j<Y.size();j++) data.push_back((float)kernel_linear(real_i,j));
 
     std::vector<float> buf = buffer[next_buffer];
 
     next_buffer = 1 - next_buffer;
     char si = sign[i];
-    for(j=0;j<len;j++)
-        buf[j] = (float) si * (float) sign[j] * data[index[j]];
+    for(int j=0;j<len;j++) buf[j] = (float) si * (float) sign[j] * data[index[j]];
+
     return buf;
 }
 
-
-std::vector<double> SVR::get_QD() const
-{
-    return QD;
-}
-
-double SVR::kernel_linear(int i, int j)
-{
-    return dot(X[i],X[j]);
-}
 
 double SVR::dot(const std::vector<double> px, const std::vector<double> py)
 {

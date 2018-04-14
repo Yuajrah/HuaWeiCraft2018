@@ -54,7 +54,7 @@ int get_bigger_mean(std::vector<double> data, int num);
  * 初始化参数, 默认参数
  * @return
  */
-svm_parameter init_svm_parameter();
+SvmParam init_svm_parameter();
 
 
 #endif //SDK_CLION_ML_PREDICT_H

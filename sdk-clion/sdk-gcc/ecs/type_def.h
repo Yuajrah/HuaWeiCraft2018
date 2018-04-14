@@ -43,37 +43,16 @@ struct Node_index
 
 bool operator< (const Node_index &index1, const Node_index &index);
 
-
 /**
- * svm type
+ * svm 参数
  */
-
-struct SolverRes {
-    double obj;
-    double rho;
-    double upper_bound_p;
-    double upper_bound_n;
-    double r;
-};
-
-
-struct svm_parameter
+struct SvmParam
 {
     double eps;
     double C;
     double nu;
 };
 
-struct svm_model
-{
-    svm_parameter param;
-    int l;
-    std::vector<std::vector<double>> SV;
-    std::vector<double> sv_coef;
-    double rho;
-    std::vector<int> sv_indices;
-};
-
-enum { LOWER_BOUND, UPPER_BOUND, FREE };
+enum { STATUS_LOWER_BOUND, STATUS_UPPER_BOUND, STATUS_FREE };
 
 #endif //SDK_GCC_TYPE_DEF_H
