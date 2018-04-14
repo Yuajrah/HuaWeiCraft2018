@@ -30,54 +30,38 @@ std::pair<std::vector<double>, double> SVR::train_one() {
     std::vector<double> alpha(Y.size(), 0.0);
 
     SolverRes si;
-    solve_nu_svr(alpha, si);
 
-    // output SVs
+    // nu_svr 求解
+    std::vector<double> t_alpha;
+    std::vector<double> linear_term;
+    std::vector<char> y;
 
-    int nSV = 0;
-    int nBSV = 0;
-    for (int i=0;i<Y.size();i++) {
-        if (fabs(alpha[i]) > 0) {
-            ++nSV;
-            if (Y[i] > 0) {
-                if(fabs(alpha[i]) >= si.upper_bound_p)
-                    ++nBSV;
-            } else {
-                if(fabs(alpha[i]) >= si.upper_bound_n)
-                    ++nBSV;
-            }
-        }
-    }
-
-    return {alpha, si.rho};
-}
-
-void SVR::solve_nu_svr(std::vector<double> &alpha, SolverRes &si) {
-
-    std::vector<double> t_alpha(2 * Y.size());
-    std::vector<double> linear_term(2 * Y.size());
-    std::vector<char> y(2 * Y.size());
-
+    // 处理前半段的数据
     double sum = param.C * param.nu * Y.size() / 2;
-
     for(int i=0;i<Y.size();i++) {
-        t_alpha[i] = t_alpha[i+Y.size()] = std::min(param.C, sum);
+        t_alpha.push_back(std::min(param.C, sum));
+        linear_term.push_back(-Y[i]);
+        y.push_back(1);
+
         sum -= t_alpha[i];
-
-        linear_term[i] = - Y[i];
-        y[i] = 1;
-
-        linear_term[i+Y.size()] = Y[i];
-        y[i+Y.size()] = -1;
     }
 
+    // 处理后半段的数据
+    for(int i=0;i<Y.size();i++) {
+        t_alpha.push_back(t_alpha[i]);
+        linear_term.push_back(Y[i]);
+        y.push_back(-1);
+    }
+
+    // 求解得到t_alpha, 进一步得到alpha
     SVR_Q svr_q(X, Y, param);
     Solve(2 * Y.size(), svr_q, linear_term, y, t_alpha, param.C, param.C, param.eps, si, param.shrinking);
 
     for(int i=0;i<Y.size();i++)
         alpha[i] = t_alpha[i] - t_alpha[i+Y.size()];
-}
 
+    return {alpha, si.rho};
+}
 
 double SVR::predict(const std::vector<double> x) {
     double pred_result = -model.rho;
@@ -116,6 +100,9 @@ void SVR::gradient() {
 void SVR::Solve(int l, SVR_Q& Q, const std::vector<double> &p_, const std::vector<char> &y_,
                    std::vector<double> &alpha_, double Cp, double Cn, double eps,
                 SolverRes &si, int shrinking) {
+
+
+//    Solve(2 * Y.size(), svr_q, linear_term, y, t_alpha, param.C, param.C, param.eps, si, param.shrinking);
 
     this->si = si;
 
