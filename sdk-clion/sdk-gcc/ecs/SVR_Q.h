@@ -18,17 +18,17 @@ private:
 
     // svm_parameter
     int l;
-    char *sign;
-    int *index;
+    std::vector<char> sign;
+    std::vector<int> index;
     mutable int next_buffer;
-    float *buffer[2];
+    std::vector<std::vector<float>> buffer;
     double *QD;
 
 public:
     SVR_Q(std::vector<std::vector<double>> X, std::vector<double> Y, const svm_parameter& param);
-    void swap_index(int i, int j) const;
+    void swap_index(int i, int j);
 
-    float *get_Q(int i, int len);
+    std::vector<float> get_Q(int i, int len);
 
     double *get_QD() const;
 

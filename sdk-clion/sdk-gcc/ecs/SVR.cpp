@@ -79,7 +79,8 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
     for(int i=0;i<l;i++)
         if (alpha[i] >= 0) {
-            const float *Q_i = Q->get_Q(i,l);
+//            const float *Q_i = Q->get_Q(i,l);
+            const std::vector<float> Q_i = Q->get_Q(i, l);
             for(int j=0;j<l;j++)
                 G[j] += alpha[i]*Q_i[j];
 
@@ -88,26 +89,26 @@ std::pair<std::vector<double>, double> SVR::train_one() {
                     G_bar[j] += get_C(i) * Q_i[j];
         }
 
-    // optimization step
+
+    // 优化
 
     int iter = 0;
-    int max_iter = std::max(10000000, l>INT_MAX/100 ? INT_MAX : 100*l);
+    int max_iter = std::max(10000000, l>INT_MAX/100? INT_MAX: 100*l);
     int counter = std::min(l,1000)+1;
 
-    while(iter < max_iter)
-    {
-        // show progress and do shrinking
-
-        if(--counter == 0)
-        {
+    while (iter < max_iter) {
+        // 松弛
+        if (--counter == 0) {
             counter = std::min(l,1000);
             shrink(l);
         }
 
         int i,j;
-        if(select_workset(i,j)!=0) {
+        if(select_workset(i,j) != 0) {
+
             gradient(l);
             active_size = l;
+
             if(select_workset(i,j)!=0)
                 break;
             else
@@ -118,8 +119,8 @@ std::pair<std::vector<double>, double> SVR::train_one() {
 
         // update alpha[i] and alpha[j], handle bounds carefully
 
-        const float *Q_i = Q->get_Q(i,active_size);
-        const float *Q_j = Q->get_Q(j,active_size);
+        std::vector<float> Q_i = Q->get_Q(i,active_size);
+        std::vector<float> Q_j = Q->get_Q(j,active_size);
 
         double C_i = get_C(i);
         double C_j = get_C(j);
@@ -276,7 +277,6 @@ std::pair<std::vector<double>, double> SVR::train_one() {
         int i;
         for(i=0;i<l;i++)
             v += alpha[i] * (G[i] + p[i]);
-
         si.obj = v/2;
     }
 
@@ -314,13 +314,13 @@ void SVR::gradient(int l) {
 
     if (nr_free*l > 2*active_size*(l-active_size)) {
         for(int i=active_size;i<l;i++) {
-            const float *Q_i = Q->get_Q(i,active_size);
+            const std::vector<float> Q_i = Q->get_Q(i,active_size);
             for(int j=0;j<active_size;j++) if(is_free(j))G[i] += alpha[j] * Q_i[j];
         }
     } else {
         for(int i=0;i<active_size;i++)
             if(is_free(i)) {
-                const float *Q_i = Q->get_Q(i,l);
+                const std::vector<float> Q_i = Q->get_Q(i,l);
                 double alpha_i = alpha[i];
                 for(int j=active_size;j<l;j++)
                     G[j] += alpha_i * Q_i[j];
@@ -331,60 +331,60 @@ void SVR::gradient(int l) {
 
 
 // return 1 if already optimal, return 0 otherwise
-int SVR::select_workset(int &out_i, int &out_j) {
-    double Gmaxp = -DBL_MAX;
-    double Gmaxp2 = -DBL_MAX;
-    int Gmaxp_idx = -1;
 
-    double Gmaxn = -DBL_MAX;
-    double Gmaxn2 = -DBL_MAX;
-    int Gmaxn_idx = -1;
+/**
+ *
+ * @param out_i
+ * @param out_j
+ * @return 返回1表示已经最优, 返回0表示其他
+ */
+int SVR::select_workset(int &res_i, int &res_j) {
 
-    int Gmin_idx = -1;
+    double g_map_p = -DBL_MAX;
+    double g_map_p2 = -DBL_MAX;
+    int g_map_p_index = -1;
+
+    double g_max_n = -DBL_MAX;
+    double g_max_n2 = -DBL_MAX;
+    int g_max_n_index = -1;
+
+    int g_min_index = -1;
     double obj_diff_min = DBL_MAX;
 
     for(int t=0;t<active_size;t++)
-        if(y[t]==+1)
-        {
+        if(y[t] == 1) {
             if(!is_upper_bound(t))
-                if(-G[t] >= Gmaxp)
-                {
-                    Gmaxp = -G[t];
-                    Gmaxp_idx = t;
+                if(-G[t] >= g_map_p) {
+                    g_map_p = -G[t];
+                    g_map_p_index = t;
                 }
-        }
-        else
-        {
+
+        } else {
             if(!is_lower_bound(t))
-                if(G[t] >= Gmaxn)
+                if(G[t] >= g_max_n)
                 {
-                    Gmaxn = G[t];
-                    Gmaxn_idx = t;
+                    g_max_n = G[t];
+                    g_max_n_index = t;
                 }
         }
 
-    int ip = Gmaxp_idx;
-    int in = Gmaxn_idx;
-    const float *Q_ip = NULL;
-    const float *Q_in = NULL;
-    if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
-        Q_ip = Q->get_Q(ip,active_size);
-    if(in != -1)
-        Q_in = Q->get_Q(in,active_size);
+    std::vector<float> Q_ip;
+    std::vector<float> Q_in;
 
-    for(int j=0;j<active_size;j++)
-    {
-        if(y[j]==+1)
-        {
-            if (!is_lower_bound(j))
-            {
-                double grad_diff=Gmaxp+G[j];
-                if (G[j] >= Gmaxp2)
-                    Gmaxp2 = G[j];
+    // 空Q_ip无法被访问: 如果ip = -1, 则g_max_p = -INF;
+    if(g_map_p_index != -1) Q_ip = Q->get_Q(g_map_p_index,active_size);
+    if(g_max_n_index != -1) Q_in = Q->get_Q(g_max_n_index,active_size);
+
+    for (int j=0;j<active_size;j++) {
+        if(y[j]==+1) {
+            if (!is_lower_bound(j)) {
+                double grad_diff=g_map_p+G[j];
+                if (G[j] >= g_map_p2)
+                    g_map_p2 = G[j];
                 if (grad_diff > 0)
                 {
                     double obj_diff;
-                    double quad_coef = QD[ip]+QD[j]-2*Q_ip[j];
+                    double quad_coef = QD[g_map_p_index]+QD[j]-2*Q_ip[j];
                     if (quad_coef > 0)
                         obj_diff = -(grad_diff*grad_diff)/quad_coef;
                     else
@@ -392,31 +392,23 @@ int SVR::select_workset(int &out_i, int &out_j) {
 
                     if (obj_diff <= obj_diff_min)
                     {
-                        Gmin_idx=j;
+                        g_min_index=j;
                         obj_diff_min = obj_diff;
                     }
                 }
             }
-        }
-        else
-        {
-            if (!is_upper_bound(j))
-            {
-                double grad_diff=Gmaxn-G[j];
-                if (-G[j] >= Gmaxn2)
-                    Gmaxn2 = -G[j];
-                if (grad_diff > 0)
-                {
+        } else {
+            if (!is_upper_bound(j)) {
+                double grad_diff=g_max_n-G[j];
+                if (-G[j] >= g_max_n2) g_max_n2 = -G[j];
+                if (grad_diff > 0) {
                     double obj_diff;
-                    double quad_coef = QD[in]+QD[j]-2*Q_in[j];
-                    if (quad_coef > 0)
-                        obj_diff = -(grad_diff*grad_diff)/quad_coef;
-                    else
-                        obj_diff = -(grad_diff*grad_diff)/TAU;
+                    double quad_coef = QD[g_max_n_index]+QD[j]-2*Q_in[j];
+                    if (quad_coef > 0) obj_diff = -(grad_diff*grad_diff)/quad_coef;
+                    else obj_diff = -(grad_diff*grad_diff)/TAU;
 
-                    if (obj_diff <= obj_diff_min)
-                    {
-                        Gmin_idx=j;
+                    if (obj_diff <= obj_diff_min) {
+                        g_min_index=j;
                         obj_diff_min = obj_diff;
                     }
                 }
@@ -424,14 +416,12 @@ int SVR::select_workset(int &out_i, int &out_j) {
         }
     }
 
-    if(std::max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2) < eps || Gmin_idx == -1)
-        return 1;
+    if(std::max(g_map_p+g_map_p2,g_max_n+g_max_n2) < eps || g_min_index == -1) return 1;
 
-    if (y[Gmin_idx] == +1)
-        out_i = Gmaxp_idx;
-    else
-        out_i = Gmaxn_idx;
-    out_j = Gmin_idx;
+    if (y[g_min_index] == +1) res_i = g_map_p_index;
+    else res_i = g_max_n_index;
+
+    res_j = g_min_index;
 
     return 0;
 }

@@ -12,8 +12,8 @@ SVR_Q::SVR_Q(std::vector<std::vector<double>> X, std::vector<double> Y, const sv
 //    buf = new Buf(l,(long int)(param.cache_size*(1<<20)));
 
     QD = new double[2*l];
-    sign = new char[2*l];
-    index = new int[2*l];
+    sign = std::vector<char>(2*l);
+    index = std::vector<int>(2*l);
 
     for(int k=0;k<l;k++) {
         sign[k] = 1;
@@ -23,31 +23,30 @@ SVR_Q::SVR_Q(std::vector<std::vector<double>> X, std::vector<double> Y, const sv
         QD[k] = kernel_linear(k,k);
         QD[k+l] = QD[k];
     }
-    buffer[0] = new float[2*l];
-    buffer[1] = new float[2*l];
+
+    buffer.push_back(std::vector<float>(2*l));
+    buffer.push_back(std::vector<float>(2*l));
+
     next_buffer = 0;
 }
 
 
-void SVR_Q::swap_index(int i, int j) const
+void SVR_Q::swap_index(int i, int j)
 {
     std::swap(sign[i],sign[j]);
     std::swap(index[i],index[j]);
     std::swap(QD[i],QD[j]);
 }
 
-float*  SVR_Q::get_Q(int i, int len)
+std::vector<float> SVR_Q::get_Q(int i, int len)
 {
     float *data = new float[l];
     int j, real_i = index[i];
 
-//    if(buf->get_data(real_i,&data,l) < l) {
-        for(j=0;j<l;j++)
-            data[j] = (float)kernel_linear(real_i,j);
-//    }
+    for(j=0;j<l;j++) data[j] = (float)kernel_linear(real_i,j);
 
-    // reorder and copy
-    float *buf = buffer[next_buffer];
+    std::vector<float> buf = buffer[next_buffer];
+
     next_buffer = 1 - next_buffer;
     char si = sign[i];
     for(j=0;j<len;j++)
@@ -78,9 +77,7 @@ double SVR_Q::dot(const std::vector<double> px, const std::vector<double> py)
 }
 
 SVR_Q::~SVR_Q() {
-    delete[] sign;
-    delete[] index;
-    delete[] buffer[0];
-    delete[] buffer[1];
+//    delete[] sign;
+//    delete[] index;
     delete[] QD;
 }
