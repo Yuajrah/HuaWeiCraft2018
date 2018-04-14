@@ -9,62 +9,24 @@ SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_paramete
 void SVR::train() {
 
     model.param = param;
-    model.sv_coef = std::vector<std::vector<double>>(1);
 
-    if(param.probability) model.probA = std::vector<double>(1, svr_probability());
+    // 计算alpha和ro
+    std::pair<std::vector<double>, double> alpha_rho = train_one();
 
-    std::pair<std::vector<double>, double> alpha_rho = train_one(0, 0);
-    model.rho = std::vector<double>(1, alpha_rho.second);
+    model.rho = alpha_rho.second;
 
     model.l = 0;
-    for(int i=0;i<Y.size();i++)
-        if(fabs(alpha_rho.first[i]) > 0) model.l++;
-
-    model.SV = std::vector<std::vector<double>>(model.l);
-    model.sv_coef[0] = std::vector<double>(model.l, 0.0);
-    model.sv_indices = std::vector<int>(model.l, 0);
-
-    int j = 0;
     for(int i=0;i<Y.size();i++) {
         if (fabs(alpha_rho.first[i]) > 0) {
-            model.SV[j] = X[i];
-            model.sv_coef[0][j] = alpha_rho.first[i];
-            model.sv_indices[j] = i + 1;
-            j++;
+            model.SV.push_back(X[i]);
+            model.sv_coef.push_back(alpha_rho.first[i]);
+            model.sv_indices.push_back(i + 1);
+            model.l++;
         }
     }
-
 }
 
-// Return parameter of a Laplace distribution
-double SVR::svr_probability()
-{
-    std::vector<double> ymv(Y.size());
-    double mae = 0;
-
-    for(int i=0;i<Y.size();i++) {
-        ymv[i]=Y[i]-ymv[i];
-        mae += fabs(ymv[i]);
-    }
-
-    mae /= Y.size();
-    double std=sqrt(2*mae*mae);
-    int count=0;
-
-    mae=0;
-    for(int i=0;i<Y.size();i++)
-        if (fabs(ymv[i]) > 5*std)
-            count=count+1;
-        else
-            mae+=fabs(ymv[i]);
-
-    mae /= (Y.size()-count);
-    return mae;
-}
-
-
-std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
-{
+std::pair<std::vector<double>, double> SVR::train_one() {
     std::vector<double> alpha(Y.size(), 0.0);
 
     SolverRes si;
@@ -74,17 +36,13 @@ std::pair<std::vector<double>, double> SVR::train_one(double Cp, double Cn)
 
     int nSV = 0;
     int nBSV = 0;
-    for(int i=0;i<Y.size();i++) {
-        if(fabs(alpha[i]) > 0)
-        {
+    for (int i=0;i<Y.size();i++) {
+        if (fabs(alpha[i]) > 0) {
             ++nSV;
-            if(Y[i] > 0)
-            {
+            if (Y[i] > 0) {
                 if(fabs(alpha[i]) >= si.upper_bound_p)
                     ++nBSV;
-            }
-            else
-            {
+            } else {
                 if(fabs(alpha[i]) >= si.upper_bound_n)
                     ++nBSV;
             }
@@ -122,11 +80,10 @@ void SVR::solve_nu_svr(std::vector<double> &alpha, SolverRes &si) {
 
 
 double SVR::predict(const std::vector<double> x) {
-    svm_model model = this->model;
-    double pred_result = -model.rho[0];
+    double pred_result = -model.rho;
 
     for(int i=0;i<model.l;i++)
-        pred_result += model.sv_coef[0][i] * SVR_Q::dot(x, model.SV[i]);
+        pred_result += model.sv_coef[i] * SVR_Q::dot(x, model.SV[i]);
 
     return pred_result;
 }

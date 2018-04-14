@@ -59,12 +59,10 @@ struct SolverRes {
 
 struct svm_parameter
 {
-    double cache_size;
     double eps;
     double C;
     double nu;
     int shrinking;
-    int probability;
 };
 
 struct svm_model
@@ -72,13 +70,9 @@ struct svm_model
     svm_parameter param;
     int l;
     std::vector<std::vector<double>> SV;
-    std::vector<std::vector<double>> sv_coef;
-    std::vector<double> rho;
-    std::vector<double> probA;
-    std::vector<double> probB;
+    std::vector<double> sv_coef;
+    double rho;
     std::vector<int> sv_indices;
-    std::vector<int> label;
-    std::vector<int> nSV;
 };
 
 enum { LOWER_BOUND, UPPER_BOUND, FREE };

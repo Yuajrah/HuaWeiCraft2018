@@ -16,9 +16,9 @@
 
 //该恒为false
 const bool split_choosed = true;
-const bool split_high_flag = true;
+const bool split_high_flag = false;
 const int split_rate = 3;
-const int move_step = 7 ;
+const int move_step = 6;
 double get_mean(std::vector<double> train_data, double rate);
 std::map<int, int> change_by_mean_vaule(std::map<int, std::vector<double>> train_data, std::map<int, Vm> vm_info, double rate, int need_predict_day,
                                         std::map<int, int> predict_data);

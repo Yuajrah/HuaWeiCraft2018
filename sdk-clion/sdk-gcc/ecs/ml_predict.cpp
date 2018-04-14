@@ -239,11 +239,9 @@ svm_parameter init_svm_parameter()
     // default values
 
     param.nu = 0.5;
-    param.cache_size = 100;
     param.C = 0.13;
     param.eps = 1e-3;
     param.shrinking = 1;
-    param.probability = 0;
 
 
     return param;
