@@ -25,7 +25,6 @@ public:
     svm_model model;
 
     SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_parameter param);
-    ~SVR();
     void train();
     std::pair<std::vector<double>, double> train_one();
     double predict(const std::vector<double> x);
@@ -66,16 +65,13 @@ private:
     std::vector<int> index;
     mutable int next_buffer;
     std::vector<std::vector<float>> buffer;
-    double *QD;
-
+    std::vector<double> QD;
 
 public:
-//    SVR_Q(std::vector<std::vector<double>> X, std::vector<double> Y, const svm_parameter& param);
-//    void swap_index(int i, int j);
 
     std::vector<float> get_Q(int i, int len);
 
-    double *get_QD() const;
+    std::vector<double> get_QD() const;
 
     double kernel_linear(int i, int j);
 

@@ -10,7 +10,8 @@ SVR::SVR(std::vector<std::vector<double>> X, std::vector<double> Y, svm_paramete
 {
     l = Y.size();
 
-    QD = new double[2*l];
+//    QD = new double[2*l];
+    QD = std::vector<double>(2*l);
     sign = std::vector<char>(2*l);
     index = std::vector<int>(2*l);
 
@@ -604,7 +605,7 @@ std::vector<float> SVR::get_Q(int i, int len)
 }
 
 
-double * SVR::get_QD() const
+std::vector<double> SVR::get_QD() const
 {
     return QD;
 }
@@ -623,10 +624,4 @@ double SVR::dot(const std::vector<double> px, const std::vector<double> py)
         i++;
     }
     return sum;
-}
-
-SVR::~SVR() {
-//    delete[] sign;
-//    delete[] index;
-    delete[] QD;
 }
