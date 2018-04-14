@@ -6,6 +6,13 @@
 #define SDK_CLION_SVR_H
 
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <ctype.h>
+#include <cfloat>
+#include <cstring>
+#include <cstdarg>
+#include <climits>
 #include "type_def.h"
 #include "SVR_Q.h"
 
