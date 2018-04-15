@@ -295,7 +295,7 @@ std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data
             predict_ecs_data.push_back(tmp_predict);
         }
 
-        double ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.end(), 0.0);
+        double ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.end(), 0.0) * 1.1;
         result[t.first] = round(std::max(0.0, ecs_sum));
 //        result[t.first] = (int)(predict_ecs_data[BasicInfo::need_predict_day-1]*BasicInfo::need_predict_day);
     }

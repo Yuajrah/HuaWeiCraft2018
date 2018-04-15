@@ -45,19 +45,37 @@ std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<doubl
     int tmp_split = split_windows;
     std::map<std::vector<double>, double> result;
     std::vector<double> used_data = ecs_data;
+//    if (mv)
+//    {
+//        if(split_choosed) {
+//            used_data = ma(ecs_data, move_step);
+//        } else
+//        {
+//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
+//        }
+//    }
+//    if (split_high_flag)
+//    {
+//        used_data = split_high(used_data,split_rate);
+//    }
+
     if (mv)
     {
-        if(split_choosed) {
-            used_data = ma(ecs_data, move_step);
-        } else
-        {
-            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-        }
+        used_data = ma(ecs_data,move_step);
     }
-    if (split_high_flag)
+    if(split_high_flag)
     {
-        used_data = split_high(used_data,split_rate);
+        used_data = split_high(used_data, split_rate);
     }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
+    }
+
     std::vector<double> tmp_train;
     int index = 0;
     while(index < tmp_split) {
@@ -80,18 +98,34 @@ std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<doubl
     int tmp_split = split_windows;
     std::vector<std::vector<double>> result;
     std::vector<double> used_data = ecs_data;
+//    if (mv)
+//    {
+//        if(split_choosed) {
+//            used_data = ma(ecs_data, move_step);
+//        } else
+//        {
+//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
+//        }
+//    }
+//    if (split_high_flag)
+//    {
+//        used_data = split_high(used_data,split_rate);
+//    }
     if (mv)
     {
-        if(split_choosed) {
-            used_data = ma(ecs_data, move_step);
-        } else
-        {
-            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-        }
+        used_data = ma(ecs_data,move_step);
     }
-    if (split_high_flag)
+    if(split_high_flag)
     {
-        used_data = split_high(used_data,split_rate);
+        used_data = split_high(used_data, split_rate);
+    }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
     }
     std::vector<double> tmp_train;
     int index = 0;
@@ -114,18 +148,34 @@ std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data
     int tmp_split = split_windows;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
+//    if (mv)
+//    {
+//        if(split_choosed) {
+//            used_data = ma(ecs_data, move_step);
+//        } else
+//        {
+//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
+//        }
+//    }
+//    if (split_high_flag)
+//    {
+//        used_data = split_high(used_data,split_rate);
+//    }
     if (mv)
     {
-        if(split_choosed) {
-            used_data = ma(ecs_data, move_step);
-        } else
-        {
-            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-        }
+        used_data = ma(ecs_data,move_step);
     }
-    if (split_high_flag)
+    if(split_high_flag)
     {
-        used_data = split_high(used_data,split_rate);
+        used_data = split_high(used_data, split_rate);
+    }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
     }
     int index = 0;
     while(index < tmp_split) {
@@ -144,18 +194,34 @@ std::vector<double>  get_frist_predict_data(std::vector<double>ecs_data, int spl
     int tmp_split = split_windows;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
+//    if (mv)
+//    {
+//        if(split_choosed) {
+//            used_data = ma(ecs_data, move_step);
+//        } else
+//        {
+//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
+//        }
+//    }
+//    if (split_high_flag)
+//    {
+//        used_data = split_high(used_data,split_rate);
+//    }
     if (mv)
     {
-        if(split_choosed) {
-            used_data = ma(ecs_data, move_step);
-        } else
-        {
-            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-        }
+        used_data = ma(ecs_data,move_step);
     }
-    if (split_high_flag)
+    if(split_high_flag)
     {
-        used_data = split_high(used_data,split_rate);
+        used_data = split_high(used_data, split_rate);
+    }
+    if(split_choosed)
+    {
+        tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    }
+    else
+    {
+        tmp_split = split_windows;
     }
     int n = used_data.size();
     for (int i = n - tmp_split; i < n; i++)

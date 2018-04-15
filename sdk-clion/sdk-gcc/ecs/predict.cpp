@@ -119,7 +119,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     BasicInfo::need_predict_day = need_predict_day;
     BasicInfo::need_predict_cnt = BasicInfo::need_predict_day * 24 / BasicInfo::split_hour;
 
-    int debug = 2;
+    int debug = 0;
 
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
@@ -246,7 +246,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     std::map<int, int> predict_data = predict_by_svm(train_data);
 
-    print_predict_score(actual_data, predict_data);
+//    print_predict_score(actual_data, predict_data);
 
     /**
      * 使用单独线性模型做预测
@@ -336,7 +336,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     gga.initial(bins, 100);
 //    gga.initial({}, 0);
     gga.start();
-    std::vector<Bin> allocate_result = gga.get_best_solution().get_bin();
+    std::vector<Bin> allocate_result = gga.get_best_chrome().get_bin();
 
     std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
     std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
