@@ -1,3 +1,0 @@
-/home/ruiy/store/HuaWeiCraft2018/arima/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/ruiy/store/HuaWeiCraft2018/arima/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/ruiy/store/HuaWeiCraft2018/arima/cmake-build-debug/CMakeFiles/arima.dir
