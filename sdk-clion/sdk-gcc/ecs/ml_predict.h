@@ -9,17 +9,11 @@
 #include <vector>
 #include "type_def.h"
 #include "data_preprocess.h"
-#include "KNN.h"
-#include "MnistPreProcess.h"
-#include "CART.h"
 
 #include "type_def.h"
-#include "RandomForest.h"
 #include "BasicInfo.h"
 #include <algorithm>
 #include <cmath>
-
-#include "LinerRegression.h"
 
 //训练集划分的标准
 const bool unchangale = false;
