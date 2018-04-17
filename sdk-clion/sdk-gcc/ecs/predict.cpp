@@ -227,6 +227,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
 
 
+
     /**
      * 线性回归
      */
@@ -310,7 +311,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
 
 
-
 //    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
 //    std::vector<Bin> bins;
 //    int cnt = 0;
@@ -364,6 +364,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //
 //    after_process(allocate_result, order_vm_info, predict_data);
 //    std::string result2 = format_allocate_res(allocate_result);
+
 //    after_process(allocate_result, order_vm_info, predict_data);
 
     /**
@@ -386,6 +387,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    after_process(allocate_result, order_vm_info, predict_data);
 //    std::string result2 = format_allocate_res(allocate_result);
 
+//    std::string result2 = format_allocate_res(allocate_result);
 
 
     /**
