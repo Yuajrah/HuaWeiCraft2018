@@ -10,7 +10,7 @@
 
 class BasicInfo {
 public:
-    static std::map<int, Vm> vm_info;
+    static std::map<int, Vm> vm_info; // 需要预测的vm基本信息
     static std::map<char*, Server> server_infos; // 不同类型server的基本信息
     static time_t t_start;
 

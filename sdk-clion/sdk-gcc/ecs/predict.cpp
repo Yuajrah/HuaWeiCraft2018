@@ -34,13 +34,6 @@
  *   inputFilePath = "../../../data/exercise/input_file.txt"
  *   resultFilePath = "../../../data/exercise/output_file.txt"
  *
- *   初赛所用项目参数
- *   项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
- *   项目可执行文件的参数： "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
- *
- *   复赛所用项目参数
- *   项目可执行文件的参数： "../../../../data/exercise/data_2015_01_to_2015_08.txt" "../../../../data/exercise/input_file_semi.txt" "../../../../data/exercise/output_file.txt"
- *
  * */
 //你要完成的功能总入口
 // info 是inputFile的数据，data是历史数据
@@ -143,7 +136,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
 
 
-    int debug = 3;
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
 
     std::map<int, std::vector<double>> fit_train_data; // 拟合阶段所用的训练集合
@@ -151,14 +143,43 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::map<int, std::vector<double>> fit_test_data_everyday; // 拟合阶段的测试集合, 包含每天的数据
 
     std::map<int, int> actual_data;
-    // 项目可执行文件的参数： "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
-    // 项目可执行文件的参数： "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
+
+
+    /**
+     * debug = 0, 上传代码时所用的获取数据的方法, 上传时所用
+     *
+     * debug = 1, 获取 date_2015_01_to_2015_05.txt 的数据, 注意要将二进制文件的执行参数改为该文本, 本地测试用
+     * 项目可执行文件的参数：
+     * 初赛: "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
+     * 复赛: "../../../../data/exercise/date_2015_01_to_2015_05.txt" "../../../../data/exercise/input_file_semi.txt" "../../../../data/exercise/output_file.txt"
+     *
+     * debug = 2, 获取 data_2015_12_to_2016_01.txt 的数据, 注意要将二进制文件的执行参数改为该文本, 本地测试用
+     * 项目可执行文件的参数：
+     * 初赛: "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
+     * 复赛:  "../../../../data/exercise/data_2015_12_to_2016_01.txt" "../../../../data/exercise/input_file_semi.txt" "../../../../data/exercise/output_file.txt"
+     *
+     * debug = 3, 获取 date_2015_01_to_2015_08.txt 的数据
+     * 项目可执行文件的参数：
+     * 初赛: "../../../../data/exercise/data_2015_01_to_2015_08.txt" "../../../../data/exercise/input_file.txt" "../../../../data/exercise/output_file.txt"
+     * 复赛: "../../../../data/exercise/data_2015_01_to_2015_08.txt" "../../../../data/exercise/input_file_semi.txt" "../../../../data/exercise/output_file.txt"
+     *
+     *
+     * 注:
+     * 本地测试时, 每次更改debug, 需要手动更替项目可执行参数
+     * 项目可执行文件的参数需要手动更替
+     *
+     * 初赛对应的inputfile为 input_file.txt
+     * 复赛对应的inputfile为 input_file_semi.txt
+     *
+     */
+    int debug = 3;
+
     if (debug == 0) { // 上传所用
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
         actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, data_num);
     } else if (debug == 1) {
-        train_data = get_esc_data(data, date_start, "2015-05-24", data_num);
-        actual_data = get_sum_data(data, "2015-05-24", "2015-05-31", data_num);
+        train_data = get_esc_data(data, date_start, "2015-05-24 00:00:00", data_num);
+        actual_data = get_sum_data(data, "2015-05-24 00:00:00", "2015-05-31 00:00:00", data_num);
     } else if (debug == 2) { // 16年的数据集
         train_data = get_esc_data(data, date_start, "2016-01-21 00:00:00", data_num);
         actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
@@ -167,14 +188,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         actual_data = get_sum_data(data, "2015-08-10 00:00:00", "2015-08-17 00:00:00", data_num);
     }
 
-//    if (data_num == 1690 && BasicInfo::vm_info.size() == 5 && BasicInfo::is_cpu()) { // 用例
-//
-//    } else{
-//        char * result_file = (char *)"17\n\n0 8 0 20";
-//        // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
-//        write_result(result_file, filename);
-//        return;
-//    }
 
 
     /*************************************************************************
@@ -215,6 +228,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
 
+
+//    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
+//    print_predict_score(actual_data, predict_data);
 
 
 
@@ -301,6 +317,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
 
 
+
 //    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
 //    std::vector<Bin> bins;
 //    int cnt = 0;
@@ -354,6 +371,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //
 //    after_process(allocate_result, order_vm_info, predict_data);
 //    std::string result2 = format_allocate_res(allocate_result);
+//    after_process(allocate_result, order_vm_info, predict_data);
 
     /**
      * 第六版分配
@@ -375,6 +393,11 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    after_process(allocate_result, order_vm_info, predict_data);
 //    std::string result2 = format_allocate_res(allocate_result);
 
+
+
+    /**
+     * 将预测结果, 格式化为字符串
+     */
 
 //    std::string result1 = format_predict_res(predict_data);
 //    std::string result = result1+result2;
