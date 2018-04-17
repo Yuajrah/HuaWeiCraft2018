@@ -40,7 +40,7 @@
 
 //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 std::default_random_engine Random::generator;
-std::map<char*, Server> BasicInfo::server_infos;
+std::map<int, Server> BasicInfo::server_infos;
 std::map<int, Vm> BasicInfo::vm_info;
 time_t BasicInfo::t_start;
 char* BasicInfo::opt_object;
@@ -82,7 +82,17 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     sscanf(info[0], "%d", &server_type_num);
     for (int i=1;i<=server_type_num;i++) {
         Server server_info;
-        sscanf(info[i],"%s %d %d %d", &server_info.type, &server_info.core, &server_info.mem, &server_info.disk); // 获取server的基本信息
+        char type_str[20];
+        sscanf(info[i],"%s %d %d %d", &type_str, &server_info.core, &server_info.mem, &server_info.disk); // 获取server的基本信息
+        if (strcmp(type_str, "General") == 0) {
+            server_info.type = TYPE_GENERAL;
+        } else if (strcmp(type_str, "Large-Memory") == 0) {
+            server_info.type = TYPE_LARGE;
+        } else if (strcmp(type_str, "High-Performance") == 0) {
+            server_info.type = TYPE_HIGH;
+        }
+
+        printf("%s \n", type_str);
         BasicInfo::server_infos[server_info.type] = server_info;
     }
 
@@ -99,23 +109,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     sscanf(info[7+type_num], "%s", forecast_start_date);
     char forecast_end_date[20]; // 预测结束日期（不包含）
     sscanf(info[8+type_num], "%s", forecast_end_date);
-
-    /**
-     *
-     * data_start，esc文本数据的开始日期
-     * ar_model的使用：
-     *      1. 传入序列, 构造对象
-     *      2. 拟合, 定阶
-     *      3. 预测
-     *      [4]. 打印信息
-     *
-     *  比如： train_data[8], 表示获取flavor8的序列
-     *      AR ar_model(train_data[8]);
-     *      ar_model.fit("none_and_least_square");
-     *      ar_model.predict(get_days(forecast_start_date, forecast_end_date));
-     *      ar_model.print_model_info();
-     *
-     */
 
 
     char date_start[20];

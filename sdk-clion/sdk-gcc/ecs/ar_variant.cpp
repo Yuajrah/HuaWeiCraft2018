@@ -10,9 +10,23 @@
 #include "type_def.h"
 #include "ml_predict.h"
 
-/**
- * 基于ar改动, 第一版
- */
+
+/*************************************************************************
+ *
+ * data_start，esc文本数据的开始日期
+ * ar_model的使用：
+ *      1. 传入序列, 构造对象
+ *      2. 拟合, 定阶
+ *      3. 预测
+ *      [4]. 打印信息
+ *
+ *  比如： train_data[8], 表示获取flavor8的序列
+ *      AR ar_model(train_data[8]);
+ *      ar_model.fit("none_and_least_square");
+ *      ar_model.predict(get_days(forecast_start_date, forecast_end_date));
+ *      ar_model.print_model_info();
+ *
+ **************************************************************************/
 
 std::map<int, int> predict_by_ar_1th (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day) {
     std::map<int, int> predict_data;

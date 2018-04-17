@@ -9,9 +9,10 @@
 #define TAU 1e-12
 
 #include <vector>
+#include <string>
 
 struct Server {
-    char* type;
+    int type; // 类型, 其值为枚举类型 ServerType的值
     int core;// 核数
     int mem; // 内存大小
     int disk; // 硬盘大小
@@ -55,5 +56,6 @@ struct SvmParam
 };
 
 enum { STATUS_LOWER_BOUND, STATUS_UPPER_BOUND, STATUS_FREE };
+enum ServerType {TYPE_GENERAL, TYPE_LARGE, TYPE_HIGH};
 
 #endif //SDK_GCC_TYPE_DEF_H
