@@ -11,6 +11,7 @@
 #include <vector>
 
 struct Server {
+    char* type;
     int core;// 核数
     int mem; // 内存大小
     int disk; // 硬盘大小

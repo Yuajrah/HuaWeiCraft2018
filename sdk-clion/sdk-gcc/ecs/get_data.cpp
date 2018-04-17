@@ -33,6 +33,7 @@ std::map<int, std::vector<double>> get_esc_data(
 
     for (int i=0;i<data_num;i++) {
         int type;char date[20];
+        printf("\n %s", data[i]);
         sscanf(data[i], "%*s flavor%d %[^\\n]",&type, &date);
 
         int hour_index = get_hours(start_date, date);
