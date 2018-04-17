@@ -111,7 +111,6 @@ venv.bak/
 #######################
 # others
 #######################
-练习数据/
 练习数据.zip
 
 # img
@@ -120,6 +119,9 @@ imgs/
 # dest
 bin/
 ecs.tar.gz
+ruiy.tar.gz
+ccc.tar.gz
+xtp.tar.gz
 data/exercise/output_file.txt 
 /data/exercise/output_file.txt
 /data/exercise/output_file.txt
