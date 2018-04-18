@@ -72,3 +72,4 @@ bool mrp_ffd(std::vector<Bin> &bins, std::vector<Vm> objects){
     });
     return mrp_ff(bins, objects);
 }
+
