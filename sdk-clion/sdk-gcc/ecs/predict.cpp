@@ -25,6 +25,7 @@
 #include "GGA.h"
 #include "math_utils.h"
 #include "noise.h"
+#include "ff_utils.h"
 
 
 /*
@@ -107,15 +108,22 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     char forecast_start_date[20]; // 预测起始日期
     sscanf(info[server_type_num+3+type_num+1], "%s", forecast_start_date);
+
     char forecast_end_date[20]; // 预测结束日期（不包含）
-    sscanf(info[server_type_num+3+type_num+2], "%s", forecast_end_date);
+    char tmp1[20];
+    sscanf(info[server_type_num+3+type_num+2], "%s %s", forecast_end_date, tmp1);
+    if (*tmp1 == '2') {
+        memcpy(forecast_end_date, add_days(strcat(forecast_end_date, " 00:00:00"), 1), 10 * sizeof(char));
+    }
+
+    printf("forecast_end_date = %s\n", forecast_end_date);
 
 
     char date_start[20];
     sscanf(data[0], "%*s %*s %s", &date_start); // 获取esc文本数据的开始日期
     strcat(date_start, " 00:00:00");
     char date_end[20];
-    sscanf(data[data_num-1], "%*s %*s %s", &date_end); // 获取esc文本数据的开始日期
+    sscanf(data[data_num-1], "%*s %*s %s", &date_end); // 获取esc文本数据的结束日期
     strcat(date_end, " 00:00:00");
 
 
@@ -125,8 +133,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     BasicInfo::need_predict_day = need_predict_day;
     BasicInfo::need_predict_cnt = BasicInfo::need_predict_day * 24 / BasicInfo::split_hour;
 
-    BasicInfo::extra_need_predict_day = get_days(date_end, forecast_start_date) - 1; // 间隔的天数
-    BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
+
 
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
@@ -169,18 +176,22 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     if (debug == 0) { // 上传所用
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
-        actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, data_num);
+        BasicInfo::extra_need_predict_day = get_days(date_end, forecast_start_date) - 1; // 间隔的天数
+        BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
     } else if (debug == 1) {
         train_data = get_esc_data(data, date_start, "2015-05-24 00:00:00", data_num);
         actual_data = get_sum_data(data, "2015-05-24 00:00:00", "2015-05-31 00:00:00", data_num);
     } else if (debug == 2) { // 16年的数据集
-        train_data = get_esc_data(data, date_start, "2016-01-21 00:00:00", data_num);
+
+        BasicInfo::extra_need_predict_day = get_days("2016-01-14 00:00:00", "2016-01-21 00:00:00") - 1; // 间隔的天数
+        BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
+
+        train_data = get_esc_data(data, date_start, "2016-01-15 00:00:00", data_num);
         actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
     } else if (debug == 3) {
         train_data = get_esc_data(data, date_start, "2015-08-10 00:00:00", data_num);
         actual_data = get_sum_data(data, "2015-08-10 00:00:00", "2015-08-17 00:00:00", data_num);
     }
-
 
 
     /*************************************************************************
@@ -265,7 +276,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     **************************************************************************/
 
     std::vector<Vm> objects = serialize(predict_data);
-    std::vector<Bin> allocate_result = alloc_by_ff_variant_1th(objects);
+    std::vector<Bin> allocate_result = ff({}, objects);
     std::string result2 = format_allocate_res(allocate_result);
     /**
      * 将预测结果, 格式化为字符串

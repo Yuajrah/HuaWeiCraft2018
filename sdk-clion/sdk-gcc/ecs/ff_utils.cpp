@@ -22,7 +22,7 @@ std::vector<Bin> ff(std::vector<Bin> bins, std::vector<Vm> objects) {
             if (is_allocated) break;
         }
         if (is_allocated == false) { // 若现有箱子无法满足分配需求, 则新开一个箱子
-            bins.push_back(Bin(1, BasicInfo::server_info.core, BasicInfo::server_info.mem)); // 打开一个新箱子
+            bins.push_back(Bin(2, BasicInfo::server_infos[2].core, BasicInfo::server_infos[2].mem)); // 打开一个新箱子
             bins.back().put(object);
         }
     }
