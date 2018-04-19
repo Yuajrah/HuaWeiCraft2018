@@ -97,18 +97,18 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     }
 
     int type_num;
-    sscanf(info[5],"%d",&type_num); // 获取共有type_num种类型的vm
+    sscanf(info[server_type_num+2],"%d",&type_num); // 获取共有type_num种类型的vm
 
-	for (int i=6;i<6+type_num;i++) {
+	for (int i=server_type_num+3;i<server_type_num+3+type_num;i++) {
         int type, core, mem;
 		sscanf(info[i],"flavor%d %d %d",&type,&core,&mem);
         BasicInfo::vm_info[type] = {type, core,  mem/ 1024}; // 获取各种vm的基本信息（包括 类型,核心数和内存大小）
 	}
 
     char forecast_start_date[20]; // 预测起始日期
-    sscanf(info[7+type_num], "%s", forecast_start_date);
+    sscanf(info[server_type_num+3+type_num+1], "%s", forecast_start_date);
     char forecast_end_date[20]; // 预测结束日期（不包含）
-    sscanf(info[8+type_num], "%s", forecast_end_date);
+    sscanf(info[server_type_num+3+type_num+2], "%s", forecast_end_date);
 
 
     char date_start[20];
@@ -165,7 +165,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 复赛对应的inputfile为 input_file_semi.txt
      *
      */
-    int debug = 2;
+    int debug = 0;
 
     if (debug == 0) { // 上传所用
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
