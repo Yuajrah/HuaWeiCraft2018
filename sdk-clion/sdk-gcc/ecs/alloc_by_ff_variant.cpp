@@ -37,6 +37,6 @@ std::vector<Bin> alloc_by_ff_variant_1th (std::vector<Vm> objects) {
         }
     }
 
-    bool flag = mrp_ff(bins, objects);
+    bool flag = mrp_bfd_bin_centric(bins, objects);
     return bins;
 }

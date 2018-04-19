@@ -24,7 +24,7 @@
 #include "data_preprocess.h"
 
 
-std::map<int, int> predict_by_ar_1th (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
+std::map<int, int> predict_by_ar_1th (std::map<int, std::vector<double>> train_data);
 
 std::map<int, int> predict_by_ar_2th (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 

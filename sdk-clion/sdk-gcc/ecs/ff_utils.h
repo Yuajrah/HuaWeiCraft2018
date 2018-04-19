@@ -26,6 +26,7 @@ int get_max_size_bin(const std::vector<Bin> &bins);
 
 bool mrp_ff(std::vector<Bin> &bins, std::vector<Vm> objects);
 bool mrp_ffd(std::vector<Bin> &bins, std::vector<Vm> objects);
+bool mrp_bf(std::vector<Bin> &bins, std::vector<Vm> objects);
 bool mrp_bfd_item_centric(std::vector<Bin> &bins, std::vector<Vm> objects);
 bool mrp_bfd_bin_centric(std::vector<Bin> &bins, std::vector<Vm> objects);
 

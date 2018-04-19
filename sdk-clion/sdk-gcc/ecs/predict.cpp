@@ -182,12 +182,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         train_data = get_esc_data(data, date_start, "2015-05-24 00:00:00", data_num);
         actual_data = get_sum_data(data, "2015-05-24 00:00:00", "2015-05-31 00:00:00", data_num);
     } else if (debug == 2) { // 16年的数据集
+        train_data = get_esc_data(data, date_start, "2016-01-15 00:00:00", data_num);
+        actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
 
         BasicInfo::extra_need_predict_day = get_days("2016-01-14 00:00:00", "2016-01-21 00:00:00") - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
 
-        train_data = get_esc_data(data, date_start, "2016-01-15 00:00:00", data_num);
-        actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
     } else if (debug == 3) {
         train_data = get_esc_data(data, date_start, "2015-08-10 00:00:00", data_num);
         actual_data = get_sum_data(data, "2015-08-10 00:00:00", "2015-08-17 00:00:00", data_num);
@@ -203,10 +203,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /*************************************************************************
     *****  预测  **************************************************************
     **************************************************************************/
-//
-//    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
-////
-//    print_predict_score(actual_data, predict_data);
 
 
     /**
@@ -233,10 +229,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    std::string result1 = format_predict_res(predict_data);
 
 
-//    std::map<int, int> predict_data = predict_by_ar_1th (BasicInfo::vm_info, train_data, need_predict_day);
-//    print_predict_score(actual_data, predict_data);
-
-
+    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
+    print_predict_score(actual_data, predict_data);
 
 
     /**
@@ -259,7 +253,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-    std::map<int, int> predict_data = predict_by_svm(train_data);
+//    std::map<int, int> predict_data = predict_by_svm(train_data);
 
 //    print_predict_score(actual_data, predict_data);
 
@@ -276,7 +270,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     **************************************************************************/
 
     std::vector<Vm> objects = serialize(predict_data);
-    std::vector<Bin> allocate_result = ff({}, objects);
+    std::vector<Bin> allocate_result;
+//    allocate_result = ff({}, objects);
+    allocate_result = alloc_by_ff_variant_1th(objects);
     std::string result2 = format_allocate_res(allocate_result);
     /**
      * 将预测结果, 格式化为字符串

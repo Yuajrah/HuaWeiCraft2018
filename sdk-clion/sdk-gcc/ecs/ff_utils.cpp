@@ -72,7 +72,7 @@ bool mrp_ffd(std::vector<Bin> &bins, std::vector<Vm> objects){
     calc_bin_size(bins, param_alphas); // 更新bin的size
 
     std::sort(objects.begin(), objects.end(), [](const Vm &o1, const Vm &o2){
-        return o1.size >= o2.size;
+        return o1.size > o2.size;
     });
     return mrp_ff(bins, objects);
 }
@@ -156,11 +156,16 @@ bool mrp_bfd_bin_centric(std::vector<Bin> &bins, std::vector<Vm> objects) {
                 return o1.size > o2.size;
             });
 
+            bool is_allocated = false;
             for (int i=0;i<objects.size();i++) {
-                if(bins[index].put(objects[i])){
+                is_allocated = bins[index].put(objects[i]);
+                if(is_allocated == true){
                     objects.erase(objects.begin() + i);
                     break;
                 }
+            }
+            if (is_allocated == false) {
+                break;
             }
         }
 
@@ -197,8 +202,8 @@ std::vector<double> calc_alpha(const std::vector<Bin> &bins){
         alpha[0] += bin.cores;
         alpha[1] += bin.mems;
     }
-    alpha[0] = 1 / alpha[0];
-    alpha[1] = 1 / alpha[1];
+    alpha[0] = 1.0 / alpha[0];
+    alpha[1] = 1.0 / alpha[1];
 
     return alpha;
 }
@@ -224,8 +229,8 @@ std::vector<double> calc_beta(const std::vector<Vm> &objects){
         beta[0] += vm.core;
         beta[1] += vm.mem;
     }
-    beta[0] = 1 / beta[0];
-    beta[1] = 1 / beta[1];
+    beta[0] = 1.0 / beta[0];
+    beta[1] = 1.0 / beta[1];
 
     return beta;
 }
