@@ -2,6 +2,8 @@
 // Created by ruiy on 18-4-18.
 //
 
+#include "ff_utils.h"
+
 /**
  * 计算加权系数alpha(j), j = 1..d
  * 该加权系数用于将多个维度资源变成一个维度资源
@@ -112,9 +114,9 @@ void calc_object_size(std::vector<Vm> &objects, const std::vector<double> &param
  * 计算bin的'size', 该size是对不同维度资源做加权得到, 即将多维度降到一维度
  * 加权系数有多种, 这个通过外界传入, 之所以由外界传入, 是因为这个系数可能由箱子计算得到, 也可能由物体计算得到, 封装在一起, 反而显得杂乱
  *
- * 如果is_priority为true, 则 size = max{ r[j] * alpha[j] }, 其中j = 1..d, 论文里面只给了alpha的情况, 没有提beta
- *
  * 这里由于维度只有2个, 所以直接加权求和即可
+ *
+ * 如果is_priority为true, 则 size = max{ r[j] * alpha[j] }, 其中j = 1..d, 论文里面只给了alpha的情况, 没有提beta
  *
  * @param objects
  * @param params 加权系数, alpha 或者 belta 或者 alpha / belta
@@ -129,3 +131,52 @@ void calc_bin_size(std::vector<Bin> &bins, const std::vector<double> &params, bo
         }
     }
 }
+
+
+/**
+ * 将object放入箱子序列中, 若可以放入, 则放入, 返回true; 若不能放入, 则返回false
+ * @param object
+ * @param bins
+ * @return
+ */
+bool put_bins(const Vm &object, std::vector<Bin> &bins){
+    for (Bin &bin: bins) {
+        if (bin.put(object)) return true;
+    }
+    return false;
+}
+
+/**
+ * 从bins中返回size最小的那个bin的索引
+ * @param bins
+ * @return
+ */
+int get_min_size_bin(const std::vector<Bin> &bins){
+    int t_min_size = INT32_MAX;
+    int index;
+    for (int i=0;i<bins.size();i++) {
+        if (bins[i].size < t_min_size) {
+            t_min_size = bins[i].size;
+            index = i;
+        }
+    }
+    return index;
+}
+
+/**
+ * 从bins中返回size最大的那个bin的索引
+ * @param bins
+ * @return
+ */
+int get_max_size_bin(const std::vector<Bin> &bins){
+    int t_max_size = 0;
+    int index;
+    for (int i=0;i<bins.size();i++) {
+        if (bins[i].size > t_max_size) {
+            t_max_size = bins[i].size;
+            index = i;
+        }
+    }
+    return index;
+}
+

@@ -19,6 +19,7 @@ public:
     double cores; // [剩余]核心数目, 之所以用double, 是因为可能会对各个维度资源做一些预处理(如归一化等等)
     double mems; // [剩余]内存大小
     double size; // 多维度计算得到一维度
+    Bin() = default;
     Bin(double cores, double mems);
 
     bool put(Vm object);
