@@ -71,32 +71,35 @@ std::string format_allocate_res(std::vector<std::map<int,int>> result_code)
 std::string format_allocate_res(std::vector<Bin> bins)
 {
     std::string result;
-    result = std::to_string(bins.size());
-    result += "\n";
-    int cnt = 0;
 
-    for (auto &bin: bins) {
+    /**
+     * 统计各个物理服务器的结果
+     */
+    std::map<int, std::vector<std::map<int, int>>> res;
+    for (Bin &bin: bins) {
 
-        cnt++;
+        if (bin.objects.empty()) continue;
 
-        result += std::to_string(cnt);
-        std::map<int, int> bin_objects; // 对一个箱子中的各个虚拟机计数
-
-        for (auto object: bin.objects) {
-            bin_objects[object.type]++;
+        std::map<int, int> one_bin_res;
+        for (Vm &vm: bin.objects) {
+            one_bin_res[vm.type]++;
         }
+        res[bin.type].push_back(one_bin_res);
+    }
 
-        for (auto &bin_object: bin_objects)
-        {
-            result += " ";
-            result += "flavor";
-            result += std::to_string(bin_object.first);
-            result += " ";
-            result += std::to_string(bin_object.second);
+    for (auto &servers: res) {
+        result += BasicInfo::server_type[servers.first] + " " + std::to_string(servers.second.size()) + "\n"; // 该种类服务器有多少个
+        int cnt = 0;
+        for (auto &vm_res: servers.second) { // 遍历该种类的物理服务器
+            result +=  BasicInfo::server_type[servers.first] + "-" + std::to_string(++cnt);
+            for (auto &vm: vm_res) { // 遍历该物理服务器上各个的数目
+                result += " flavor" + std::to_string(vm.first) + " " + std::to_string(vm.second);
+            }
+            result += "\n";
         }
-
         result += "\n";
     }
+
     return result;
 }
 

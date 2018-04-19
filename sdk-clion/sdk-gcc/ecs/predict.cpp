@@ -49,6 +49,8 @@ int BasicInfo::need_predict_cnt;
 int BasicInfo::extra_need_predict_day; // 需要额外预测的天数
 int BasicInfo::extra_need_predict_cnt; // 需要额外预测的次数, 当粒度为天时, 同上(extra_need_predict_day)
 
+std::map<int, std::string> BasicInfo::server_type = {{TYPE_GENERAL, "General"}, {TYPE_LARGE, "Large-Memory"}, {TYPE_HIGH, "High-Performance"}};
+
 // no usage
 Server BasicInfo::server_info;
 
@@ -262,19 +264,20 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     *****  复赛分配  **************************************************************
     **************************************************************************/
 
-//    std::vector<Vm> objects = serialize(predict_data);
-//    alloc_by_ff_variant_1th(objects);
+    std::vector<Vm> objects = serialize(predict_data);
+    std::vector<Bin> allocate_result = alloc_by_ff_variant_1th(objects);
+    std::string result2 = format_allocate_res(allocate_result);
     /**
      * 将预测结果, 格式化为字符串
      */
 
-//    std::string result1 = format_predict_res(predict_data);
-//    std::string result = result1+result2;
+    std::string result1 = format_predict_res(predict_data);
+    std::string result = result1+result2;
 
     // 需要输出的内容
     char * result_file = (char *)"17\n\n0 8 0 20";
     // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
-//    write_result(result.c_str(), filename);
+    write_result(result.c_str(), filename);
     //0分答案
-    write_result(result_file, filename);
+//    write_result(result_file, filename);
 }

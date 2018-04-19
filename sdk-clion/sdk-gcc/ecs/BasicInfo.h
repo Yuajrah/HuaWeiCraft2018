@@ -29,6 +29,7 @@ public:
     static int extra_need_predict_day; // 需要额外预测的天数
     static int extra_need_predict_cnt; // 需要额外预测的次数, 当粒度为天时, 同上(extra_need_predict_day)
 
+    static std::map<int, std::string> server_type; // 不同物理服务器的名称和对应的编号
 
     /**
      * no usage

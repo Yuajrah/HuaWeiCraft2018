@@ -26,6 +26,10 @@ std::vector<Bin> alloc_by_ff_variant_1th (std::vector<Vm> objects) {
         bins_max_num[server.first] = std::ceil(std::max(core_demand_sum / server.second.core  , mem_demand_sum / server.second.mem));
     }
 
+//    for (auto &server: BasicInfo::server_infos) {
+//        bins_max_num[server.first] = 2;
+//    }
+
     std::vector<Bin> bins;
     for (auto &t: bins_max_num) {
         for (int i=0;i<t.second;i++) {
