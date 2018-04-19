@@ -139,28 +139,28 @@ std::vector<Vm> random_permutation(std::vector<Vm> objects) {
 }
 
 
-/**
- * 把背包的结果转化为bin的格式
- * @param packing_result
- * @return
- */
-std::vector<Bin> vector_res_to_bins_res(std::vector<std::map<int,int>> packing_result){
-    std::vector<Bin> bins;
-    int cnt = 0;
-    for (auto &server: packing_result) {
-        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
-        for (auto &vm: server) {
-            Vm t_vm = BasicInfo::vm_info[vm.first];
-            for (int i=0;i<vm.second;i++) {
-                t_vm.no = cnt++;
-                t_vm.type = vm.first;
-                bin.put(t_vm);
-            }
-        }
-        bins.push_back(bin);
-    }
-    return bins;
-}
+///**
+// * 把背包的结果转化为bin的格式
+// * @param packing_result
+// * @return
+// */
+//std::vector<Bin> vector_res_to_bins_res(std::vector<std::map<int,int>> packing_result){
+//    std::vector<Bin> bins;
+//    int cnt = 0;
+//    for (auto &server: packing_result) {
+//        Bin bin(BasicInfo::server_info.core, BasicInfo::server_info.mem);
+//        for (auto &vm: server) {
+//            Vm t_vm = BasicInfo::vm_info[vm.first];
+//            for (int i=0;i<vm.second;i++) {
+//                t_vm.no = cnt++;
+//                t_vm.type = vm.first;
+//                bin.put(t_vm);
+//            }
+//        }
+//        bins.push_back(bin);
+//    }
+//    return bins;
+//}
 
 /**
  * 对数据进行进一步处理

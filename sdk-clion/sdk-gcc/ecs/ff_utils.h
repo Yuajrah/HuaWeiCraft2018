@@ -7,7 +7,12 @@
 
 
 #include <vector>
+#include <algorithm>
 #include "Bin.h"
+#include "type_def.h"
+#include "BasicInfo.h"
+
+std::vector<Bin> ff(std::vector<Bin> bins, std::vector<Vm> objects);
 
 std::vector<double> calc_alpha(const std::vector<Bin> &bins);
 std::vector<double> calc_beta(const std::vector<Vm> &objects);
@@ -18,4 +23,10 @@ bool put_bins(const Vm &object, std::vector<Bin> &bins);
 
 int get_min_size_bin(const std::vector<Bin> &bins);
 int get_max_size_bin(const std::vector<Bin> &bins);
+
+bool mrp_ff(std::vector<Bin> &bins, std::vector<Vm> objects);
+bool mrp_ffd(std::vector<Bin> &bins, std::vector<Vm> objects);
+bool mrp_bfd_item_centric(std::vector<Bin> &bins, std::vector<Vm> objects);
+bool mrp_bfd_bin_centric(std::vector<Bin> &bins, std::vector<Vm> objects);
+
 #endif //SDK_CLION_FF_UTILS_H

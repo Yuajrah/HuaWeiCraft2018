@@ -4,8 +4,8 @@
 
 #include "Chromo.h"
 #include "Random.h"
-#include "ff.h"
 #include "BasicInfo.h"
+#include "ff_utils.h"
 #include <algorithm>
 #include <iterator>
 

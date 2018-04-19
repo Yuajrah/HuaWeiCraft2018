@@ -5,9 +5,9 @@
 #include <algorithm>
 #include  "GGA.h"
 #include "data_format_change.h"
-#include "ff.h"
 #include "Random.h"
 #include "BasicInfo.h"
+#include "ff_utils.h"
 
 GGA::GGA(std::vector<Vm> objects, int pop_size, int cross_num, double p_mutation, int mutation_num, int inversion_num, int iter_num):
         objects(objects),
