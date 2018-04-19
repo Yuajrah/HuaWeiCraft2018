@@ -563,6 +563,9 @@ double calc_alloc_score(std::vector<Bin> bins){
     double core_sum = 0.0;
     double mem_sum = 0.0;
     for (Bin &bin: bins) {
+        if (bin.objects.empty()) {
+            continue;
+        }
         core_residual += bin.cores;
         mem_residual += bin.mems;
         core_sum += BasicInfo::server_infos[bin.type].core;
