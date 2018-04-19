@@ -551,3 +551,23 @@ void get_scores_f(std::map<int, int>&predict_data, Server server, int number)
     double percent = (total_need+0.0)/total_allocate;
     printf("allocate score = %f\n", percent);
 }
+
+/**
+ * 计算分配得分
+ * @param bins
+ */
+double calc_alloc_score(std::vector<Bin> bins){
+    double core_residual = 0.0;
+    double mem_residual= 0.0;
+
+    double core_sum = 0.0;
+    double mem_sum = 0.0;
+    for (Bin &bin: bins) {
+        core_residual += bin.cores;
+        mem_residual += bin.mems;
+        core_sum += BasicInfo::server_infos[bin.type].core;
+        mem_sum += BasicInfo::server_infos[bin.type].mem;
+    }
+    double res = ((core_sum - core_residual) / core_sum + (mem_sum - mem_residual) / mem_sum ) / 2.0;
+    return res;
+}

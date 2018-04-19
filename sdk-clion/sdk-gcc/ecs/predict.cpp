@@ -273,6 +273,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::vector<Bin> allocate_result;
 //    allocate_result = ff({}, objects);
     allocate_result = alloc_by_ff_variant_1th(objects);
+    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
     std::string result2 = format_allocate_res(allocate_result);
     /**
      * 将预测结果, 格式化为字符串

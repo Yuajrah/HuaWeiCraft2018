@@ -9,6 +9,8 @@
 #include <map>
 #include "math_utils.h"
 #include "type_def.h"
+#include "Bin.h"
+
 /**
  *自协方差 AutoCov[k] = E((x[i] - u)(x[i-k] - u))
  *自相关系数 AutoCov[k] = AutoCov[k] / AutoCov[0]
@@ -103,6 +105,12 @@ std::vector<std::vector<double>> inv_lu(std::vector<std::vector<double>> a);
  * @param target
  */
 void get_scores_f(std::map<int, int>&predict_data, Server server, int number);
+
+/**
+ * 计算分配得分
+ * @param bins
+ */
+double calc_alloc_score(std::vector<Bin> bins);
 #endif //SDK_GCC_MATH_UTILS_H
 
 
