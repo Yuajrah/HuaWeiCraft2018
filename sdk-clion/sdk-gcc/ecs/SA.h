@@ -8,7 +8,6 @@
 
 class SA {
     std::vector<Bin> initial_bins;
-    std::vector<Bin> best_solution;
     double calc_cost(const std::vector<Bin> &bins);
     std::vector<std::vector<Bin>> one_way_transfer(const std::vector<Bin> &bins);
     double calc_t0();
@@ -16,9 +15,12 @@ class SA {
     double alpha;
     double beta;
     double delta;
+    std::vector<Bin> best_solution;
+
 public:
     SA(std::vector<Bin> initial_bins, double alpha, double beta, double delta);
     void start();
+    std::vector<Bin> get_best_solution();
 };
 
 
