@@ -15,8 +15,9 @@ class SA {
     double t0;
     double alpha;
     double beta;
+    double delta;
 public:
-    SA(std::vector<Bin> initial_bins, double alpha, double beta);
+    SA(std::vector<Bin> initial_bins, double alpha, double beta, double delta);
     void start();
 };
 

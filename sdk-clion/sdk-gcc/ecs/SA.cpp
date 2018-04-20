@@ -8,11 +8,17 @@
 #include "ff_utils.h"
 #include <algorithm>
 
-SA::SA(std::vector<Bin> initial_bins, double alpha, double beta)
-        :initial_bins(initial_bins), alpha(alpha), beta(beta){}
+SA::SA(std::vector<Bin> initial_bins, double alpha, double beta, double delta)
+        :initial_bins(initial_bins), alpha(alpha), beta(beta), delta(delta){}
 
 double SA::calc_cost(const std::vector<Bin> &bins) {
-    return 1 - calc_alloc_score(bins);
+    double alpha_penalty = 0.0;
+    double beta_penalty = 0.0;
+    for (const Bin &bin: bins) {
+        alpha_penalty += std::max(std::max(bin.cores / BasicInfo::server_infos[bin.type].core, bin.mems / BasicInfo::server_infos[bin.type].mem), 0.0);
+        beta_penalty += std::max(std::max(-bin.cores / BasicInfo::server_infos[bin.type].core, -bin.mems / BasicInfo::server_infos[bin.type].mem), 0.0);
+    }
+    return 1 - calc_alloc_score(bins) + alpha * alpha_penalty + beta_penalty * beta_penalty;
 }
 
 /**
@@ -42,7 +48,7 @@ std::vector<std::vector<Bin>> SA::one_way_transfer(const std::vector<Bin> &bins)
 
 double SA::calc_t0() {
     double initial_c = calc_cost(initial_bins);
-    std::vector<std::vector<Bin>> neighborhood_states;
+    std::vector<std::vector<Bin>> neighborhood_states = one_way_transfer(initial_bins);
 
     int increase_cnt = 0;
     double increase_sum = 0;
@@ -59,6 +65,7 @@ double SA::calc_t0() {
 
     double acceptance_ratio = 0.90;
     double t0 = - increase_sum / std::log((acceptance_ratio * (increase_cnt + decrease_cnt) - decrease_cnt ) / increase_cnt);
+    return t0;
 }
 
 void SA::start() {
@@ -70,18 +77,40 @@ void SA::start() {
 
         if (BasicInfo::is_stop()) break;
 
+        double standard_deviation = 0;
+        double mean = 0;
+        std::vector<double> delta_cs;
+
         std::vector<std::vector<Bin>> neighborhood_states = one_way_transfer(S);
-        int rnd = Random::random_int(0, neighborhood_states.size()-1);
-        double delta_c = calc_cost(neighborhood_states[rnd]) - calc_cost(S);
-        if (delta_c < 0) {
-            S.assign(neighborhood_states[rnd].begin(), neighborhood_states[rnd].end());
-            if (is_feasible(S)) {
-                best_solution.assign(S.begin(), S.end());
-            }
-        } else {
-            if (Random::random_double(0, 1) <= std::exp(-delta_c / t)) {
+
+        for (int i=0;i<neighborhood_states.size();i++) {
+
+            int rnd = Random::random_int(0, neighborhood_states.size()-1);
+            double delta_c = calc_cost(neighborhood_states[rnd]) - calc_cost(S);
+            delta_cs.push_back(delta_c);
+            mean += delta_c;
+
+            if (delta_c < 0) {
                 S.assign(neighborhood_states[rnd].begin(), neighborhood_states[rnd].end());
+                if (is_feasible(S)) {
+                    best_solution.assign(S.begin(), S.end());
+                }
+            } else {
+                if (Random::random_double(0, 1) <= std::exp(-delta_c / t)) {
+                    S.assign(neighborhood_states[rnd].begin(), neighborhood_states[rnd].end());
+                }
             }
         }
+
+        S = clear_empty_bin(S);
+
+        mean = mean / neighborhood_states.size();
+
+        for (int i=0;i<delta_cs.size();i++) {
+            standard_deviation += pow((delta_cs[i] - mean), 2);
+        }
+        standard_deviation /= delta_cs.size();
+
+        t = t / (1 + t * std::log(1 + delta) / (3 * standard_deviation));
     }
 }
