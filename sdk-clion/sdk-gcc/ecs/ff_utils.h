@@ -30,4 +30,7 @@ bool mrp_bf(std::vector<Bin> &bins, std::vector<Vm> objects);
 bool mrp_bfd_item_centric(std::vector<Bin> &bins, std::vector<Vm> objects);
 bool mrp_bfd_bin_centric(std::vector<Bin> &bins, std::vector<Vm> objects);
 
+bool is_feasible(std::vector<Bin> &bins);
+
+
 #endif //SDK_CLION_FF_UTILS_H

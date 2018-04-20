@@ -41,3 +41,11 @@ void Bin::remove(int index) {
     objects.erase(objects.begin() + index);
 
 }
+
+/**
+ * 判断Bin是否可行
+ */
+bool Bin::is_feasible() {
+    // 如果剩余资源均大于等于0, 则可行; 否则不可行
+    return cores >=0 && mems >= 0;
+}

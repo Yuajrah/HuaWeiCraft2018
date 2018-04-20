@@ -4,6 +4,8 @@
 
 #include "SA.h"
 #include "math_utils.h"
+#include "Random.h"
+#include "ff_utils.h"
 #include <algorithm>
 
 SA::SA(std::vector<Bin> initial_bins, double alpha, double beta)
@@ -60,4 +62,26 @@ double SA::calc_t0() {
 }
 
 void SA::start() {
+    double t0 = calc_t0();
+    double t = t0;
+    std::vector<Bin> S(initial_bins);
+    best_solution.assign(S.begin(), S.end());
+    while (true) {
+
+        if (BasicInfo::is_stop()) break;
+
+        std::vector<std::vector<Bin>> neighborhood_states = one_way_transfer(S);
+        int rnd = Random::random_int(0, neighborhood_states.size()-1);
+        double delta_c = calc_cost(neighborhood_states[rnd]) - calc_cost(S);
+        if (delta_c < 0) {
+            S.assign(neighborhood_states[rnd].begin(), neighborhood_states[rnd].end());
+            if (is_feasible(S)) {
+                best_solution.assign(S.begin(), S.end());
+            }
+        } else {
+            if (Random::random_double(0, 1) <= std::exp(-delta_c / t)) {
+                S.assign(neighborhood_states[rnd].begin(), neighborhood_states[rnd].end());
+            }
+        }
+    }
 }

@@ -172,7 +172,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 复赛对应的inputfile为 input_file_semi.txt
      *
      */
-    int debug = 0;
+    int debug = 2;
 
     if (debug == 0) { // 上传所用
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num);

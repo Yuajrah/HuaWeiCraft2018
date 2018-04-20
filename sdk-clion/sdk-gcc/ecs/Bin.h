@@ -26,6 +26,8 @@ public:
     bool put(Vm object);
     void put_force(const Vm &object);
     void remove(int index);
+
+    bool is_feasible();
 };
 
 #endif //SDK_CLION_BIN_H
