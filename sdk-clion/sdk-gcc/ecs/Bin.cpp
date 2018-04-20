@@ -21,3 +21,23 @@ bool Bin::put(Vm object) {
     }
     return false;
 }
+
+/**
+ * 不管能否放入, 强行塞入
+ */
+void Bin::put_force(const Vm &object) {
+    objects.push_back(object);
+    cores -= object.core;
+    mems -= object.mem;
+}
+
+/**
+ * 去除该箱子中第index个物体
+ * @param index
+ */
+void Bin::remove(int index) {
+    cores += objects[index].core;
+    mems += objects[index].mem;
+    objects.erase(objects.begin() + index);
+
+}

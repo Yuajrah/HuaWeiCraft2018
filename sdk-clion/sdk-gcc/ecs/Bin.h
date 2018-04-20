@@ -24,6 +24,8 @@ public:
     Bin(int type, double cores, double mems);
 
     bool put(Vm object);
+    void put_force(const Vm &object);
+    void remove(int index);
 };
 
 #endif //SDK_CLION_BIN_H
