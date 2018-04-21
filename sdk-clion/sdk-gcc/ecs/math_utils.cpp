@@ -574,3 +574,4 @@ double calc_alloc_score(std::vector<Bin> bins){
     double res = ((core_sum - core_residual) / core_sum + (mem_sum - mem_residual) / mem_sum ) / 2.0;
     return res;
 }
+

@@ -5,6 +5,8 @@
 #include "AR.h"
 #include "math_utils.h"
 #include "type_def.h"
+#include "data_format_change.h"
+#include "data_preprocess.h"
 #include <cfloat>
 #include <cmath>
 #include <cstdio>
@@ -27,22 +29,23 @@ AR::AR(std::vector<double> data):data(data){};
  *      2. 若
  *
  */
-void AR::fit(std::string ic, int max_lag, std::vector<int> lag_unequal) {
+void AR::fit(std::string ic, int is_interval, int max_lag, std::vector<int> lag_unequal) {
 
+    this->is_interval = is_interval;
     if (max_lag == -1) {
         max_lag = int(round(12 * pow((data.size() / 100.0), 1.0/4)));
     }
 
     if (ic=="none") {
         this->best_p = max_lag;
-        std::pair<std::vector<double>, double> a_ssr = least_squares(this->data, max_lag);
+        std::pair<std::vector<double>, double> a_ssr = least_squares(this->data, max_lag, is_interval);
         this->a = a_ssr.first;
         return;
     } else if (ic=="aic" || ic=="bic" || ic=="hqic") {
         int len = this->data.size();
         double min_ic = DBL_MAX;
         for (int lag=1;lag<=max_lag;lag++) {
-            std::pair<std::vector<double>, double> a_ssr = least_squares(std::vector<double>(this->data.begin()+max_lag-lag, this->data.end()), lag);
+            std::pair<std::vector<double>, double> a_ssr = least_squares(std::vector<double>(this->data.begin()+max_lag-lag, this->data.end()), lag, is_interval);
             double sigma2 = a_ssr.second / (len - max_lag);
 
             double ic_val;
@@ -59,7 +62,7 @@ void AR::fit(std::string ic, int max_lag, std::vector<int> lag_unequal) {
                 this->best_p = lag;
             }
         }
-        std::pair<std::vector<double>, double> a_ssr = least_squares(this->data, this->best_p);
+        std::pair<std::vector<double>, double> a_ssr = least_squares(this->data, this->best_p, is_interval);
         this->a = a_ssr.first;
         return;
     }
@@ -116,10 +119,19 @@ std::vector<double> AR::get_auto_cor(std::vector<double> auto_cov){
  * a = inv(t(x) _*_ x) _*_ t(x) _*_ Y
  * e = sum(a) / (n-p)
  */
-std::pair<std::vector<double>, double> AR::least_squares(std::vector<double> data, int lag){
-    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> form_data = format_data(data, lag);
-    std::vector<std::vector<double>> x = form_data.first;
-    std::vector<std::vector<double>> y = form_data.second;
+std::pair<std::vector<double>, double> AR::least_squares(std::vector<double> data, int lag, int is_interval){
+    std::vector<std::vector<double>> x;
+    std::vector<std::vector<double>> y;
+    if (is_interval == 0) {
+        std::pair<std::vector<std::vector<double>>, std::vector<double>> form_data = ::format_data(data, lag, is_interval, 1);
+        x = form_data.first;
+        y.push_back(form_data.second);
+        y = t(y);
+    } else {
+        std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> form_data = format_data(data, lag);
+        x = form_data.first;
+        y = form_data.second;
+    }
 
     std::vector<std::vector<double> > a, tx,invx,tmp;
     tx = t(x);
@@ -168,10 +180,11 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AR
     std::vector<double> tmpy;
     for(int i=lag;i<data.size();i++){
         tmpy.push_back(data[i]);
-        std::vector<double> tmp{1};
-        for(int j=i-1;j>=i-lag;j--){
+        std::vector<double> tmp;
+        for(int j=i-lag;j<=i-1;j++){
             tmp.push_back(data[j]);
         }
+        tmp.push_back(1);
         x.push_back(tmp);
     }
     y.push_back(tmpy);
@@ -187,21 +200,39 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AR
 
 std::vector<double> AR::predict(int k, int diff_day){ // 预测接下来k天的数据
     std::vector<double> data_copy(data);
-    for(int i=0;i<k;i++){
-        double s = a[0];
-        int t = data_copy.size();
-        for(int j=0;j<best_p;j++){
-            s += a[j+1] * data_copy[t-j-1];
+    std::vector<double> predict_res;
+    if (is_interval) {
+        for(int i=0;i<k;i++){
+            double s = a.back();
+            int t = data_copy.size();
+            for(int j=0;j<best_p;j++){
+                s += a[a.size() - j - 2] * data_copy[t-j-1];
+            }
+            if (diff_day > 0) { // 如果做了差分, 则负值不归0
+                data_copy.push_back(s);
+            } else {
+                data_copy.push_back(s < 0? 0: s);
+            }
         }
-        if (diff_day > 0) { // 如果做了差分, 则负值不归0
-            data_copy.push_back(s);
-        } else {
-            data_copy.push_back(s < 0? 0: s);
+        predict_res.assign(data_copy.begin() + data.size(), data_copy.end());
+    } else {
+        predict_res.assign(k, 0.0);
+        for(int i=0;i<k;i++){
+            double s = a.back();
+            int t = data_copy.size();
+            for(int j=0;j<best_p;j++){
+                s += a[a.size() - j - 2] * data_copy[t-j-1];
+            }
+            if (diff_day > 0) { // 如果做了差分, 则负值不归0
+                predict_res[k-i-1] = s;
+            } else {
+                predict_res[k-i-1] = s < 0? 0: s;
+            }
+            data_copy.pop_back();
         }
     }
 
 
-    std::vector<double> predict_res(data_copy.begin() + data.size(), data_copy.end());
     this->res.assign(predict_res.begin(), predict_res.end());
 
     return predict_res;
