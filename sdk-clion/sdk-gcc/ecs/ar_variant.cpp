@@ -34,12 +34,13 @@ std::map<int, int> predict_by_ar_1th (std::map<int, std::vector<double>> train_d
         std::vector<double> after_ma_data = ma(train_data[t.first], 6);
         //after_ma_data = split_high(after_ma_data,4);
         AR ar_model(after_ma_data);
+//        ar_model.fit("none", BasicInfo::need_predict_cnt + BasicInfo::extra_need_predict_cnt - 1);
         ar_model.fit("none");
         // ar_model.fit("aic");
-        ar_model.predict(BasicInfo::extra_need_predict_cnt + BasicInfo::need_predict_cnt);
-        // ar_model.print_model_info();
+        ar_model.predict(BasicInfo::need_predict_cnt);
+         ar_model.print_model_info();
         auto predict_res = ar_model.get_res();
-        predict_data[t.first] = std::max(round(accumulate(predict_res.begin() + BasicInfo::extra_need_predict_cnt, predict_res.end(), 0.0)), 0.0);
+        predict_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), 0.0)), 0.0);
     }
     return predict_data;
 }
@@ -114,7 +115,7 @@ std::map<int, int> predict_by_ar_5th(std::map<int, Vm> vm_info, std::map<int, st
         double s = 0;
         for (int i=0;i<mean_cnt;i++) {
             AR ar_model(after_ma_data);
-            ar_model.fit("aic", -1, exist_p);
+            ar_model.fit("aic", false, -1, exist_p);
 
             exist_p.push_back(ar_model.get_p());
 
