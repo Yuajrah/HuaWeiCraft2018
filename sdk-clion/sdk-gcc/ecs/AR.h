@@ -11,7 +11,7 @@
 #include "type_def.h"
 class AR {
 private:
-
+    bool is_interval;
     std::vector<double> get_auto_cov();
     std::vector<double> get_auto_cor(std::vector<double> auto_cov);
 
@@ -27,12 +27,12 @@ private:
 
 public:
     AR(std::vector<double>);
-    void fit(std::string ic="none", int max_lag=-1, std::vector<int> lag_unequal={});
+    void fit(std::string ic="none", int is_interval = 0, int max_lag=-1, std::vector<int> lag_unequal={});
     std::vector<double> predict(int k, int diff_day=0);
     void print_model_info();
 
     double get_bias();
-    std::pair<std::vector<double>, double> least_squares(std::vector<double> data, int lag);
+    std::pair<std::vector<double>, double> least_squares(std::vector<double> data, int lag, int is_interval=false);
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> format_data(std::vector<double> data, int lag);
 
     inline int get_p () {return best_p;}

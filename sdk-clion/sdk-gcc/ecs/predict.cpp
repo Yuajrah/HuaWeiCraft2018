@@ -26,6 +26,7 @@
 #include "math_utils.h"
 #include "noise.h"
 #include "ff_utils.h"
+#include "FFOD.h"
 
 
 /*
@@ -49,7 +50,7 @@ int BasicInfo::need_predict_cnt;
 
 int BasicInfo::extra_need_predict_day; // 需要额外预测的天数
 int BasicInfo::extra_need_predict_cnt; // 需要额外预测的次数, 当粒度为天时, 同上(extra_need_predict_day)
-
+int BasicInfo::sum_need_predict_day;
 std::map<int, std::string> BasicInfo::server_type = {{TYPE_GENERAL, "General"}, {TYPE_LARGE, "Large-Memory"}, {TYPE_HIGH, "High-Performance"}};
 
 // no usage
@@ -172,28 +173,20 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 复赛对应的inputfile为 input_file_semi.txt
      *
      */
-    int debug = 0;
 
-    if (debug == 0) { // 上传所用
+    if (getenv("DATA_SET") == NULL) {
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
         BasicInfo::extra_need_predict_day = get_days(date_end, forecast_start_date) - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
-    } else if (debug == 1) {
-        train_data = get_esc_data(data, date_start, "2015-05-24 00:00:00", data_num);
-        actual_data = get_sum_data(data, "2015-05-24 00:00:00", "2015-05-31 00:00:00", data_num);
-    } else if (debug == 2) { // 16年的数据集
+    } else if (strcmp(getenv("DATA_SET"), "2") == 0){
         train_data = get_esc_data(data, date_start, "2016-01-15 00:00:00", data_num);
         actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
 
         BasicInfo::extra_need_predict_day = get_days("2016-01-14 00:00:00", "2016-01-21 00:00:00") - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
-
-    } else if (debug == 3) {
-        train_data = get_esc_data(data, date_start, "2015-08-10 00:00:00", data_num);
-        actual_data = get_sum_data(data, "2015-08-10 00:00:00", "2015-08-17 00:00:00", data_num);
     }
 
-
+    BasicInfo::sum_need_predict_day = BasicInfo::need_predict_day + BasicInfo::extra_need_predict_day;
     /*************************************************************************
     *****  去噪声 **************************************************************
     **************************************************************************/
@@ -224,20 +217,23 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     * 使用随机森林进行预测
     * 有问题
     */
-//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, BasicInfo::need_predict_cnt);
+//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
 
+//    if (BasicInfo::extra_need_predict_cnt == 7) {
+//        return;
+//    }
 
-    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
+//    print_predict_score(actual_data, predict_data);
 
 
     /**
      * 线性回归
      */
-//    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::need_predict_cnt);
-//    print_predict_score(actual_data, predict_data);
+    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
+    print_predict_score(actual_data, predict_data);
 
 
     /**
@@ -254,7 +250,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
 
 //    std::map<int, int> predict_data = predict_by_svm(train_data);
-
+//
 //    print_predict_score(actual_data, predict_data);
 
     /**
@@ -268,6 +264,14 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /*************************************************************************
     *****  复赛分配  **************************************************************
     **************************************************************************/
+
+    /*
+     * FFOD
+     */
+//    std::vector<Vm> objects = serialize(predict_data);
+//    std::vector<Bin> allocate_result;
+//    allocate_result = alloc_by_ffod(objects);
+//    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
 
     /**
      * 背包
@@ -298,17 +302,24 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    allocate_result = alloc_by_ff_variant_1th(objects);
 //    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
 //    std::string result2 = format_allocate_res(allocate_result);
+
     /**
      * 将预测结果, 格式化为字符串
      */
-
     std::string result1 = format_predict_res(predict_data);
     std::string result = result1+result2;
 
     // 需要输出的内容
     char * result_file = (char *)"17\n\n0 8 0 20";
     // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
-    write_result(result.c_str(), filename);
+    if (BasicInfo::extra_need_predict_day == 0)
+    {
+        write_result(result.c_str(), filename);
+    }
+    else
+    {
+        write_result(result_file, filename);
+    }
     //0分答案
 //    write_result(result_file, filename);
 }

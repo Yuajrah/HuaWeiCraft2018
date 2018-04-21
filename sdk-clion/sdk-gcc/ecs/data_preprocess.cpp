@@ -352,3 +352,51 @@ std::vector<double> split_high(std::vector<double>data, double rate)
     }
     return result;
 }
+
+/**
+ *
+ * @param data
+ * @param lag
+ * @param interval
+ * @return
+ */
+std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std::vector<double> data, int lag, int interval, bool constant){
+
+
+    std::vector<double> y; //y = [data[p+1, ..., n]]
+    std::vector<std::vector<double> > x;
+/**
+[ data[p, ..., 1] ] p+1
+[ data[p+1, ..., 2] ] p+2
+[ data[p+2, ..., 3] ] p+3
+.
+.
+.
+[ data[n-1, ..., n-p] ] n
+*/
+
+/**
+[ data[1, ..., p] ] p+interval+1
+[ data[2, ..., p+1] ] p+interval+2
+[ data[3, ..., p+2] ] p+interval+3
+.
+.
+.
+[ data[n-p-interval, ..., n-1-interval] ] n
+*/
+    for(int i=lag;i<data.size()-interval;i++){
+        y.push_back(data[i+interval]);
+
+        std::vector<double> tmp;
+        for(int j=i-lag;j<=i-1;j++){
+            tmp.push_back(data[j]);
+        }
+
+        if (constant) {
+            tmp.push_back(1);
+        }
+
+        x.push_back(tmp);
+    }
+    return {x, y};
+}
