@@ -27,7 +27,8 @@ std::map<int, int> predict_by_knn (std::map<int, Vm> vm_info, std::map<int, std:
             ecs_sum += tmp_predict;
         }
             //result[t.first] = predict_ecs_data[0]*need_predict_day*2;
-            result[t.first] = (int) ecs_sum;
+        ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
+        result[t.first] = round(std::max(0.0, ecs_sum));
     }
 
     return result;
@@ -92,7 +93,8 @@ std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std
             predict_ecs_data.push_back(tmp_predict);
             ecs_sum += tmp_predict;
         }
-        result[t.first] = (int)(predict_ecs_data[need_predict_day-1]*need_predict_day);
+        ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
+        result[t.first] = round(std::max(0.0, ecs_sum));
     }
 
     return result;
@@ -201,7 +203,7 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         }
         //ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.begin()+ BasicInfo::need_predict_day, 0.0);
         ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
-        result[t.first] = round(std::max(0.0, ecs_sum));
+        result[t.first] = round(0.9*std::max(0.0, ecs_sum));
     }
 
     return result;
