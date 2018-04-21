@@ -173,25 +173,16 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 复赛对应的inputfile为 input_file_semi.txt
      *
      */
-    int debug = 2;
-
-    if (debug == 0) { // 上传所用
+    if (getenv("DATA_SET") == NULL) {
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
         BasicInfo::extra_need_predict_day = get_days(date_end, forecast_start_date) - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
-    } else if (debug == 1) {
-        train_data = get_esc_data(data, date_start, "2015-05-24 00:00:00", data_num);
-        actual_data = get_sum_data(data, "2015-05-24 00:00:00", "2015-05-31 00:00:00", data_num);
-    } else if (debug == 2) { // 16年的数据集
+    } else if (strcmp(getenv("DATA_SET"), "2") == 0){
         train_data = get_esc_data(data, date_start, "2016-01-15 00:00:00", data_num);
         actual_data = get_sum_data(data, "2016-01-21 00:00:00", "2016-01-28 00:00:00", data_num);
 
         BasicInfo::extra_need_predict_day = get_days("2016-01-14 00:00:00", "2016-01-21 00:00:00") - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
-
-    } else if (debug == 3) {
-        train_data = get_esc_data(data, date_start, "2015-08-10 00:00:00", data_num);
-        actual_data = get_sum_data(data, "2015-08-10 00:00:00", "2015-08-17 00:00:00", data_num);
     }
 
 
@@ -229,9 +220,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
 
+//    if (BasicInfo::extra_need_predict_cnt == 7) {
+//        return;
+//    }
 
-    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
+//    print_predict_score(actual_data, predict_data);
 
 
     /**
@@ -254,9 +248,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-//    std::map<int, int> predict_data = predict_by_svm(train_data);
+    std::map<int, int> predict_data = predict_by_svm(train_data);
 
-//    print_predict_score(actual_data, predict_data);
+    print_predict_score(actual_data, predict_data);
 
     /**
      * 使用单独线性模型做预测
@@ -281,12 +275,15 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /**
      * 背包
      */
-//    BasicInfo::server_info = BasicInfo::server_infos[0];
-//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, BasicInfo::opt_object);
+
+//    Server server_info = BasicInfo::server_infos[0];
+//    packing pack(server_info, predict_data, BasicInfo::vm_info, 15);
+//    std::vector<std::map<int,int>> packing_result = pack.pack_item_compareA(server_info, predict_data);
+//
 //    std::vector<Bin> bins;
 //    int cnt = 0;
 //    for (auto &server: packing_result) {
-//        Bin bin(BasicInfo::server_info.type, BasicInfo::server_info.core, BasicInfo::server_info.mem);
+//        Bin bin(server_info.type, server_info.core, server_info.mem);
 //        for (auto &vm: server) {
 //            Vm t_vm = BasicInfo::vm_info[vm.first];
 //            for (int i=0;i<vm.second;i++) {
@@ -298,20 +295,20 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //        bins.push_back(bin);
 //    }
 //
-//    std::string result2 = format_allocate_res(bins);
+
 
     std::vector<Vm> objects = serialize(predict_data);
     std::vector<Bin> allocate_result;
-//    allocate_result = ff({}, objects);
+    allocate_result = ff({}, objects);
 
     allocate_result = alloc_by_ff_variant_1th(objects);
     printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
+    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 将预测结果, 格式化为字符串
      */
     std::string result1 = format_predict_res(predict_data);
-    std::string result2 = format_allocate_res(allocate_result);
     std::string result = result1+result2;
 
     // 需要输出的内容
