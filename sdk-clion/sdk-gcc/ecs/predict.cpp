@@ -270,6 +270,14 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     *****  复赛分配  **************************************************************
     **************************************************************************/
 
+    /*
+     * FFOD
+     */
+//    std::vector<Vm> objects = serialize(predict_data);
+//    std::vector<Bin> allocate_result;
+//    allocate_result = alloc_by_ffod(objects);
+//    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
+
     /**
      * 背包
      */
@@ -298,11 +306,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     allocate_result = alloc_by_ff_variant_1th(objects);
     printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
-    std::string result2 = format_allocate_res(allocate_result);
+
     /**
      * 将预测结果, 格式化为字符串
      */
     std::string result1 = format_predict_res(predict_data);
+    std::string result2 = format_allocate_res(allocate_result);
     std::string result = result1+result2;
 
     // 需要输出的内容

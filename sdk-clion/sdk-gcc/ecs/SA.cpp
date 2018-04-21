@@ -114,3 +114,7 @@ void SA::start() {
         t = t / (1 + t * std::log(1 + delta) / (3 * standard_deviation));
     }
 }
+
+std::vector<Bin> SA::get_best_solution(){
+    return best_solution;
+}
