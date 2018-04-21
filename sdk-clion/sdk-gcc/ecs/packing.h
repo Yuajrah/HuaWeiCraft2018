@@ -29,7 +29,8 @@ class packing {
     std::map<int,int> onepack_base(Server server, std::map<int, int> vm_num, int type);
     //完全背包方法，type为不同权重系数
     std::vector<std::map<int,int>> pack_base(Server, std::map<int, int> vm_num, int type);
-
+    //完全背包方法，type为paramA_type
+    std::vector<std::map<int,int>> pack_base(Server, std::map<int, int> vm_num);
     //一次背包函数
     void MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos);
     void ZeroOnePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos);
@@ -50,14 +51,16 @@ public:
     std::map<int,int> onepack_item(Server server, std::map<int, int> vm_num);
 
 
-    //一次背包方法，使用默认参数
+    //一次背包方法，使用默认参数,type = 2
     std::vector<std::map<int,int>> pack_item();
-    //一次背包方法，自定义参数,包括server信息和vm数量
-    std::vector<std::map<int,int>> pack_item(Server server, std::map<int, int> vm_num);
+    //一次背包方法，自定义参数,包括server信息和vm数量,type分为1和2,1表示比例和，2表示直和
+    std::vector<std::map<int,int>> pack_item(Server server, std::map<int, int> vm_num, int type);
+    //一次背包方法，执行两次，paramA系数不同，返回得分高的结果
+    std::vector<std::map<int,int>> pack_item_compareA(Server server, std::map<int, int> vm_num);
 
 
+    //获取背包方法的得分
     double get_score(std::map<int, int>vmnum, Server sv, int sv_num);
-
 
 
 

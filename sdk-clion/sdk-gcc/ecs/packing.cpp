@@ -42,14 +42,22 @@ void packing::set_paramA() {
 }
 
 
+
 std::vector<std::map<int,int>> packing::pack_item() {
-     return pack_item(server,vm_num);
+     return pack_item(server, vm_num, 2);
 }
 
-std::vector<std::map<int,int>> packing::pack_item(Server ser, std::map<int, int> vnum) {
+
+std::vector<std::map<int,int>> packing::pack_item(Server ser, std::map<int, int> vnum, int type) {
+    std::vector<std::map<int,int>>result_record_1;
+    result_record_1 = pack_base(ser, vnum, type);
+    return  result_record_1;
+}
+
+
+std::vector<std::map<int,int>> packing::pack_item_compareA(Server ser, std::map<int, int> vnum) {
     std::vector<std::map<int,int>>result_record_1;
     std::vector<std::map<int,int>>result_record_2;
-
     result_record_1 = pack_base(ser, vnum, 1);
     result_record_2 = pack_base(ser, vnum, 2);
 
@@ -114,7 +122,6 @@ std::vector<std::map<int,int>> packing::pack_base(Server server, std::map<int, i
         std::vector<std::vector<std::vector<int> > > used(vm_typenum+1, std::vector<std::vector<int> >(server.core+1, std::vector<int>(server.mem+1,0)));
 
 
-
         //一次二维多重背包循环,pos表示前pos个物品
         for(int pos = 1; pos <= vm_typenum; pos++){
             //获取当前虚拟机的CPU和MEM限制，同时当前虚拟机id为current_flavor->first
@@ -177,13 +184,14 @@ bool packing::check_vmnum_empty(std::vector<int> &temp) {
 std::vector<int> packing::get_path(std::vector<std::vector<std::vector<int> > > &used, std::map<int,Vm> vminfo, int U, int V)
 {
     //vm_typenum种物品选择了哪些
-    std::vector<int> choose_num(vm_typenum, 0);
+    std::vector<int> choose_num(vm_typenum+1, 0);
     std::map<int, Vm>::iterator current_flavor_info;
     for(int i=1; i<=vm_typenum; i++){
         choose_num[i] = used[i][U][V];
     }
     return choose_num;
 }
+
 
 void packing::CompletePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int pos)
 {
