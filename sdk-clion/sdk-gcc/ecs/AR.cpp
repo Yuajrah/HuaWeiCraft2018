@@ -123,7 +123,7 @@ std::pair<std::vector<double>, double> AR::least_squares(std::vector<double> dat
     std::vector<std::vector<double>> x;
     std::vector<std::vector<double>> y;
     if (is_interval == 0) {
-        std::pair<std::vector<std::vector<double>>, std::vector<double>> form_data = ::format_data(data, lag, is_interval, 1);
+        std::pair<std::vector<std::vector<double>>, std::vector<double>> form_data = ::format_data(data, lag, is_interval, true);
         x = form_data.first;
         y.push_back(form_data.second);
         y = t(y);
@@ -201,7 +201,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AR
 std::vector<double> AR::predict(int k, int diff_day){ // 预测接下来k天的数据
     std::vector<double> data_copy(data);
     std::vector<double> predict_res;
-    if (is_interval) {
+    if (is_interval == 0) {
         for(int i=0;i<k;i++){
             double s = a.back();
             int t = data_copy.size();
