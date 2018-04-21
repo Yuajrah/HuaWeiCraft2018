@@ -180,11 +180,19 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
     for (auto &t: vm_info) {
         std::vector<double> ecs_data = train_data[t.first];
         //printf("训练第%d种服务器：\n",t.first);
-        bool mv_flag = true;
-        int split_windows = get_split_window(ecs_data);
-        std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
-        std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
-        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
+//        bool mv_flag = true;
+//        int split_windows = get_split_window(ecs_data);
+//        std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
+//        std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
+//        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
+        int mvStep = 6;
+        double alpha = 0.5;
+        //std::string Mode = "Ma";
+        std::string Mode = "Smooth1";
+        usedData useddata = getData(ecs_data, Mode, mvStep, 0.5);
+        std::vector<std::vector<double>> train = useddata.trainData;
+        std::vector<double> target = useddata.targetData;
+        std::vector<double> frist_predict_data = useddata.fristPredictData;
         LR lr(train, target);
         lr.train();
         double ecs_sum = 0.0;
