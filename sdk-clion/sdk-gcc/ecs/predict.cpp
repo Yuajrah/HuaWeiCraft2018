@@ -173,6 +173,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 复赛对应的inputfile为 input_file_semi.txt
      *
      */
+
     if (getenv("DATA_SET") == NULL) {
         train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
         BasicInfo::extra_need_predict_day = get_days(date_end, forecast_start_date) - 1; // 间隔的天数
@@ -274,35 +275,32 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /**
      * 背包
      */
+    BasicInfo::server_info = BasicInfo::server_infos[0];
+    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data);
+    std::vector<Bin> bins;
+    int cnt = 0;
+    for (auto &server: packing_result) {
+        Bin bin(BasicInfo::server_info.type, BasicInfo::server_info.core, BasicInfo::server_info.mem);
+        for (auto &vm: server) {
+            Vm t_vm = BasicInfo::vm_info[vm.first];
+            for (int i=0;i<vm.second;i++) {
+                t_vm.no = cnt++;
+                t_vm.type = vm.first;
+                bin.put(t_vm);
+            }
+        }
+        bins.push_back(bin);
+    }
+    printf("\n allocated score = %f\n", calc_alloc_score(bins));
+    std::string result2 = format_allocate_res(bins);
 
-//    Server server_info = BasicInfo::server_infos[0];
-//    packing pack(server_info, predict_data, BasicInfo::vm_info, 15);
-//    std::vector<std::map<int,int>> packing_result = pack.pack_item_compareA(server_info, predict_data);
+//    std::vector<Vm> objects = serialize(predict_data);
+//    std::vector<Bin> allocate_result;
+////    allocate_result = ff({}, objects);
 //
-//    std::vector<Bin> bins;
-//    int cnt = 0;
-//    for (auto &server: packing_result) {
-//        Bin bin(server_info.type, server_info.core, server_info.mem);
-//        for (auto &vm: server) {
-//            Vm t_vm = BasicInfo::vm_info[vm.first];
-//            for (int i=0;i<vm.second;i++) {
-//                t_vm.no = cnt++;
-//                t_vm.type = vm.first;
-//                bin.put(t_vm);
-//            }
-//        }
-//        bins.push_back(bin);
-//    }
-//
-
-
-    std::vector<Vm> objects = serialize(predict_data);
-    std::vector<Bin> allocate_result;
-    allocate_result = ff({}, objects);
-
-    allocate_result = alloc_by_ff_variant_1th(objects);
-    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
-    std::string result2 = format_allocate_res(allocate_result);
+//    allocate_result = alloc_by_ff_variant_1th(objects);
+//    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
+//    std::string result2 = format_allocate_res(allocate_result);
 
     /**
      * 将预测结果, 格式化为字符串
