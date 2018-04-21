@@ -4,50 +4,65 @@
 
 #include "packing.h"
 #include <cstring>
+#include "BasicInfo.h"
 
-double score1,score2;
-
-//get Ai
-std::vector<double> getA(std::map<int, int> predict_data, std::map<int,Vm> vm_info)
-{
-    std::vector<double> A(2,0);
-    int count = 0;
-    for(auto &t: predict_data)
-    {
-        A[0] += (vm_info[t.first].core * t.second);
-        A[1] += (vm_info[t.first].mem * t.second);
-        count += t.second;
-    }
-    A[0] = A[0] * 1.0 / count;
-    A[1] = A[1] * 1.0 / count;
-    return A;
+packing::packing(Server server, std::map<int, int> vm_num, std::map<int,Vm> vm_info, int vmtypenum){
+    this->server = server;
+    this->vm_num = vm_num;
+    this->vm_info = vm_info;
+    vm_typenum = vmtypenum;
+    paramA[0] = 0;
+    paramA[1] = 0;
+    score[0] = 0;
+    score[1] = 0;
 }
 
-std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object){
+
+packing::packing(Server server, std::map<int, int> vm_num, std::map<int, Vm> vm_info) {
+    packing(server,vm_num,vm_info,18);
+}
+
+
+packing::packing(Server server, std::map<int, int> vm_num){
+    packing(server,vm_num,BasicInfo::vm_info,18);
+}
+
+void packing::set_paramA() {
+    int count = 0;
+    paramA[0] = 0;
+    paramA[1] = 0;
+    for(auto &t: vm_num)
+    {
+        paramA[0] += (vm_info[t.first].core * t.second);
+        paramA[1] += (vm_info[t.first].mem * t.second);
+        count += t.second;
+    }
+    paramA[0] = paramA[0] * 1.0 / count;
+    paramA[1] = paramA[1] * 1.0 / count;
+}
+
+
+std::vector<std::map<int,int>> packing::pack_item() {
+     return pack_item(server,vm_num);
+}
+
+std::vector<std::map<int,int>> packing::pack_item(Server ser, std::map<int, int> vnum) {
     std::vector<std::map<int,int>>result_record_1;
     std::vector<std::map<int,int>>result_record_2;
 
-	result_record_1 = packing(vm_info, server, predict_data, opt_object, 1);
-	result_record_2 = packing(vm_info, server, predict_data, opt_object, 2);
+    result_record_1 = pack_base(ser, vnum, 1);
+    result_record_2 = pack_base(ser, vnum, 2);
 
-	if(score1 >= score2){
-	    return result_record_2;
-	}else{
+    if(score[0] >= score[1]){
+        return result_record_2;
+    }else{
         return  result_record_1;
-	}
+    }
 }
 
 
-std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, char *opt_object, int value_type){
-    std::map<int, int> predict_data_tmp = predict_data;
-    //首先确定优化目标
-    int target;
-    const char * target_string  = "CPU\n";
-    if (strcmp(target_string, opt_object) == 0){
-        target = 0;//CPU
-    }else{
-        target = 1;//MEM
-    }
+std::vector<std::map<int,int>> packing::pack_base(Server server, std::map<int, int> vmnum, int type) {
+    std::map<int, int> vm_num_copy = vmnum;
 
     //保存最终结果的map，vector中的ID对应编号为多少的分配结果
     std::vector<std::map<int,int>>result_record;
@@ -55,24 +70,22 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
     int server_number = 0;
     std::priority_queue<Allocat_server> allocate_result;
     //归一化系数
-    std::vector<double> paramA = getA(predict_data,vm_info);
+    set_paramA();
 
-    //用来保存虚拟机的剩余数量，反向对应，比如tmp_vm_num[15]对应vm1，tmp_vm_num[1]对应vm15
-    std::vector<int> tmp_vm_num(16,0);
+    //用来保存虚拟机的剩余数量，反向对应，比如tmp_vm_num[vm_typenum]对应vm1，tmp_vm_num[1]对应vm_typenum
+    std::vector<int> tmp_vm_num(vm_typenum+1,0);
     bool is_vm_empty;
-    for(int i=1; i<=15; i++){
+    for(int i=1; i<=vm_typenum; i++){
         std::map<int, int>::iterator iter;
-        iter = predict_data.find(16-i);
-        if(iter == predict_data.end()){
+        iter = vmnum.find(vm_typenum+1-i);
+        if(iter == vmnum.end()){
             tmp_vm_num[i] = 0;
         }else {
             tmp_vm_num[i] = iter->second;
         }
-
     }
-
     is_vm_empty = check_vmnum_empty(tmp_vm_num);
-    /*对于预测文档的数据进行分配,每次装满一个二维多重背包，背包容量分别为服务器CPU核数U和MEM大小V(转化为GB)，物品数量最大值N为15，
+    /*对于预测文档的数据进行分配,每次装满一个二维多重背包，背包容量分别为服务器CPU核数U和MEM大小V(转化为GB)，物品数量最大值N为vm_typenum，
      * 物品费用分别为CPU核数和MEM大小(转化为GB)，状态转移数组dp[N+1][max{U+1,V+1}]，同时利用一个二维数组记录选择了哪些物品used[U+1][V+1],
      * 最后通过读取use[U][V]的值来确定物品选择了多少件
     */
@@ -80,42 +93,41 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
     while(!is_vm_empty)
     {
         //首先初始化一个节点
-        Allocat_server new_server = allocate_oneserver(server_number, server.core, server.mem, target);
+        Allocat_server new_server = allocate_oneserver(server_number, server.core, server.mem);
         allocate_result.push(new_server);
         server_number++;
 
         //清除预测数据中value为0的项
-        for(int i = 15; i>0; i--) {
+        for(int i = vm_typenum; i>0; i--) {
             std::map<int, int>::iterator iter;
-            iter = predict_data.find(i);
-            if(iter == predict_data.end()){
+            iter = vmnum.find(i);
+            if(iter == vmnum.end()){
                 continue;
             }else if(iter->second == 0) {
-                predict_data.erase(iter);
+                vmnum.erase(iter);
             }
         }
 
-
-        std::map<int ,int >::iterator current_flavor = predict_data.begin();
+        std::map<int ,int >::iterator current_flavor = vmnum.begin();
         std::map<int,int> new_record;
         std::vector<std::vector <int> > dp (server.core+1, std::vector<int>(server.mem+1,0));
-        std::vector<std::vector<std::vector<int> > > used(16, std::vector<std::vector<int> >(server.core+1, std::vector<int>(server.mem+1,0)));
+        std::vector<std::vector<std::vector<int> > > used(vm_typenum+1, std::vector<std::vector<int> >(server.core+1, std::vector<int>(server.mem+1,0)));
 
 
 
         //一次二维多重背包循环,pos表示前pos个物品
-        for(int pos = 1; pos <= 15; pos++){
+        for(int pos = 1; pos <= vm_typenum; pos++){
             //获取当前虚拟机的CPU和MEM限制，同时当前虚拟机id为current_flavor->first
             std::map<int, Vm>::iterator current_flavor_info;
-            current_flavor_info =  vm_info.find(16-pos);
+            current_flavor_info =  vm_info.find(vm_typenum-pos);
             int core_need = current_flavor_info->second.core;
             int mem_need = current_flavor_info->second.mem;
- 			int item_value;
-			if(value_type == 1){
-				item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
-			}else if(value_type == 2){
-				item_value =core_need + mem_need;//物品价值
-			}
+            int item_value;
+            if(type == 1){
+                item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
+            }else if(type == 2){
+                item_value =core_need + mem_need;//物品价值
+            }
             int item_num = tmp_vm_num[pos];//可用的物品数量
 
             //void MultiplePack(int C, int D, int U, int V, int W, int M);
@@ -126,14 +138,14 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
         std::vector<int> choose_vm_num;
         choose_vm_num = get_path(used, vm_info, server.core, server.mem);
         //处理数据，tmp_vm_num数据更新，同时对predict_data数据更新
-        for(int i=1; i<=15; i++){
-            if(choose_vm_num[16 - i] != 0){
-                new_record[i] = choose_vm_num[16 - i];
+        for(int i=1; i<=vm_typenum; i++){
+            if(choose_vm_num[vm_typenum+1 - i] != 0){
+                new_record[i] = choose_vm_num[vm_typenum+1 - i];
             }
 
             std::map<int ,int >::iterator iter;
-            iter = predict_data.find(16 - i);
-            iter->second -= choose_vm_num[16 - i];
+            iter = vmnum.find(vm_typenum+1 - i);
+            iter->second -= choose_vm_num[vm_typenum+1 - i];
             tmp_vm_num[i] -= choose_vm_num[i];
         }
 
@@ -141,19 +153,19 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
         is_vm_empty = check_vmnum_empty(tmp_vm_num);
     }
 
-    if(value_type == 1){
-        score1 = get_scores_p(predict_data_tmp, server, server_number, target, vm_info);
+    if(type == 1){
+        score[0] = get_score(vm_num_copy, server, server_number);
     }else{
-        score2 = get_scores_p(predict_data_tmp, server, server_number, target, vm_info);
+        score[1] = get_score(vmnum, server, server_number);
     }
 
     return result_record;
+
 }
 
-bool check_vmnum_empty(std::vector<int> &temp)
-{
+bool packing::check_vmnum_empty(std::vector<int> &temp) {
     bool isempty = true;
-    for(int i=1; i<=15; i++){
+    for(int i=1; i<=vm_typenum; i++){
         if(temp[i] != 0){
             isempty = false;
         }
@@ -162,18 +174,18 @@ bool check_vmnum_empty(std::vector<int> &temp)
 }
 
 
-std::vector<int> get_path(std::vector<std::vector<std::vector<int> > > &used, std::map<int,Vm> vminfo, int U, int V)
+std::vector<int> packing::get_path(std::vector<std::vector<std::vector<int> > > &used, std::map<int,Vm> vminfo, int U, int V)
 {
-    //15种物品选择了哪些
-    std::vector<int> choose_num(16, 0);
+    //vm_typenum种物品选择了哪些
+    std::vector<int> choose_num(vm_typenum, 0);
     std::map<int, Vm>::iterator current_flavor_info;
-    for(int i=1; i<=15; i++){
+    for(int i=1; i<=vm_typenum; i++){
         choose_num[i] = used[i][U][V];
     }
     return choose_num;
 }
 
-void CompletePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int pos)
+void packing::CompletePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int pos)
 {
 
     for(int u=C; u<=U; u++)
@@ -183,7 +195,7 @@ void CompletePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<s
                 //第i个物品可放入
                 if(dp[u][v] < dp[u-C][v-D]+W){
                     dp[u][v] =  dp[u-C][v-D]+W;
-                    for(int k=1; k<=15; k++){
+                    for(int k=1; k<=vm_typenum; k++){
                         used[k][u][v] = used[k][u-C][v-D];
                     }
                     used[pos][u][v] += 1;
@@ -195,7 +207,7 @@ void CompletePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<s
 
 }
 
-void ZeroOnePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos)
+void packing::ZeroOnePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos)
 {
   //  std::cout<<"ZeroPack("<<C*M<<", "<<D*M<<", "<<W*M<<", "<<pos<<")"<<std::endl;
     for(int u=U; u>=C*M; u--)
@@ -205,7 +217,7 @@ void ZeroOnePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<st
                 //第i个物品可放入
                 if (dp[u][v] < dp[u - C * M][v - D * M] + W * M) {
                     dp[u][v] = dp[u - C * M][v - D * M] + W * M;
-                    for(int k=1; k<=15; k++){
+                    for(int k=1; k<=vm_typenum; k++){
                         used[k][u][v] = used[k][u-C*M][v-D*M];
                     }
                     used[pos][u][v] += M;
@@ -218,7 +230,7 @@ void ZeroOnePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<st
 
 }
 
-void MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos)
+void packing::MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos)
 {
     //物品容量大于背包容量，直接返回
     if(C >= U || D >= V)
@@ -245,54 +257,46 @@ void MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<s
 }
 
 
-
-
-Allocat_server allocate_oneserver(int id, int core, int mem, int target)
+Allocat_server packing::allocate_oneserver(int id, int core, int mem)
 {
     Allocat_server new_allocate;
     new_allocate.id = id;
     new_allocate.core = core;
     new_allocate.mem = mem;
-    new_allocate.target = target;
     return new_allocate;
 }
 
-double get_scores_p(std::map<int, int>predict_data, Server server, int number, int target, std::map<int, Vm> vm_info)
-{
-    int total_allocate;
-    if (target == 0)
-    {
-        total_allocate = server.core * number;
-    }
-    else{
-        total_allocate = server.mem *number;
-    }
-    int total_need = 0;
-    for (int i = 1; i<=15; i++)
+double packing::get_score(std::map<int, int>vmnum, Server sv, int sv_num){
+    int total_allocate_cpu,total_allocate_mem;
+    total_allocate_cpu = sv.core * sv_num;
+    total_allocate_mem = sv.mem *sv_num;
+
+    int total_need_cpu = 0;
+    int total_need_mem = 0;
+    for (int i = 1; i<=vm_typenum; i++)
     {
         std::map<int ,int >::iterator iter;
-        iter = predict_data.find(i);
-        if (iter == predict_data.end())
+        iter = vmnum.find(i);
+        if (iter == vmnum.end())
         {
             continue;
         }
         else
         {
-            int target_need = 0;
+            int target_need_cpu = 0;
+            int target_need_mem = 0;
             std::map<int, Vm>::iterator current_flavor_info;
-            current_flavor_info =  vm_info.find(i);;
-            if (target == 0)
-            {
-                target_need = current_flavor_info->second.core;
-            }
-            else
-            {
-                target_need = current_flavor_info->second.mem;
-            }
-            total_need += iter->second * target_need;
+            current_flavor_info =  vm_info.find(i);
+
+            target_need_cpu = current_flavor_info->second.core;
+            target_need_mem = current_flavor_info->second.mem;
+
+            total_need_cpu += iter->second * target_need_cpu;
+            total_need_mem += iter->second * target_need_mem;
         }
     }
-    double percent = (total_need+0.0)/total_allocate;
+    double percent = ((total_need_cpu+0.0)/total_allocate_cpu + (total_need_mem+0.0)/total_allocate_mem)*0.5;
     printf("allocate score = %f\n", percent);
     return percent;
 }
+
