@@ -1,9 +1,10 @@
 //
-// Created by txink on 18-3-23.
+// Created by txink on 18-4-21.
 //
 
-#ifndef SDK_CLION_PACKING_H
-#define SDK_CLION_PACKING_H
+#ifndef SDK_CLION_PACKING_NEW_H
+#define SDK_CLION_PACKING_NEW_H
+
 
 #include "type_def.h"
 #include <iostream>
@@ -26,4 +27,4 @@ std::vector<int> get_path(std::vector<std::vector<std::vector<int> > > &used, st
 
 bool check_vmnum_empty(std::vector<int> &temp);
 
-#endif //SDK_CLION_PACKING_H
+#endif //SDK_CLION_PACKING_NEW_H

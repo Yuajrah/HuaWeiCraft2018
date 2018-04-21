@@ -2,7 +2,7 @@
 // Created by txink on 18-3-23.
 //
 
-#include "packing.h"
+#include "packing_new.h"
 #include <cstring>
 
 double score1,score2;
@@ -27,14 +27,14 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
     std::vector<std::map<int,int>>result_record_1;
     std::vector<std::map<int,int>>result_record_2;
 
-	result_record_1 = packing(vm_info, server, predict_data, 1);
-	result_record_2 = packing(vm_info, server, predict_data, 2);
+    result_record_1 = packing(vm_info, server, predict_data, 1);
+    result_record_2 = packing(vm_info, server, predict_data, 2);
 
-	if(score1 >= score2){
-	    return result_record_2;
-	}else{
+    if(score1 >= score2){
+        return result_record_2;
+    }else{
         return  result_record_1;
-	}
+    }
 }
 
 
@@ -102,12 +102,12 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
             current_flavor_info =  vm_info.find(19-pos);
             int core_need = current_flavor_info->second.core;
             int mem_need = current_flavor_info->second.mem;
- 			int item_value;
-			if(value_type == 1){
-				item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
-			}else if(value_type == 2){
-				item_value =core_need + mem_need;//物品价值
-			}
+            int item_value;
+            if(value_type == 1){
+                item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
+            }else if(value_type == 2){
+                item_value =core_need + mem_need;//物品价值
+            }
             int item_num = tmp_vm_num[pos];//可用的物品数量
 
             //void MultiplePack(int C, int D, int U, int V, int W, int M);
@@ -189,7 +189,7 @@ void CompletePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<s
 
 void ZeroOnePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos)
 {
-  //  std::cout<<"ZeroPack("<<C*M<<", "<<D*M<<", "<<W*M<<", "<<pos<<")"<<std::endl;
+    //  std::cout<<"ZeroPack("<<C*M<<", "<<D*M<<", "<<W*M<<", "<<pos<<")"<<std::endl;
     for(int u=U; u>=C*M; u--)
     {
         for(int v=V; v>=D*M; v--){
