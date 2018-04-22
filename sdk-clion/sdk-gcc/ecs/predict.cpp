@@ -277,7 +277,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 背包
      */
     BasicInfo::server_info = BasicInfo::server_infos[0];
-    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data);
+    std::vector<std::map<int,int>> packing_result = packing_ad(BasicInfo::vm_info, BasicInfo::server_infos, predict_data);
     std::vector<Bin> bins;
     int cnt = 0;
     for (auto &server: packing_result) {
