@@ -45,19 +45,6 @@ std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<doubl
     int tmp_split = split_windows;
     std::map<std::vector<double>, double> result;
     std::vector<double> used_data = ecs_data;
-//    if (mv)
-//    {
-//        if(split_choosed) {
-//            used_data = ma(ecs_data, move_step);
-//        } else
-//        {
-//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-//        }
-//    }
-//    if (split_high_flag)
-//    {
-//        used_data = split_high(used_data,split_rate);
-//    }
 
     if (mv)
     {
@@ -98,19 +85,6 @@ std::vector<std::vector<double>> timeseries_to_supervised_data(std::vector<doubl
     int tmp_split = split_windows;
     std::vector<std::vector<double>> result;
     std::vector<double> used_data = ecs_data;
-//    if (mv)
-//    {
-//        if(split_choosed) {
-//            used_data = ma(ecs_data, move_step);
-//        } else
-//        {
-//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-//        }
-//    }
-//    if (split_high_flag)
-//    {
-//        used_data = split_high(used_data,split_rate);
-//    }
     if (mv)
     {
         used_data = ma(ecs_data,move_step);
@@ -148,19 +122,6 @@ std::vector<double> timeseries_to_supervised_target(std::vector<double> ecs_data
     int tmp_split = split_windows;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
-//    if (mv)
-//    {
-//        if(split_choosed) {
-//            used_data = ma(ecs_data, move_step);
-//        } else
-//        {
-//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-//        }
-//    }
-//    if (split_high_flag)
-//    {
-//        used_data = split_high(used_data,split_rate);
-//    }
     if (mv)
     {
         used_data = ma(ecs_data,move_step);
@@ -194,19 +155,6 @@ std::vector<double>  get_frist_predict_data(std::vector<double>ecs_data, int spl
     int tmp_split = split_windows;
     std::vector<double> result;
     std::vector<double> used_data = ecs_data;
-//    if (mv)
-//    {
-//        if(split_choosed) {
-//            used_data = ma(ecs_data, move_step);
-//        } else
-//        {
-//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-//        }
-//    }
-//    if (split_high_flag)
-//    {
-//        used_data = split_high(used_data,split_rate);
-//    }
     if (mv)
     {
         used_data = ma(ecs_data,move_step);
@@ -231,59 +179,7 @@ std::vector<double>  get_frist_predict_data(std::vector<double>ecs_data, int spl
     return result;
 }
 
-float* get_frist_preditc(std::vector<double>ecs_data, int split_windows, bool mv)
-{
-    float* result = new float[ecs_data.size()];
-    std::vector<double> used_data = ecs_data;
-    if (mv)
-    {
-        used_data = ma(ecs_data,6);
-    }
-    int n = used_data.size();
-    for (int i = n - split_windows; i < n; i++)
-    {
-        result[i] = (float)used_data[i];
-    }
-    return result;
-}
 
-float** get_float_train(std::map<std::vector<double>, double> input, int split_windows)
-{
-    float** result = new float*[input.size()];
-    int index =0;
-    for (auto item:input)
-    {
-        result[index] = new float[split_windows];
-        for (int i=0; i<split_windows; i++)
-        {
-            result[index][i] = (float)item.first[i];
-        }
-        index++;
-    }
-    return result;
-}
-
-float* get_float_test(std::map<std::vector<double>, double> input)
-{
-    float* result = new float[input.size()];
-    int index =0;
-    for (auto item:input)
-    {
-        result[index] = (float)item.second;
-    }
-    return result;
-}
-
-float* add_one_data(float* primary_data, float need_add, int len)
-{
-    float* tmp = new float[len];
-    for (int i=0; i<len-1; i++)
-    {
-        tmp[i] = primary_data[i+1];
-    }
-    tmp[len-1] = need_add;
-    return tmp;
-}
 std::vector<std::vector<double >> get_vector_train(std::map<std::vector<double>, double> input)
 {
     std::vector<std::vector<double>> result;
@@ -353,6 +249,31 @@ std::vector<double> split_high(std::vector<double>data, double rate)
     return result;
 }
 
+//一阶指数平滑
+// data 原始数据 alpha占比 initNum: 初始值的个数
+std::vector<double> smoothOrderOne(std::vector<double> data, double alpha, int initNum = 3) {
+    std::vector<double> result;
+    double initData = 0.0;
+    for (int i = 0; i < initNum; ++i)
+    {
+        initData += data[i];
+    }
+    initData /= initNum;
+    for (int j = 0; j < data.size(); ++j) {
+        double tmp = 0.0;
+        if(j==0)
+        {
+            tmp = alpha*data[j]+(1-alpha)*initData;
+        }
+        else
+        {
+            tmp = alpha*data[j]+(1-alpha)*result[j-1];
+        }
+        result.push_back(tmp);
+    }
+    return result;
+
+}
 /**
  *
  * @param data
@@ -399,4 +320,56 @@ std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std
         x.push_back(tmp);
     }
     return {x, y};
+}
+
+
+//将所有的划分集合到一个函数里面
+usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, double alpha)
+{
+    usedData result;
+    std::vector<double> used_data = ecs_data;
+    if(Mode == "Ma")
+    {
+        used_data = ma(ecs_data, moveStep);
+    }
+    else if(Mode == "Smooth1")
+    {
+        used_data = smoothOrderOne(ecs_data, alpha);
+    }
+    int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    std::vector<std::vector<double>> train;
+    std::vector<double> tmp_train;
+    int index = 0;
+    while(index < tmp_split) {
+        tmp_train.push_back(used_data[index]);
+        index++;
+    }
+    while(index < used_data.size())
+    {
+        train.push_back(tmp_train);
+        tmp_train.erase(tmp_train.begin());
+        tmp_train.push_back(used_data[index]);
+        index++;
+    }
+    std::vector<double> target;
+    index = 0;
+    while(index < tmp_split) {
+        index++;
+    }
+    while(index < used_data.size())
+    {
+        double tmp_test = used_data[index];
+        target.push_back(tmp_test);
+        index++;
+    }
+    std::vector<double> fristPredict;
+    int n = used_data.size();
+    for (int i = n - tmp_split; i < n; i++)
+    {
+        fristPredict.push_back(used_data[i]);
+    }
+    result.fristPredictData = fristPredict;
+    result.trainData = train;
+    result.targetData = target;
+    return result;
 }
