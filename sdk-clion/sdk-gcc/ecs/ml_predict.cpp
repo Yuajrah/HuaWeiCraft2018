@@ -183,10 +183,11 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         //printf("训练第%d种服务器：\n",t.first);
         int mvStep = 6;
         double alpha = 0.1;
-        //std::string Mode = "Ma";
+        std::string Mode = "Ma";
         //std::string Mode = "Smooth1";
-        std::string Mode = "Smooth2";
+        //std::string Mode = "Smooth2";
         //std::string Mode = "None";
+        //正常获取
         usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
         std::vector<std::vector<double>> train = useddata.trainData;
         std::vector<double> target = useddata.targetData;
@@ -215,7 +216,45 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
     return result;
 }
 
+//线性回归增加间隔
+std::map<int, int> predict_by_LR_intervel (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
+{
+    std::map<int,int>result;
+    for (auto &t: vm_info) {
+        std::vector<double> ecs_data = train_data[t.first];
+        //printf("训练第%d种服务器：\n",t.first);
+        int mvStep = 6;
+        double alpha = 0.3;
+//        std::string Mode = "Ma";
+//        std::string Mode = "Smooth1";
+//        std::string Mode = "Smooth2";
+        std::string Mode = "None";
+        //正常获取
+        int intervel = need_predict_day;
+        usedDataIntervel useddata = getIntervelData(ecs_data, Mode, mvStep, alpha, intervel);
+        std::vector<std::vector<double>> train = useddata.trainData;
+        std::vector<double> target = useddata.targetData;
+        std::vector<std::vector<double>> frist_predict_data = useddata.PredictData;
+        LR lr(train, target);
+        lr.train();
+        double ecs_sum = 0.0;
+        std::vector <double> predict_ecs_data;
+        for(int i=0; i < need_predict_day; i++)
+        {
+            double tmp_predict = lr.predict(frist_predict_data[i]);
+            if(tmp_predict<0.0)
+            {
+                tmp_predict = 0.0;
+            }
+            predict_ecs_data.push_back(tmp_predict);
+            ecs_sum += tmp_predict;
+        }
+        ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.end(), 0.0);
+        result[t.first] = round(std::max(0.0, ecs_sum));
+    }
 
+    return result;
+}
 int get_split_window(std::vector<double> data)
 {
     if (unchangale)
