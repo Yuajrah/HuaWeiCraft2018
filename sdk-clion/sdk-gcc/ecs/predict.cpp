@@ -251,9 +251,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
-
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
+//
+//    print_predict_score(actual_data, predict_data);
 
     /**
      * 使用单独线性模型做预测
