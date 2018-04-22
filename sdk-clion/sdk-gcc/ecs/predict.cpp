@@ -27,6 +27,7 @@
 #include "noise.h"
 #include "ff_utils.h"
 #include "FFOD.h"
+#include "predict_by_svm.h"
 
 
 /*
@@ -108,15 +109,15 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 	}
 
     char forecast_start_date[20]; // 预测起始日期
-    sscanf(info[server_type_num+3+type_num+1], "%s", forecast_start_date);
+    sscanf(info[server_type_num+3+type_num+1], "%[^\\n]", forecast_start_date);
 
     char forecast_end_date[20]; // 预测结束日期（不包含）
     char tmp1[20];
     sscanf(info[server_type_num+3+type_num+2], "%s %s", forecast_end_date, tmp1);
+    strcat(forecast_end_date, " 00:00:00");
     if (*tmp1 == '2') {
-        memcpy(forecast_end_date, add_days(strcat(forecast_end_date, " 00:00:00"), 1), 10 * sizeof(char));
+        memcpy(forecast_end_date, add_days(forecast_end_date, 1), 20 * sizeof(char));
     }
-
     printf("forecast_end_date = %s\n", forecast_end_date);
 
 
@@ -127,14 +128,11 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     sscanf(data[data_num-1], "%*s %*s %s", &date_end); // 获取esc文本数据的结束日期
     strcat(date_end, " 00:00:00");
 
-
     printf("date_start = %s\n", date_start);
 
     int need_predict_day = get_days(forecast_start_date, forecast_end_date); // 要预测的天数
     BasicInfo::need_predict_day = need_predict_day;
     BasicInfo::need_predict_cnt = BasicInfo::need_predict_day * 24 / BasicInfo::split_hour;
-
-
 
 
     std::map<int, std::vector<double>> train_data; // 用于最终训练模型的训练数据
@@ -144,6 +142,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     std::map<int, std::vector<double>> fit_test_data_everyday; // 拟合阶段的测试集合, 包含每天的数据
 
     std::map<int, int> actual_data;
+
 
 
     /**
@@ -175,7 +174,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      */
 
     if (getenv("DATA_SET") == NULL) {
-        train_data = get_esc_data(data, date_start, forecast_start_date, data_num);
+        train_data = get_esc_data(data, date_start, add_days(date_end, 1), data_num);
         BasicInfo::extra_need_predict_day = get_days(date_end, forecast_start_date) - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
     } else if (strcmp(getenv("DATA_SET"), "2") == 0){
@@ -184,6 +183,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
         BasicInfo::extra_need_predict_day = get_days("2016-01-14 00:00:00", "2016-01-21 00:00:00") - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
+    }
+
+    if (BasicInfo::extra_need_predict_day == 7) {
+
+    } else {
+        exit(0);
     }
 
     BasicInfo::sum_need_predict_day = BasicInfo::need_predict_day + BasicInfo::extra_need_predict_day;
@@ -220,9 +225,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
 
-//    if (BasicInfo::extra_need_predict_cnt == 7) {
-//        return;
-//    }
+
 
 //    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
 //    print_predict_score(actual_data, predict_data);
@@ -231,8 +234,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /**
      * 线性回归
      */
-    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
+//    print_predict_score(actual_data, predict_data);
 
 
     /**
@@ -248,9 +251,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-//    std::map<int, int> predict_data = predict_by_svm(train_data);
-//
-//    print_predict_score(actual_data, predict_data);
+    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
+
+    print_predict_score(actual_data, predict_data);
 
     /**
      * 使用单独线性模型做预测
@@ -291,14 +294,24 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         }
         bins.push_back(bin);
     }
+
+
+    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+        return a.second.mem > b.second.mem;
+    });
+
+    after_process(bins, order_vm_info, predict_data);
+
     printf("\n allocated score = %f\n", calc_alloc_score(bins));
     std::string result2 = format_allocate_res(bins);
 
+
 //    std::vector<Vm> objects = serialize(predict_data);
 //    std::vector<Bin> allocate_result;
-////    allocate_result = ff({}, objects);
+//    allocate_result = ff({}, objects);
 //
-//    allocate_result = alloc_by_ff_variant_1th(objects);
+////    allocate_result = alloc_by_ff_variant_1th(objects);
 //    printf("\nallocate score = %f\n", calc_alloc_score(allocate_result));
 //    std::string result2 = format_allocate_res(allocate_result);
 
@@ -310,15 +323,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     // 需要输出的内容
     char * result_file = (char *)"17\n\n0 8 0 20";
+//    write_result(result.c_str(), filename);
     // 直接调用输出文件的方法输出到指定文件中（ps请注意格式的正确性，如果有解，第一行只有一个数据；第二行为空；第三行开始才是具体的数据，数据之间用一个空格分隔开）
-    if (BasicInfo::extra_need_predict_day == 0)
-    {
-        write_result(result.c_str(), filename);
-    }
-    else
-    {
-        write_result(result_file, filename);
-    }
+    write_result(result.c_str(), filename);
+
     //0分答案
 //    write_result(result_file, filename);
 }

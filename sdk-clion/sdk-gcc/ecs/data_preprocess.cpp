@@ -45,19 +45,6 @@ std::map<std::vector<double>, double> timeseries_to_supervised(std::vector<doubl
     int tmp_split = split_windows;
     std::map<std::vector<double>, double> result;
     std::vector<double> used_data = ecs_data;
-//    if (mv)
-//    {
-//        if(split_choosed) {
-//            used_data = ma(ecs_data, move_step);
-//        } else
-//        {
-//            used_data = ma(ecs_data,BasicInfo::need_predict_day);
-//        }
-//    }
-//    if (split_high_flag)
-//    {
-//        used_data = split_high(used_data,split_rate);
-//    }
 
     if (mv)
     {
