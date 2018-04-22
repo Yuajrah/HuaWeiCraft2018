@@ -61,5 +61,9 @@ std::vector<double> split_high(std::vector<double>, double rate);
 usedData getData(std::vector<double>, std::string Mode, int moveStep, double alpha);
 //使用一结的指数平滑
 std::vector<double> smoothOrderOne(std::vector<double>, double alpha, int initNum);
+
+//使用二阶指数平滑
+std::vector<double> smoothOrderTwo(std::vector<double>, double alpha, int initNum);
+
 std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std::vector<double> data, int lag, int interval, bool constant);
 #endif //SDK_CLION_DATA_PREPROCESS_H

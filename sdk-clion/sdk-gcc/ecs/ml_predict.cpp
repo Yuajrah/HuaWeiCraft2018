@@ -108,7 +108,8 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
         int mvStep = 6;
         double alpha = 0.2;
         //std::string Mode = "Ma";
-        std::string Mode = "Smooth1";
+//        std::string Mode = "Smooth1";
+        std::string Mode = "Smooth2";
         //std::string Mode = "None";
         usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
         std::vector<std::vector<double>> train = useddata.trainData;

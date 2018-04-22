@@ -274,6 +274,14 @@ std::vector<double> smoothOrderOne(std::vector<double> data, double alpha, int i
     return result;
 
 }
+
+//二阶指数平滑
+std::vector<double> smoothOrderTwo(std::vector<double> data, double alpha, int initNum = 3)
+{
+    std::vector<double>dataOrder1 = smoothOrderOne(data, alpha, initNum);
+    std::vector<double> result = smoothOrderOne(dataOrder1, alpha, initNum);
+    return result;
+}
 /**
  *
  * @param data
@@ -335,6 +343,10 @@ usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, do
     else if(Mode == "Smooth1")
     {
         used_data = smoothOrderOne(ecs_data, alpha);
+    }
+    else if (Mode == "Smooth2")
+    {
+        used_data = smoothOrderTwo(ecs_data, alpha);
     }
     int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
     std::vector<std::vector<double>> train;
