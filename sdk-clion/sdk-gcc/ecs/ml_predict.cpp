@@ -105,15 +105,15 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
     std::map<int,int>result;
     for (auto &t: vm_info) {
         std::vector<double> ecs_data = train_data[t.first];
-        //printf("训练第%d种服务器：\n",t.first);
-        bool mv_flag = true;
-        int split_windows = get_split_window(ecs_data);
-//        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
-//        std::vector<std::vector<double>> train = get_vector_train(train_data_need);
-//        std::vector<double> target = get_vector_target(train_data_need);
-        std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
-        std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
-        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
+        int mvStep = 6;
+        double alpha = 0.2;
+        //std::string Mode = "Ma";
+        std::string Mode = "Smooth1";
+        //std::string Mode = "None";
+        usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
+        std::vector<std::vector<double>> train = useddata.trainData;
+        std::vector<double> target = useddata.targetData;
+        std::vector<double> frist_predict_data = useddata.fristPredictData;
         //依次是树的数量，每课树的特征，树的最大深度，每个叶节点的最大样本数，最小的下降不纯度
         //50,4,7,1,1.0 72.6
         RandomForest rf(50,4,7,1,1.0, sqrt(train.size()));
@@ -180,16 +180,12 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
     for (auto &t: vm_info) {
         std::vector<double> ecs_data = train_data[t.first];
         //printf("训练第%d种服务器：\n",t.first);
-//        bool mv_flag = true;
-//        int split_windows = get_split_window(ecs_data);
-//        std::vector<std::vector<double>> train = timeseries_to_supervised_data(ecs_data, split_windows, mv_flag);
-//        std::vector<double> target = timeseries_to_supervised_target(ecs_data, split_windows, mv_flag);
-//        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
         int mvStep = 6;
         double alpha = 0.5;
         //std::string Mode = "Ma";
-        std::string Mode = "Smooth1";
-        usedData useddata = getData(ecs_data, Mode, mvStep, 0.5);
+        //std::string Mode = "Smooth1";
+        std::string Mode = "None";
+        usedData useddata = getData(ecs_data, Mode, mvStep, 0.6);
         std::vector<std::vector<double>> train = useddata.trainData;
         std::vector<double> target = useddata.targetData;
         std::vector<double> frist_predict_data = useddata.fristPredictData;
@@ -211,7 +207,7 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         }
         //ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.begin()+ BasicInfo::need_predict_day, 0.0);
         ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
-        result[t.first] = round(0.9*std::max(0.0, ecs_sum));
+        result[t.first] = round(std::max(0.0, ecs_sum));
     }
 
     return result;

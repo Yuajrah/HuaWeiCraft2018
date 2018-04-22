@@ -251,7 +251,7 @@ std::vector<double> split_high(std::vector<double>data, double rate)
 
 //一阶指数平滑
 // data 原始数据 alpha占比 initNum: 初始值的个数
-std::vector<double> smoothOrderOne(std::vector<double> data, double alpha=0.5, int initNum = 3) {
+std::vector<double> smoothOrderOne(std::vector<double> data, double alpha, int initNum = 3) {
     std::vector<double> result;
     double initData = 0.0;
     for (int i = 0; i < initNum; ++i)
