@@ -185,11 +185,17 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
     }
 
-    if (BasicInfo::extra_need_predict_day == 7) {
+    /**
+     * 如果是线上, 则可以区别初级和中级对待
+     */
+    if (getenv("DATA_SET") == NULL) {
+        if (BasicInfo::extra_need_predict_day == 0) {
 
-    } else {
-        exit(0);
+        } else {
+            exit(0);
+        }
     }
+
 
     BasicInfo::sum_need_predict_day = BasicInfo::need_predict_day + BasicInfo::extra_need_predict_day;
     /*************************************************************************
@@ -221,8 +227,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     * 使用随机森林进行预测
     * 有问题
     */
-    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
+//    print_predict_score(actual_data, predict_data);
 //    std::string result1 = format_predict_res(predict_data);
 
 
@@ -251,9 +257,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-//    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
-//
-//    print_predict_score(actual_data, predict_data);
+    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
+
+    print_predict_score(actual_data, predict_data);
 
     /**
      * 使用单独线性模型做预测
