@@ -106,7 +106,7 @@ std::map<int, int> predict_by_randomForest (std::map<int, Vm> vm_info, std::map<
     for (auto &t: vm_info) {
         std::vector<double> ecs_data = train_data[t.first];
         int mvStep = 6;
-        double alpha = 0.2;
+        double alpha = 0.1;
         //std::string Mode = "Ma";
 //        std::string Mode = "Smooth1";
         std::string Mode = "Smooth2";
@@ -182,11 +182,12 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         std::vector<double> ecs_data = train_data[t.first];
         //printf("训练第%d种服务器：\n",t.first);
         int mvStep = 6;
-        double alpha = 0.5;
+        double alpha = 0.1;
         //std::string Mode = "Ma";
         //std::string Mode = "Smooth1";
-        std::string Mode = "None";
-        usedData useddata = getData(ecs_data, Mode, mvStep, 0.6);
+        std::string Mode = "Smooth2";
+        //std::string Mode = "None";
+        usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
         std::vector<std::vector<double>> train = useddata.trainData;
         std::vector<double> target = useddata.targetData;
         std::vector<double> frist_predict_data = useddata.fristPredictData;
