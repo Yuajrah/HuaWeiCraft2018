@@ -9,6 +9,7 @@
 #include "ml_predict.h"
 #include "date_utils.h"
 #include "NeuralNetwork.h"
+#include "gm.h"
 
 
 void test_ar(){
@@ -145,4 +146,42 @@ void test_ann()
     printf("测试代码：----------\n");
     printf("测试input %.4f %.4f %.4f %.4f  \n",curr_myinput.at(0),curr_myinput.at(1),curr_myinput.at(2),curr_myinput.at(3));
     printf("测试output %.4f %.4f %.4f %.4f  \n",current_output.at(0),current_output.at(1),current_output.at(2),current_output.at(3));
+}
+
+
+void test_gm(){
+    std::vector<double> input = {2.67, 3.13, 3.25, 3.36, 3.56, 3.72};
+    std::vector<double> pre_processed = pre_precess(input);
+    printf("X0:\n");
+    for (int i=0;i<input.size();i++) {
+        printf("%f ", input[i]);
+    }
+    printf("\n\nX1:\n");
+    for (int i=0;i<pre_processed.size();i++) {
+        printf("%f ", pre_processed[i]);
+    }
+
+    std::vector<std::vector<double>> B = gen_b_mat(pre_processed);
+    printf("\n\nB:\n");
+    for (int i=0;i<B.size();i++) {
+        for (int j=0;j<B[i].size();j++) {
+            printf("%f ", B[i][j]);
+        }
+        printf("\n");
+    }
+
+    std::vector<std::vector<double>> Y = gen_y_mat(input);
+    printf("\nY:\n");
+    for (int i=0;i<Y.size();i++) {
+        printf("%f ", Y[i][0]);
+    }
+    printf("\n\n");
+
+    std::vector<double> au = estau(B, Y);
+    printf("a=%f u=%f\n",au[0], au[1]);
+    printf("\nmodel gen value x1:\n");
+    for(int i = 0; i < input.size() + 1; i++){
+        printf("%f ", predict_x1(au[0], au[1], input[0], i));
+    }
+    printf("\n");
 }
