@@ -17,8 +17,8 @@
 std::map<int,int> onepacking(std::map<int, Vm> vm_info, Server server, std::map<int,int> predict_data);
 std::map<int,int> onepacking(std::map<int, Vm> vm_info, std::map<int, Server> servers, std::map<int,int> predict_data);
 std::vector<std::map<int,int>> packing_ad(std::map<int,Vm> vm_info, std::map<int, Server> servers, std::map<int, int> predict_data, std::vector<Server> &allocate_result);
-    std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data);
-std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, int value_type);
+    std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, std::vector<Server> &allocate_result);
+std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, int value_type, std::vector<Server> &allocate_result);
 Server allocate_oneserver(int type, int core, int mem);
 
 void MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos);
