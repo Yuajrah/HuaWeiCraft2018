@@ -106,7 +106,7 @@ std::map<int,int> onepacking(std::map<int, Vm> vm_info, std::map<int, Server> se
             record = record1;
         }
     }
-    printf("choose score:%f   serverType:%d\n",max,index);
+    //printf("choose score:%f   serverType:%d\n",max,index);
     if(index == 0){
         serverType = 0;
         return record;
@@ -484,7 +484,7 @@ double get_score_one(Server server, std::map<int,int> record, std::map<int, Vm> 
         }
     }
     double percent = ((total_need_cpu+0.0)/server.core + (total_need_mem+0.0)/server.mem)*0.5;
-    printf("allocate score = %f\n", percent);
+    //printf("allocate score = %f\n", percent);
     return percent;
 
 }
