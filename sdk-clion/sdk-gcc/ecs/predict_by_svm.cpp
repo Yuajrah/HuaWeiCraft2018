@@ -127,7 +127,7 @@ svm_parameter init_svm_parameter()
     param.coef0 = 0;
     param.nu = 0.5;
     param.cache_size = 100;
-    param.C = 0.3;
+    param.C = 0.13;
     param.eps = 1e-3;
     param.p = 0.1;
     param.shrinking = 1;
@@ -167,11 +167,17 @@ std::map<int, int> predict_by_svm_2th (std::map<int, std::vector<double>> train_
         std::vector<double> ecs_data = train_data[t.first];
         printf("训练第%d种服务器：\n",t.first);
         /* 1. 准备训练集合*/
-        bool mv_flag = false;
-        int split_windows = 10;
-        std::map<std::vector<double>, double> train_data_need = timeseries_to_supervised(ecs_data, split_windows, mv_flag);
-        std::vector<std::vector<double>> train_x = get_vector_train(train_data_need);
-        std::vector<double> train_y = get_vector_target(train_data_need);
+
+
+        //printf("训练第%d种服务器：\n",t.first);
+        int mvStep = 6;
+        double alpha = 0.1;
+        //std::string Mode = "Ma";
+        std::string Mode = "Smooth2";
+//        std::string Mode = "None";
+        usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
+        std::vector<std::vector<double>> train_x = useddata.trainData;
+        std::vector<double> train_y  = useddata.targetData;
 
         /* 2. 初始化问题*/
         svm_problem prob = init_svm_problem(train_x, train_y);     // 打包训练样本
@@ -181,7 +187,7 @@ std::map<int, int> predict_by_svm_2th (std::map<int, std::vector<double>> train_
         svm_model* model = svm_train(&prob, &param);
 
         /* 4. 获取所需要的特征 */
-        std::vector<double> frist_predict_data = get_frist_predict_data(ecs_data, split_windows, mv_flag);
+        std::vector<double> frist_predict_data = useddata.fristPredictData;
 
         /* 5. 开始预测 */
         std::vector<double> predict_ecs_data;
@@ -198,7 +204,7 @@ std::map<int, int> predict_by_svm_2th (std::map<int, std::vector<double>> train_
             predict_ecs_data.push_back(tmp_predict);
         }
 
-        double ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0) * 1.4;
+        double ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
         result[t.first] = round(std::max(0.0, ecs_sum));
 //        result[t.first] = (int)(predict_ecs_data[BasicInfo::need_predict_day-1]*BasicInfo::need_predict_day);
     }

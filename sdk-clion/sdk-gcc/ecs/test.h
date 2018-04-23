@@ -14,5 +14,8 @@ void gen_sample(std::vector<std::vector<double>> &x, std::vector<double>& y, lon
 
 
 void test_get_hours();
+void test_ann();
+
+void test_gm();
 
 #endif //SDK_GCC_TEST_H

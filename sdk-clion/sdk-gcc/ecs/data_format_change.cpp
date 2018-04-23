@@ -171,7 +171,7 @@ std::vector<Vm> random_permutation(std::vector<Vm> objects) {
  * @param order_vm_info
  * @param predict_data
  */
-void after_process(std::vector<Bin> &allocate_result, std::vector<std::pair<int, Vm>> &order_vm_info, std::map<int, int> &predict_data){
+void after_process_add_bin(std::vector<Bin> &allocate_result, std::vector<std::pair<int, Vm>> &order_vm_info, std::map<int, int> &predict_data){
 
     for (int i=0;i<allocate_result.size();i++) {
         if (allocate_result[i].cores > 0 && allocate_result[i].mems > 0) {
