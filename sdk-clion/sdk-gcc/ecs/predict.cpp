@@ -183,18 +183,31 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
         BasicInfo::extra_need_predict_day = get_days("2016-01-14 00:00:00", "2016-01-21 00:00:00") - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
+    } else if (strcmp(getenv("DATA_SET"), "3") == 0) {
+        memcpy(date_start, "2015-01-01 00:00:00", 20 * sizeof(char));
+        memcpy(date_end, "2015-08-10 00:00:00", 20 * sizeof(char));
+
+        memcpy(forecast_start_date, "2015-08-18 00:00:00", 20 * sizeof(char));
+        memcpy(forecast_end_date, "2015-09-01 00:00:00", 20 * sizeof(char));
+
+        train_data = get_esc_data(data, date_start, add_days(date_end, 1), data_num);
+        actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, data_num);
+
+        BasicInfo::extra_need_predict_day = get_days(date_end, forecast_start_date) - 1; // 间隔的天数
+        BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
     }
 
+    printf("extra_need_predict_day = %d\n", BasicInfo::extra_need_predict_day);
     /**
      * 如果是线上, 则可以区别初级和中级对待
      */
-//    if (getenv("DATA_SET") == NULL) {
-//        if (BasicInfo::extra_need_predict_day == 0) {
-//
-//        } else {
-//            exit(0);
-//        }
-//    }
+    if (getenv("DATA_SET") == NULL) {
+        if (BasicInfo::extra_need_predict_day == 0) {
+
+        } else {
+            exit(0);
+        }
+    }
 
     BasicInfo::sum_need_predict_day = BasicInfo::need_predict_day + BasicInfo::extra_need_predict_day;
     /*************************************************************************
@@ -238,7 +251,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /**
      * 线性回归
 //     */
-    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
+    //std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
+    std::map<int, int> predict_data = predict_by_LR_intervel(BasicInfo::vm_info, train_data, BasicInfo::need_predict_day);
     print_predict_score(actual_data, predict_data);
 
 

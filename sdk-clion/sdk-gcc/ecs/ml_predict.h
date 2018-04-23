@@ -39,6 +39,8 @@ std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std
 
 
 std::map<int, int> predict_by_LR(std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
+//使用间隔的数据
+std::map<int, int> predict_by_LR_intervel (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 
 std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data);
 

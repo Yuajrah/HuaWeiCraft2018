@@ -385,3 +385,61 @@ usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, do
     result.targetData = target;
     return result;
 }
+
+//获取有间隔的数据
+usedDataIntervel getIntervelData(std::vector<double> ecs_data, std::string Mode, int moveStep, double alpha, int intervel)
+{
+    usedDataIntervel result;
+    std::vector<double> used_data = ecs_data;
+    if(Mode == "Ma")
+    {
+        used_data = ma(ecs_data, moveStep);
+    }
+    else if(Mode == "Smooth1")
+    {
+        used_data = smoothOrderOne(ecs_data, alpha);
+    }
+    else if (Mode == "Smooth2")
+    {
+        used_data = smoothOrderTwo(ecs_data, alpha);
+    }
+    int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    std::vector<std::vector<double>> train;
+    std::vector<double> tmp_train;
+    int index = 0;
+    while(index < tmp_split) {
+        tmp_train.push_back(used_data[index]);
+        index++;
+    }
+    while(index < used_data.size()-intervel)
+    {
+        train.push_back(tmp_train);
+        tmp_train.erase(tmp_train.begin());
+        tmp_train.push_back(used_data[index]);
+        index++;
+    }
+    std::vector<double> target;
+    index = 0;
+    while(index < tmp_split+intervel) {
+        index++;
+    }
+    while(index < used_data.size())
+    {
+        double tmp_test = used_data[index];
+        target.push_back(tmp_test);
+        index++;
+    }
+    std::vector<std::vector<double>> Predict;
+    int n = used_data.size();
+    for (int i = n - intervel - tmp_split; i < n-tmp_split; ++i) {
+        std::vector<double> tmp;
+        for (int j = 0; j < tmp_split; ++j) {
+            tmp.push_back(used_data[i+j]);
+        }
+        Predict.push_back(tmp);
+    }
+    result.trainData = train;
+    result.targetData = target;
+    result.PredictData = Predict;
+    return result;
+}
