@@ -320,11 +320,16 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 背包
      */
     std::vector<Server> allocate_result;
-    Pack pack = Pack(BasicInfo::server_infos, predict_data, BasicInfo::vm_info, 18);
-    std::vector<std::map<int,int>> packing_result = pack.packStepBest(allocate_result);
+    BasicInfo::server_info = BasicInfo::server_infos[0];
+//    Pack pack = Pack(BasicInfo::server_infos, predict_data, BasicInfo::vm_info, 18);
+//    std::vector<std::map<int,int>> packing_result = pack.packStepBest(allocate_result);
 
- //   BasicInfo::server_info = BasicInfo::server_infos[0];
-   // std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, allocate_result);
+    //1.0
+//    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, allocate_result);
+    //2.0
+    std::vector<std::map<int,int>> packing_result = packing_ad(BasicInfo::vm_info, BasicInfo::server_infos, predict_data, allocate_result);
+
+
     std::vector<Bin> bins;
     int cnt = 0;
     for (int k=0;k<packing_result.size();k++) {
@@ -349,15 +354,15 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    }
 
 
-//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
-//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
-//        return a.second.mem > b.second.mem;
-//    });
-//
-//    after_process_add_bin(bins, order_vm_info, predict_data);
-////    after_process_remove_bin();
-//
-//    printf("\n allocated score = %f\n", calc_alloc_score(bins));
+    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+        return a.second.mem > b.second.mem;
+    });
+
+    after_process_add_bin(bins, order_vm_info, predict_data);
+//    after_process_remove_bin();
+
+    printf("\n allocated score = %f\n", calc_alloc_score(bins));
 
     std::string result2 = format_allocate_res(bins);
 

@@ -211,12 +211,13 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         //ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.begin()+ BasicInfo::need_predict_day, 0.0);
         ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
         if (BasicInfo::extra_need_predict_day >0) {
-            result[t.first] = round(std::max(0.0, ecs_sum)*1.5);
+            result[t.first] = round(std::max(0.0, ecs_sum)*1.6);
         }
         else
         {
             result[t.first] = round(std::max(0.0, ecs_sum));
         }
+//        result[t.first] = result[t.first];
     }
 
     return result;
