@@ -16,15 +16,15 @@
 
 std::map<int,int> onepacking(std::map<int, Vm> vm_info, Server server, std::map<int,int> predict_data);
 std::map<int,int> onepacking(std::map<int, Vm> vm_info, std::map<int, Server> servers, std::map<int,int> predict_data);
-std::vector<std::map<int,int>> packing_ad(std::map<int,Vm> vm_info, std::map<int, Server> servers, std::map<int, int> predict_data);
+std::vector<std::map<int,int>> packing_ad(std::map<int,Vm> vm_info, std::map<int, Server> servers, std::map<int, int> predict_data, std::vector<Server> &allocate_result);
     std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data);
 std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, int value_type);
-Allocat_server allocate_oneserver(int id, int core, int mem);
+Server allocate_oneserver(int type, int core, int mem);
 
 void MultiplePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos);
 
 //计算分配资源得分函数
-double get_scores_p(std::map<int, int>predict_data, std::vector<Allocat_server> servers, std::map<int, Vm> vm_info);
+double get_scores_p(std::map<int, int>predict_data, std::vector<Server> servers, std::map<int, Vm> vm_info);
 double get_score_one(Server server, std::map<int,int> record,std::map<int, Vm> vm_info);
 std::vector<int> get_path(std::vector<std::vector<std::vector<int> > > &used, std::map<int,Vm> vminfo, int U, int V);
 

@@ -15,7 +15,6 @@
 #include "ar.h"
 #include "ma.h"
 #include <map>
-#include "frist_fit.h"
 #include "packing.h"
 #include "lib_io.h"
 #include "data_format_change.h"

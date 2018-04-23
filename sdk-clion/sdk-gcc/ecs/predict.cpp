@@ -8,7 +8,6 @@
 #include "ar.h"
 #include "ma.h"
 #include <map>
-#include "frist_fit.h"
 #include "packing.h"
 #include "lib_io.h"
 #include "data_format_change.h"
@@ -189,11 +188,11 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 如果是线上, 则可以区别初级和中级对待
      */
     if (getenv("DATA_SET") == NULL) {
-        if (BasicInfo::extra_need_predict_day == 0) {
-
-        } else {
-            exit(0);
-        }
+//        if (BasicInfo::extra_need_predict_day == 0) {
+//
+//        } else {
+//            exit(0);
+//        }
     }
 
 
@@ -233,8 +232,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
 
 
-//    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
-//    print_predict_score(actual_data, predict_data);
+    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
+    print_predict_score(actual_data, predict_data);
 
 
     /**
@@ -256,10 +255,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      *
      */
-
-    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
-
-    print_predict_score(actual_data, predict_data);
+//
+//    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
+//
+//    print_predict_score(actual_data, predict_data);
 
     /**
      * 使用单独线性模型做预测
@@ -285,12 +284,13 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 背包
      */
     //BasicInfo::server_info = BasicInfo::server_infos[0];
-    std::vector<std::map<int,int>> packing_result = packing_ad(BasicInfo::vm_info, BasicInfo::server_infos, predict_data);
+    std::vector<Server> allocate_result;
+    std::vector<std::map<int,int>> packing_result = packing_ad(BasicInfo::vm_info, BasicInfo::server_infos, predict_data, allocate_result);
     std::vector<Bin> bins;
     int cnt = 0;
-    for (auto &server: packing_result) {
-        Bin bin(BasicInfo::server_info.type, BasicInfo::server_info.core, BasicInfo::server_info.mem);
-        for (auto &vm: server) {
+    for (int k=0;k<packing_result.size();k++) {
+        Bin bin(allocate_result[k].type, allocate_result[k].core, allocate_result[k].mem);
+        for (auto &vm: packing_result[k]) {
             Vm t_vm = BasicInfo::vm_info[vm.first];
             for (int i=0;i<vm.second;i++) {
                 t_vm.no = cnt++;
