@@ -183,10 +183,10 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         //printf("训练第%d种服务器：\n",t.first);
         int mvStep = 6;
         double alpha = 0.1;
-        std::string Mode = "Ma";
+//        std::string Mode = "Ma";
         //std::string Mode = "Smooth1";
-        //std::string Mode = "Smooth2";
-        //std::string Mode = "None";
+        std::string Mode = "Smooth2";
+//        std::string Mode = "None";
         //正常获取
         usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
         std::vector<std::vector<double>> train = useddata.trainData;
@@ -210,12 +210,32 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         }
         //ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.begin()+ BasicInfo::need_predict_day, 0.0);
         ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
-        result[t.first] = round(std::max(0.0, ecs_sum));
+        if (BasicInfo::extra_need_predict_day >0) {
+            result[t.first] = round(std::max(0.0, ecs_sum));
+        }
+        else
+        {
+            result[t.first] = round(std::max(0.0, ecs_sum));
+        }
     }
 
     return result;
 }
 
+//指数平滑进行预测
+std::map<int, int> predict_by_enponential (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
+{
+    std::map<int, int> result;
+    for (auto &t: vm_info)
+    {
+        std::vector<double> ecs_data = train_data[t.first];
+        double alpha = 0.3;
+        std::vector <double> predict_ecs_data =  exponentialPredict(ecs_data, need_predict_day, alpha);
+        double ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
+        result[t.first] = round(std::max(0.0, ecs_sum));
+    }
+    return result;
+}
 //线性回归增加间隔
 std::map<int, int> predict_by_LR_intervel (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day)
 {

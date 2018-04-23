@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "exponential.h"
 #include "LinerRegression.h"
 
 //训练集划分的标准
@@ -44,7 +45,8 @@ std::map<int, int> predict_by_LR_intervel (std::map<int, Vm> vm_info, std::map<i
 
 std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data);
 
-
+//使用指数回归进行拟合
+std::map<int, int> predict_by_enponential (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 //取结果前一半的平均值
 int get_bigger_mean(std::vector<double> data, int num);
 
