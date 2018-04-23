@@ -21,6 +21,13 @@ struct usedData
     std::vector<double> targetData;
     std::vector<double> fristPredictData;
 };
+//划分有间隔数据集返回的数据
+struct usedDataIntervel
+{
+    std::vector<std::vector<double>> trainData;
+    std::vector<double> targetData;
+    std::vector<std::vector<double>> PredictData;
+};
 //对于低频计算计算平均值
 
 
@@ -57,9 +64,15 @@ std::vector<std::vector<double>>  get_vector_test_method2(std::vector<std::vecto
 
 //利用平均值削去高峰
 std::vector<double> split_high(std::vector<double>, double rate);
-
+//获取数据
 usedData getData(std::vector<double>, std::string Mode, int moveStep, double alpha);
+//获取间隔数据
+usedDataIntervel getIntervelData(std::vector<double>data, std::string Mode, int moveStep, double alpha, int intervel);
 //使用一结的指数平滑
 std::vector<double> smoothOrderOne(std::vector<double>, double alpha, int initNum);
+
+//使用二阶指数平滑
+std::vector<double> smoothOrderTwo(std::vector<double>, double alpha, int initNum);
+
 std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std::vector<double> data, int lag, int interval, bool constant);
 #endif //SDK_CLION_DATA_PREPROCESS_H

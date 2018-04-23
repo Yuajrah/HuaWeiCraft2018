@@ -9,7 +9,9 @@
 #define TAU 1e-12
 
 #include <vector>
+#include <map>
 #include <string>
+#include <queue>
 
 struct Server {
     int type; // 类型, 其值为枚举类型 ServerType的值

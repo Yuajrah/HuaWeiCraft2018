@@ -272,13 +272,7 @@ std::vector<std::map<int,int>> packing_ad(std::map<int,Vm> vm_info, std::map<int
 //        result_record.push_back(new_record);
 //        is_vm_empty = check_vmnum_empty(tmp_vm_num);
 //    }
-//
-////    if(value_type == 1){
-////        score1 = get_scores_p(predict_data_tmp, server, server_number, target, vm_info);
-////    }else{
-////        score2 = get_scores_p(predict_data_tmp, server, server_number, target, vm_info);
-////    }
-//
+//efff
 //    return result_record;
 //}
 

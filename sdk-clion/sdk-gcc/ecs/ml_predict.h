@@ -20,6 +20,7 @@
 #include <cmath>
 
 #include "LinerRegression.h"
+#include "svm.h"
 
 //训练集划分的标准
 const bool unchangale = false;
@@ -39,6 +40,8 @@ std::map<int, int> predict_by_cart (std::map<int, Vm> vm_info, std::map<int, std
 
 
 std::map<int, int> predict_by_LR(std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
+//使用间隔的数据
+std::map<int, int> predict_by_LR_intervel (std::map<int, Vm> vm_info, std::map<int, std::vector<double>> train_data, int need_predict_day);
 
 std::map<int, int> predict_by_svm (std::map<int, std::vector<double>> train_data);
 
@@ -54,7 +57,7 @@ int get_bigger_mean(std::vector<double> data, int num);
  * 初始化参数, 默认参数
  * @return
  */
-SvmParam init_svm_parameter();
+svm_parameter init_svm_parameter();
 
 
 #endif //SDK_CLION_ML_PREDICT_H

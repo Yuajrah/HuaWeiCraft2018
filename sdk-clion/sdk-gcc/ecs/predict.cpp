@@ -28,6 +28,9 @@
 #include "FFOD.h"
 #include "predict_by_svm.h"
 
+#include "test.h"
+#include "predict_by_bp.h"
+
 
 /*
  *   ecsDataPath = "../../../data/exercise/date_2015_01_to_2015_05.txt"
@@ -182,8 +185,21 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
         BasicInfo::extra_need_predict_day = get_days("2016-01-14 00:00:00", "2016-01-21 00:00:00") - 1; // 间隔的天数
         BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
+    } else if (strcmp(getenv("DATA_SET"), "3") == 0) {
+        memcpy(date_start, "2015-01-01 00:00:00", 20 * sizeof(char));
+        memcpy(date_end, "2015-08-10 00:00:00", 20 * sizeof(char));
+
+        memcpy(forecast_start_date, "2015-08-18 00:00:00", 20 * sizeof(char));
+        memcpy(forecast_end_date, "2015-09-01 00:00:00", 20 * sizeof(char));
+
+        train_data = get_esc_data(data, date_start, add_days(date_end, 1), data_num);
+        actual_data = get_sum_data(data, forecast_start_date, forecast_end_date, data_num);
+
+        BasicInfo::extra_need_predict_day = get_days(date_end, forecast_start_date) - 1; // 间隔的天数
+        BasicInfo::extra_need_predict_cnt = BasicInfo::extra_need_predict_day * 24 / BasicInfo::split_hour;
     }
 
+    printf("extra_need_predict_day = %d\n", BasicInfo::extra_need_predict_day);
     /**
      * 如果是线上, 则可以区别初级和中级对待
      */
@@ -193,8 +209,10 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //        } else {
 //            exit(0);
 //        }
-    }
 
+
+
+    }
 
     BasicInfo::sum_need_predict_day = BasicInfo::need_predict_day + BasicInfo::extra_need_predict_day;
     /*************************************************************************
@@ -224,7 +242,6 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     /*
     * 使用随机森林进行预测
-    * 有问题
     */
 //    std::map<int, int> predict_data = predict_by_randomForest(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
 //    print_predict_score(actual_data, predict_data);
@@ -238,9 +255,11 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 
     /**
      * 线性回归
-     */
-//    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
+//     */
+    //std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
+//    std::map<int, int> predict_data = predict_by_LR_intervel(BasicInfo::vm_info, train_data, BasicInfo::need_predict_day);
 //    print_predict_score(actual_data, predict_data);
+
 
 
     /**
@@ -255,7 +274,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      *
      */
-//
+
 //    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
 //
 //    print_predict_score(actual_data, predict_data);
@@ -267,6 +286,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    print_predict_score(actual_data, predict_data);
 
 
+    /**
+     * bp 神经网络
+     */
+
+//    std::map<int, int> predict_data  = predict_by_bp_1th(train_data);
+//    print_predict_score(actual_data, predict_data);
 
     /*************************************************************************
     *****  复赛分配  **************************************************************
@@ -301,15 +326,25 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
         bins.push_back(bin);
     }
 
-
-    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
-    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
-        return a.second.mem > b.second.mem;
-    });
-
-    after_process(bins, order_vm_info, predict_data);
-
     printf("\n allocated score = %f\n", calc_alloc_score(bins));
+
+//    if (calc_alloc_score(bins) > 0.87) {
+//
+//    } else {
+//        return;
+//    }
+
+
+//    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+//    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+//        return a.second.mem > b.second.mem;
+//    });
+//
+//    after_process_add_bin(bins, order_vm_info, predict_data);
+////    after_process_remove_bin();
+//
+//    printf("\n allocated score = %f\n", calc_alloc_score(bins));
+
     std::string result2 = format_allocate_res(bins);
 
 
