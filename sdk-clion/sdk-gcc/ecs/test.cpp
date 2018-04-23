@@ -8,6 +8,8 @@
 #include "Random.h"
 #include "ml_predict.h"
 #include "date_utils.h"
+#include "NeuralNetwork.h"
+
 
 void test_ar(){
     //北京1987-2014人口: 35
@@ -83,3 +85,64 @@ void test_get_hours(){
     int hours = get_hours("2015-12-01 00:17:03", "2015-12-01 03:20:55");
     printf("\nsub hours = %d\n", hours);
 };
+
+
+
+// MyANN.cpp : 定义控制台应用程序的入口点。
+//
+//参考别人的算法写的BP 三层神经网络 加了很多注释 帮助自己理解 也帮助大家看 废话不多时 上代码
+//详细的神经网络算法参考这个博文，写的非常好http://www.cnblogs.com/ronny/p/ann_02.html
+//还有一本书 [游戏编程中的人工智能技术].pdf 该书第二部分主要讲解神经网络 也是零基础入门 非常好
+
+void test_ann()
+{
+    //定义一个神经网络类
+    NeuralNetwork m_ann;
+    //定义一个三层网络，其中数组中代表网络的节点
+    int ann_nodes[3]={4,20,4};
+    //创建一个三层神经网络，主要是设置网络参数
+    m_ann.create(3,ann_nodes);
+    //创建网络中的节点，主要是记录各连接线之间的关系（便于找到权重索引和输入索引）
+    m_ann.initializeNetwork();
+
+    //生成训练向量和理想输出向量 二者是一致的
+    vector<vector<double>>inputData;
+    vector<vector<double>>outData;
+    for (int i = 0; i < m_ann.iterNum; i++)
+    {
+        int index = i % 4;
+        vector<double> dvect(4, 0);
+        dvect[index] = 1;
+        outData.push_back(dvect);
+        for (int i = 0; i != dvect.size(); i++)
+        {
+            dvect[i] += (5e-3*rand() / RAND_MAX - 2.5e-3);
+        }
+        inputData.push_back(dvect);
+    }
+
+    //训练网络
+    //先前向计算输出
+    for (int i=0;i<m_ann.iterNum;i++)
+    {
+        vector<double> current_t;
+        current_t.clear();
+        m_ann.forwardCalculate(inputData.at(i),current_t);
+        m_ann.backPropagate(outData.at(i),current_t);
+
+        printf("input %.4f %.4f %.4f %.4f  \n",inputData.at(i).at(0),inputData.at(i).at(1),inputData.at(i).at(2),inputData.at(i).at(3));
+        printf("output %.4f %.4f %.4f %.4f  \n",current_t.at(0),current_t.at(1),current_t.at(2),current_t.at(3));
+    }
+
+    //测试
+    vector<double>curr_myinput;
+    curr_myinput.push_back(0.01);
+    curr_myinput.push_back(0.99);
+    curr_myinput.push_back(0.001);
+    curr_myinput.push_back(-0.05);
+    vector<double> current_output;
+    m_ann.forwardCalculate(curr_myinput,current_output);
+    printf("测试代码：----------\n");
+    printf("测试input %.4f %.4f %.4f %.4f  \n",curr_myinput.at(0),curr_myinput.at(1),curr_myinput.at(2),curr_myinput.at(3));
+    printf("测试output %.4f %.4f %.4f %.4f  \n",current_output.at(0),current_output.at(1),current_output.at(2),current_output.at(3));
+}
