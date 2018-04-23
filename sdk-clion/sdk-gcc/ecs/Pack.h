@@ -22,6 +22,8 @@ private:
     void setA(int paramType);
     std::map<int,int> packOnce(std::map<int, int> vm_num,Server server);
     std::map<int,int> packOnceBest(std::map<int, int> vm_num);
+    std::vector<std::map<int,int>> packOneTypeServer(std::vector<Server> &serverResult, Server server, int paramType);
+
 
 
     void ZeroOnePack(std::vector<std::vector <int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C, int D, int U, int V, int W, int M, int pos);
@@ -34,7 +36,7 @@ public:
     Pack(std::map<int, Server> servers,std::map<int,int> vm_num,std::map<int,Vm> vm_info, int vm_typenum);
 
     std::vector<std::map<int,int>> packStepBest(std::vector<Server> &serverResult);
-    std::vector<std::map<int,int>> packOneTypeServer();
+    std::vector<std::map<int,int>> packTypeBest(std::map<int, int> vm_num, Server server, std::vector<Server> &serverResult);
     double getFinalScore(std::vector<Server> serverResult,std::map<int,int> vm_num);
     double getOnceScore(Server server, std::map<int,int> record);
 };

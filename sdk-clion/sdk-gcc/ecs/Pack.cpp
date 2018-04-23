@@ -9,8 +9,7 @@ Pack::Pack(std::map<int, Server> servers, std::map<int, int> vm_num, std::map<in
     this->Servers = servers;
     this->vmNum = vm_num;
     this->vmInfo = vm_info;
-    this->paramA[0] = 1;
-    this->paramA[1] = 1;
+    this->paramA = std::vector<double>(2, 1);
     this->vmTypeNum = vm_typenum;
     this->finalScore = -1;
     this->onceScore = -1;
@@ -58,6 +57,10 @@ Server allocateOneServer(int type, int core, int mem)
 }
 
 
+
+
+
+//每次选择最优的Server种类
 std::vector<std::map<int,int>> Pack::packStepBest(std::vector<Server> &serverResult) {
 
     std::map<int, int> vmNumTmp = vmNum;
@@ -112,6 +115,82 @@ std::vector<std::map<int,int>> Pack::packStepBest(std::vector<Server> &serverRes
 }
 
 
+std::vector<std::map<int,int>> Pack::packTypeBest(std::map<int, int> vm_num, Server server, std::vector<Server> &serverResult) {
+    std::vector<std::map<int,int>>result_record_1;
+    std::vector<std::map<int,int>>result_record_2;
+    std::vector<Server> serverResult1;
+    std::vector<Server> serverResult2;
+    double score1,score2;
+    result_record_1 = packOneTypeServer(serverResult1, server, 0);
+    score1 = finalScore;
+    result_record_2 = packOneTypeServer(serverResult2, server, 1);
+    score2 = finalScore;
+    if(score1 >= score2){
+        finalScore = score2;
+        return result_record_2;
+    }else{
+        finalScore = score1;
+        return  result_record_1;
+    }
+}
+
+
+//选择一种Server
+std::vector<std::map<int,int>> Pack::packOneTypeServer(std::vector<Server> &serverResult, Server server, int paramType) {
+
+    std::map<int, int> vmNumTmp = vmNum;
+    //保存最终结果的map，vector中的ID对应编号为多少的分配结果
+    std::vector<std::map<int,int>>result_record;
+    // 初始化服务器节点
+    int server_number = 0;
+    //归一化系数,参数为0或1，0表示cpu+mem，1表示k1*cpu+k2*mem
+    setA(paramType);
+    bool is_vm_empty;
+    is_vm_empty = checkEmpty(vmNumTmp);
+
+
+    while(!is_vm_empty)
+    {
+        //清除预测数据中value为0的项
+        for(int i = 1; i<= vmTypeNum; i++) {
+            std::map<int, int>::iterator iter;
+            iter = vmNumTmp.find(i);
+            if(iter == vmNumTmp.end()){
+                continue;
+            }else if(iter->second == 0) {
+                vmNumTmp.erase(iter);
+            }
+        }
+
+        //单次背包函数
+        std::map<int,int> new_record = packOnce(vmNumTmp, server);
+
+        //处理数据，对vmNumTmp数据更新
+        for(int i=1; i<=vmTypeNum; i++) {
+            std::map<int, int>::iterator iter;
+            iter = new_record.find(i);
+            if (iter == new_record.end()) {
+                continue;
+            } else if (iter->second != 0) {
+                std::map<int, int>::iterator itert;
+                itert = vmNumTmp.find(i);
+                itert->second -= iter->second;
+            }
+        }
+        //首先初始化一个节点
+        Server sv = server;
+        Server new_server = allocateOneServer(sv.type, sv.core, sv.mem);
+        serverResult.push_back(new_server);
+        server_number++;
+        result_record.push_back(new_record);
+        is_vm_empty = checkEmpty(vmNumTmp);
+    }
+    finalScore = getFinalScore(serverResult, vmNum);
+    return result_record;
+}
+
+
+//三种类型Server跑一次背包，选择最优
 std::map<int,int> Pack::packOnceBest(std::map<int, int> vm_num) {
     std::map<int,int> record1;
     std::map<int,int> record;
@@ -153,7 +232,7 @@ std::map<int,int> Pack::packOnce(std::map<int, int> vm_num, Server server) {
         current_flavor_info =  vmInfo.find(vmTypeNum+1-pos);
         int core_need = current_flavor_info->second.core;
         int mem_need = current_flavor_info->second.mem;
-        int item_value=core_need + mem_need;//物品价值;
+        int item_value=paramA[0]*core_need + paramA[1]*mem_need;//物品价值;
         int item_num = getItemNum(vm_num, vmTypeNum+1-pos);//可用的物品数量
 
         //void MultiplePack(int C, int D, int U, int V, int W, int M);

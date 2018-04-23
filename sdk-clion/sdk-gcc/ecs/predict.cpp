@@ -30,6 +30,7 @@
 
 #include "test.h"
 #include "predict_by_bp.h"
+#include "Pack.h"
 
 
 /*
@@ -248,18 +249,18 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    std::string result1 = format_predict_res(predict_data);
 
 
-
-    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
-    print_predict_score(actual_data, predict_data);
+//
+//    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
+//    print_predict_score(actual_data, predict_data);
 
 
     /**
      * 线性回归
 //     */
 
-    //std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
-//    std::map<int, int> predict_data = predict_by_LR_intervel(BasicInfo::vm_info, train_data, BasicInfo::need_predict_day);
-//    print_predict_score(actual_data, predict_data);
+    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
+
+    print_predict_score(actual_data, predict_data);
 
 //    std::map<int, int> predict_data = predict_by_LR(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
 ////    std::map<int, int> predict_data = predict_by_LR_intervel(BasicInfo::vm_info, train_data, BasicInfo::sum_need_predict_day);
@@ -317,9 +318,12 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
     /**
      * 背包
      */
-    BasicInfo::server_info = BasicInfo::server_infos[0];
     std::vector<Server> allocate_result;
-    std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, allocate_result);
+    Pack pack = Pack(BasicInfo::server_infos, predict_data, BasicInfo::vm_info, 18);
+    std::vector<std::map<int,int>> packing_result = pack.packStepBest(allocate_result);
+
+ //   BasicInfo::server_info = BasicInfo::server_infos[0];
+   // std::vector<std::map<int,int>> packing_result = packing(BasicInfo::vm_info, BasicInfo::server_info, predict_data, allocate_result);
     std::vector<Bin> bins;
     int cnt = 0;
     for (int k=0;k<packing_result.size();k++) {
