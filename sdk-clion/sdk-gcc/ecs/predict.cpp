@@ -205,11 +205,11 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 如果是线上, 则可以区别初级和中级对待
      */
     if (getenv("DATA_SET") == NULL) {
-//        if (BasicInfo::extra_need_predict_day > 0) {
-//
-//        } else {
-//            exit(0);
-//        }
+        if (BasicInfo::extra_need_predict_day > 0) {
+
+        } else {
+            exit(0);
+        }
     }
 
     BasicInfo::sum_need_predict_day = BasicInfo::need_predict_day + BasicInfo::extra_need_predict_day;
@@ -283,7 +283,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-//    std::map<int, int> predict_data = predict_by_svm_2th(train_data);
+//    std::map<int, int> predict_data = predict_by_svm_1th(train_data);
 //
 //    print_predict_score(actual_data, predict_data);
 

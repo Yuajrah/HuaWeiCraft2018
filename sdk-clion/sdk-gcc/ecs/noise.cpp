@@ -62,12 +62,13 @@ std::vector<double> remove_noise_by_box(std::vector<double> data){
     z = w - y;
     double q3 = data[y-1] + z * (data[y] - data[y-1]);
 
+    int k  = 1.5;
     double iqr = q3 - q1;
-    double low_bounder = q1 - 1.5 * iqr;
-    double upper_bounder = q3 + 1.5 * iqr;
+    double low_bounder = q1 - k * iqr;
+    double upper_bounder = q3 + k * iqr;
 
     for (int i=0;i<res.size();i++) {
-        if (res[i] < low_bounder || res[i] > upper_bounder) { // 如果是异常值, 则替代掉
+        if (res[i] > upper_bounder) { // 如果是异常值, 则替代掉
             if (i == 0) {
                 res[i] = res[i+1];
             } else if (i == res.size() - 1) {
