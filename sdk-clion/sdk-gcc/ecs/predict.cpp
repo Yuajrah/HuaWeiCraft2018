@@ -205,14 +205,11 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 如果是线上, 则可以区别初级和中级对待
      */
     if (getenv("DATA_SET") == NULL) {
-        if (BasicInfo::extra_need_predict_day > 0) {
-
-        } else {
-            exit(0);
-        }
-
-
-
+//        if (BasicInfo::extra_need_predict_day > 0) {
+//
+//        } else {
+//            exit(0);
+//        }
     }
 
     BasicInfo::sum_need_predict_day = BasicInfo::need_predict_day + BasicInfo::extra_need_predict_day;
@@ -354,12 +351,8 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    }
 
 
-    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
-    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
-        return a.second.mem > b.second.mem;
-    });
 
-    after_process_add_bin(bins, order_vm_info, predict_data);
+    after_process_add_bin(bins, predict_data);
 //    after_process_remove_bin();
 
     printf("\n allocated score = %f\n", calc_alloc_score(bins));

@@ -445,3 +445,4 @@ usedDataIntervel getIntervelData(std::vector<double> ecs_data, std::string Mode,
     result.PredictData = Predict;
     return result;
 }
+
