@@ -348,7 +348,8 @@ usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, do
     {
         used_data = smoothOrderTwo(ecs_data, alpha);
     }
-    int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    //int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    int tmp_split = 7;
     std::vector<std::vector<double>> train;
     std::vector<double> tmp_train;
     int index = 0;
@@ -438,6 +439,7 @@ usedDataIntervel getIntervelData(std::vector<double> ecs_data, std::string Mode,
         }
         Predict.push_back(tmp);
     }
+
     result.trainData = train;
     result.targetData = target;
     result.PredictData = Predict;
