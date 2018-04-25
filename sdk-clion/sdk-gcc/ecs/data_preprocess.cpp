@@ -2,6 +2,8 @@
 // Created by caocongcong on 18-3-31.
 //
 #include "data_preprocess.h"
+#include "math_utils.h"
+#include <algorithm>
 
 double get_mean(std::vector<double> train_data,  double rate)
 {
@@ -348,7 +350,7 @@ usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, do
     {
         used_data = smoothOrderTwo(ecs_data, alpha);
     }
-    //int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+//    int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
     int tmp_split = 7;
     std::vector<std::vector<double>> train;
     std::vector<double> tmp_train;
@@ -446,3 +448,52 @@ usedDataIntervel getIntervelData(std::vector<double> ecs_data, std::string Mode,
     return result;
 }
 
+/**
+ * 根据data计算对应的C
+ * @param data
+ * @return
+ */
+std::vector<std::vector<double>> get_dct_matrix(std::vector<double> data){
+    int N = data.size();
+    std::vector<std::vector<double>> C(N);
+    for (int i=0;i<N;i++) {
+        C[0].push_back(1 / sqrt(N));
+    }
+    for (int i=1;i<N;i++) {
+        for (int j=0;j<N;j++) {
+            double element = sqrt(2 / static_cast<double>(N)) * std::cos((2*j+1)*PI*i / static_cast<double>(2 * N));
+            C[i].push_back(element);
+        }
+    }
+    return C;
+};
+/**
+ *
+ * DCT 正向变换
+ *
+ * @param data
+ * @return
+ */
+std::vector<double> dct(std::vector<std::vector<double>> C, std::vector<double> u){
+    std::vector<std::vector<double>> t_u(1, u);
+    t_u = t(t_u);
+    std::vector<std::vector<double>> v = mulMat(C, t_u);
+    v = t(v);
+    return v[0];
+}
+
+/**
+ *
+ * DCT 逆变换
+ *
+ * @param data
+ * @return
+ */
+std::vector<double> dct_inv(std::vector<std::vector<double>> C, std::vector<double> v){
+    std::vector<std::vector<double>> t_v(1, v);
+    t_v = t(t_v);
+    std::vector<std::vector<double>> inv_C = inv_lu(C);
+    std::vector<std::vector<double>> u = mulMat(inv_C, t_v);
+    u = t(u);
+    return u[0];
+}
