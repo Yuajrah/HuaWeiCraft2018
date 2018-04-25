@@ -453,8 +453,7 @@ usedDataIntervel getIntervelData(std::vector<double> ecs_data, std::string Mode,
  * @param data
  * @return
  */
-std::vector<std::vector<double>> get_dct_matrix(std::vector<double> data){
-    int N = data.size();
+std::vector<std::vector<double>> get_dct_matrix(int N){
     std::vector<std::vector<double>> C(N);
     for (int i=0;i<N;i++) {
         C[0].push_back(1 / sqrt(N));

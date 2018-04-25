@@ -79,7 +79,7 @@ std::vector<double> smoothOrderTwo(std::vector<double>, double alpha, int initNu
 
 std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std::vector<double> data, int lag, int interval, bool constant);
 
-std::vector<std::vector<double>> get_dct_matrix(std::vector<double> data);
+std::vector<std::vector<double>> get_dct_matrix(int N);
 std::vector<double> dct(std::vector<std::vector<double>> C, std::vector<double> u);
 std::vector<double> dct_inv(std::vector<std::vector<double>> C, std::vector<double> v);
 #endif //SDK_CLION_DATA_PREPROCESS_H
