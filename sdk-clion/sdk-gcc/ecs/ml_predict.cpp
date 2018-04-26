@@ -199,7 +199,7 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         std::vector <double> predict_ecs_data;
         for(int i=0; i < need_predict_day; i++)
         {
-            double tmp_predict = lr.predict(frist_predict_data) + Random::random_int(0, 1) - 0.5;
+            double tmp_predict = lr.predict(frist_predict_data);
             if(tmp_predict<0.0)
             {
                 tmp_predict = 0.0;
