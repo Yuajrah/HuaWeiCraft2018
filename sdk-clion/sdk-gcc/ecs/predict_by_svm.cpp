@@ -30,6 +30,7 @@ std::map<int, int> predict_by_svm_1th (std::map<int, std::vector<double>> train_
 //        std::string Mode = "Smooth2";
         std::string Mode = "None";
 
+
         usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
         std::vector<std::vector<double>> train_x = useddata.trainData;
         std::vector<double> train_y  = useddata.targetData;

@@ -199,14 +199,14 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         std::vector <double> predict_ecs_data;
         for(int i=0; i < need_predict_day; i++)
         {
-            double tmp_predict = lr.predict(frist_predict_data);
+            double tmp_predict = lr.predict(frist_predict_data) + Random::random_int(0, 1) - 0.5;
             if(tmp_predict<0.0)
             {
                 tmp_predict = 0.0;
             }
             frist_predict_data.erase(frist_predict_data.begin());
             frist_predict_data.push_back(tmp_predict);
-            predict_ecs_data.push_back(tmp_predict);
+            predict_ecs_data.push_back(tmp_predict );
             ecs_sum += tmp_predict;
         }
         //ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.begin()+ BasicInfo::need_predict_day, 0.0);
@@ -223,7 +223,6 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         {
             result[t.first] = round(std::max(0.0, ecs_sum));
         }
-//        result[t.first] = result[t.first];
     }
 
     return result;
