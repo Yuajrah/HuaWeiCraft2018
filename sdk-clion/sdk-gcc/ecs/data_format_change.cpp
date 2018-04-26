@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <cfloat>
 #include "BasicInfo.h"
 
 /**
@@ -166,12 +167,18 @@ std::vector<Vm> random_permutation(std::vector<Vm> objects) {
 //}
 
 /**
- * 对数据进行进一步处理
+ * 对数据进行进一步处理, 将不满的箱子装满
  * @param allocate_result
  * @param order_vm_info
  * @param predict_data
  */
-void after_process_add_bin(std::vector<Bin> &allocate_result, std::vector<std::pair<int, Vm>> &order_vm_info, std::map<int, int> &predict_data){
+void after_process_add_bin(std::vector<Bin> &allocate_result, std::map<int, int> &predict_data){
+
+    std::vector<std::pair<int, Vm>> order_vm_info(BasicInfo::vm_info.begin(), BasicInfo::vm_info.end());
+    std::sort(order_vm_info.begin(), order_vm_info.end(), [](const std::pair<int, Vm>& a, const std::pair<int, Vm>& b) {
+        return a.second.mem > b.second.mem;
+    });
+
 
     for (int i=0;i<allocate_result.size();i++) {
         if (allocate_result[i].cores > 0 && allocate_result[i].mems > 0) {
@@ -183,4 +190,29 @@ void after_process_add_bin(std::vector<Bin> &allocate_result, std::vector<std::p
             }
         }
     }
+}
+
+
+/**
+ * 对数据进行进一步处理, 去除资源利用率最小的那个箱子
+ * @param allocate_result
+ * @param order_vm_info
+ * @param predict_data
+ */
+void after_process_remove_bin(std::vector<Bin> &allocate_result, std::map<int, int> &predict_data){
+    double min_usage_rate = DBL_MAX;
+    int min_index = 0;
+    for (int i=0;i<allocate_result.size();i++) {
+        double t_usage_rate =
+                (BasicInfo::server_infos[allocate_result[i].type].core - allocate_result[i].cores) / BasicInfo::server_infos[allocate_result[i].type].core
+        + (BasicInfo::server_infos[allocate_result[i].type].mem - allocate_result[i].mems) / BasicInfo::server_infos[allocate_result[i].type].mem;
+        if (t_usage_rate < min_usage_rate) {
+            min_usage_rate = t_usage_rate;
+            min_index = i;
+        }
+    }
+    for (Vm &vm: allocate_result[min_index].objects) {
+        predict_data[vm.type]--;
+    }
+    allocate_result.erase(allocate_result.begin()+min_index);
 }

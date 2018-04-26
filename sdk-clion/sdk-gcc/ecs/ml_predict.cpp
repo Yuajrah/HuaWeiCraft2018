@@ -182,13 +182,14 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         std::vector<double> ecs_data = train_data[t.first];
         //printf("训练第%d种服务器：\n",t.first);
         int mvStep = 6;
-        double alpha = 0.1;
+        double alpha1 = 0.1;
 //        std::string Mode = "Ma";
         //std::string Mode = "Smooth1";
         std::string Mode = "Smooth2";
+//        std::string Mode = "Smooth3";
 //        std::string Mode = "None";
         //正常获取
-        usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
+        usedData useddata = getData(ecs_data, Mode, mvStep, alpha1);
         std::vector<std::vector<double>> train = useddata.trainData;
         std::vector<double> target = useddata.targetData;
         std::vector<double> frist_predict_data = useddata.fristPredictData;
@@ -211,12 +212,15 @@ std::map<int, int> predict_by_LR (std::map<int, Vm> vm_info, std::map<int, std::
         //ecs_sum = std::accumulate(predict_ecs_data.begin(), predict_ecs_data.begin()+ BasicInfo::need_predict_day, 0.0);
         ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
         if (BasicInfo::extra_need_predict_day >0) {
-            result[t.first] = round(std::max(0.0, ecs_sum)*1.5);
+            //smooth2的最好成绩
+            result[t.first] = round(std::max(0.0, ecs_sum)*1.6);
+//            result[t.first] = round(std::max(0.0, ecs_sum));
         }
         else
         {
             result[t.first] = round(std::max(0.0, ecs_sum));
         }
+//        result[t.first] = result[t.first];
     }
 
     return result;

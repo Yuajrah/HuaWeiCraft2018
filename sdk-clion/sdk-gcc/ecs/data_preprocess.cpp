@@ -2,6 +2,8 @@
 // Created by caocongcong on 18-3-31.
 //
 #include "data_preprocess.h"
+#include "math_utils.h"
+#include <algorithm>
 
 double get_mean(std::vector<double> train_data,  double rate)
 {
@@ -276,10 +278,19 @@ std::vector<double> smoothOrderOne(std::vector<double> data, double alpha, int i
 }
 
 //二阶指数平滑
-std::vector<double> smoothOrderTwo(std::vector<double> data, double alpha, int initNum = 3)
+std::vector<double> smoothOrderTwo(std::vector<double> data, double alpha1, double alpha2, int initNum = 3)
 {
-    std::vector<double>dataOrder1 = smoothOrderOne(data, alpha, initNum);
-    std::vector<double> result = smoothOrderOne(dataOrder1, alpha, initNum);
+    std::vector<double>dataOrder1 = smoothOrderOne(data, alpha1, initNum);
+    std::vector<double> result = smoothOrderOne(dataOrder1, alpha2, initNum);
+    return result;
+}
+
+
+//三阶指数平滑
+std::vector<double>smoothOrderThree(std::vector<double>data, double alpha,int initNum=3)
+{
+    std::vector<double>dataOrder2 = smoothOrderTwo(data, alpha, initNum);
+    std::vector<double> result = smoothOrderOne(dataOrder2, alpha, initNum);
     return result;
 }
 /**
@@ -332,7 +343,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std
 
 
 //将所有的划分集合到一个函数里面
-usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, double alpha)
+usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, double alpha1)
 {
     usedData result;
     std::vector<double> used_data = ecs_data;
@@ -342,14 +353,19 @@ usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, do
     }
     else if(Mode == "Smooth1")
     {
-        used_data = smoothOrderOne(ecs_data, alpha);
+        used_data = smoothOrderOne(ecs_data, alpha1);
     }
     else if (Mode == "Smooth2")
     {
-        used_data = smoothOrderTwo(ecs_data, alpha);
+        double alpha2 = 0.1;
+        used_data = smoothOrderTwo(ecs_data, alpha1,alpha2);
     }
-    int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
-    //int tmp_split = 7;
+    else if (Mode == "Smooth3")
+    {
+        used_data = smoothOrderThree(ecs_data, alpha1);
+    }
+//    int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
+    int tmp_split = 5;
     std::vector<std::vector<double>> train;
     std::vector<double> tmp_train;
     int index = 0;
@@ -402,7 +418,7 @@ usedDataIntervel getIntervelData(std::vector<double> ecs_data, std::string Mode,
     }
     else if (Mode == "Smooth2")
     {
-        used_data = smoothOrderTwo(ecs_data, alpha);
+        used_data = smoothOrderTwo(ecs_data, alpha, alpha);
     }
     int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
     std::vector<std::vector<double>> train;
@@ -444,4 +460,53 @@ usedDataIntervel getIntervelData(std::vector<double> ecs_data, std::string Mode,
     result.targetData = target;
     result.PredictData = Predict;
     return result;
+}
+
+/**
+ * 根据data计算对应的C
+ * @param data
+ * @return
+ */
+std::vector<std::vector<double>> get_dct_matrix(int N){
+    std::vector<std::vector<double>> C(N);
+    for (int i=0;i<N;i++) {
+        C[0].push_back(1 / sqrt(N));
+    }
+    for (int i=1;i<N;i++) {
+        for (int j=0;j<N;j++) {
+            double element = sqrt(2 / static_cast<double>(N)) * std::cos((2*j+1)*PI*i / static_cast<double>(2 * N));
+            C[i].push_back(element);
+        }
+    }
+    return C;
+};
+/**
+ *
+ * DCT 正向变换
+ *
+ * @param data
+ * @return
+ */
+std::vector<double> dct(std::vector<std::vector<double>> C, std::vector<double> u){
+    std::vector<std::vector<double>> t_u(1, u);
+    t_u = t(t_u);
+    std::vector<std::vector<double>> v = mulMat(C, t_u);
+    v = t(v);
+    return v[0];
+}
+
+/**
+ *
+ * DCT 逆变换
+ *
+ * @param data
+ * @return
+ */
+std::vector<double> dct_inv(std::vector<std::vector<double>> C, std::vector<double> v){
+    std::vector<std::vector<double>> t_v(1, v);
+    t_v = t(t_v);
+    std::vector<std::vector<double>> inv_C = inv_lu(C);
+    std::vector<std::vector<double>> u = mulMat(inv_C, t_v);
+    u = t(u);
+    return u[0];
 }
