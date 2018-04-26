@@ -247,7 +247,7 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
 //    std::string result1 = format_predict_res(predict_data);
 
 
-//
+
 //    std::map<int, int> predict_data = predict_by_ar_1th (train_data);
 //    print_predict_score(actual_data, predict_data);
 
@@ -284,9 +284,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      *
      */
 
-//    std::map<int, int> predict_data = predict_by_svm_1th(train_data);
-//
-//    print_predict_score(actual_data, predict_data);
+    std::map<int, int> predict_data = predict_by_svm_1th(train_data);
+
+    print_predict_score(actual_data, predict_data);
 
     /**
      * 使用单独线性模型做预测
@@ -306,9 +306,9 @@ void predict_server(char * info[MAX_INFO_NUM], char * data[MAX_DATA_NUM], int da
      * 平均值预测
      */
 
-    std::map<int, int> predict_data = predict_by_avg_1th(train_data);
-
-    print_predict_score(actual_data, predict_data);
+//    std::map<int, int> predict_data = predict_by_avg_1th(train_data);
+//
+//    print_predict_score(actual_data, predict_data);
 
     /*************************************************************************
     *****  复赛分配  **************************************************************

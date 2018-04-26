@@ -68,7 +68,7 @@ std::vector<double> remove_noise_by_box(std::vector<double> data){
     double upper_bounder = q3 + k * iqr;
 
     for (int i=0;i<res.size();i++) {
-        if (res[i] > upper_bounder) { // 如果是异常值, 则替代掉
+        if (res[i] < low_bounder) { // 如果是异常值, 则替代掉
             if (i == 0) {
                 res[i] = res[i+1];
             } else if (i == res.size() - 1) {

@@ -65,6 +65,9 @@ std::map<int, int> predict_by_svm_1th (std::map<int, std::vector<double>> train_
         }
 
         double ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
+        if (ecs_sum < 0) {
+            ecs_sum = 0;
+        }
         if (BasicInfo::extra_need_predict_cnt > 0) {
             ecs_sum = ecs_sum * 2.4;
         } else {

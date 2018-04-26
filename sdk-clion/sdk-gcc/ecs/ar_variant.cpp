@@ -9,6 +9,7 @@
 
 #include "type_def.h"
 #include "ml_predict.h"
+#include "noise.h"
 
 
 /*************************************************************************
@@ -31,7 +32,8 @@
 std::map<int, int> predict_by_ar_1th (std::map<int, std::vector<double>> train_data) {
     std::map<int, int> predict_data;
     for (auto &t: BasicInfo::vm_info) {
-        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
+//        std::vector<double> after_ma_data = ma(train_data[t.first], 6);
+        std::vector<double> after_ma_data = remove_noise_by_box(train_data[t.first]);
         //after_ma_data = split_high(after_ma_data,4);
         AR ar_model(after_ma_data);
 //        ar_model.fit("none", BasicInfo::need_predict_cnt + BasicInfo::extra_need_predict_cnt - 1);
@@ -41,6 +43,9 @@ std::map<int, int> predict_by_ar_1th (std::map<int, std::vector<double>> train_d
          ar_model.print_model_info();
         auto predict_res = ar_model.get_res();
         predict_data[t.first] = std::max(round(accumulate(predict_res.begin(), predict_res.end(), 0.0)), 0.0);
+        if(predict_data[t.first] < 0){
+            predict_data[t.first] = 0;
+        }
     }
     return predict_data;
 }
