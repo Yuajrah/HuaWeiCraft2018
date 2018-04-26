@@ -27,8 +27,8 @@ std::map<int, int> predict_by_svm_1th (std::map<int, std::vector<double>> train_
         int mvStep = 6;
         double alpha = 0.1;
 //        std::string Mode = "Ma";
-        std::string Mode = "Smooth2";
-//        std::string Mode = "None";
+//        std::string Mode = "Smooth2";
+        std::string Mode = "None";
 
         usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
         std::vector<std::vector<double>> train_x = useddata.trainData;
@@ -65,11 +65,11 @@ std::map<int, int> predict_by_svm_1th (std::map<int, std::vector<double>> train_
         }
 
         double ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
-//        if (BasicInfo::extra_need_predict_cnt > 0) {
-//            ecs_sum = ecs_sum * 2.4;
-//        } else {
-//            ecs_sum = ecs_sum * 0.55;
-//        }
+        if (BasicInfo::extra_need_predict_cnt > 0) {
+            ecs_sum = ecs_sum * 2.4;
+        } else {
+            ecs_sum = ecs_sum * 0.55;
+        }
         result[t.first] = round(std::max(0.0, ecs_sum));
 //        result[t.first] = (int)(predict_ecs_data[BasicInfo::need_predict_day-1]*BasicInfo::need_predict_day);
     }
