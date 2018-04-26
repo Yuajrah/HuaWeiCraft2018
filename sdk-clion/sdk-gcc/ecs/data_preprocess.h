@@ -4,6 +4,9 @@
 
 #ifndef SDK_CLION_DATA_PREPROCESS_H
 #define SDK_CLION_DATA_PREPROCESS_H
+
+#define PI 3.1415926
+
 //该文件通用处理数据
 #include "type_def.h"
 #include <vector>
@@ -78,4 +81,8 @@ std::vector<double> smoothOrderTwo(std::vector<double>, double alpha1,double alp
 std::vector<double>smoothOrderThree(std::vector<double>, double alpha,int initNum);
 
 std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std::vector<double> data, int lag, int interval, bool constant);
+
+std::vector<std::vector<double>> get_dct_matrix(int N);
+std::vector<double> dct(std::vector<std::vector<double>> C, std::vector<double> u);
+std::vector<double> dct_inv(std::vector<std::vector<double>> C, std::vector<double> v);
 #endif //SDK_CLION_DATA_PREPROCESS_H

@@ -21,6 +21,7 @@ std::vector<Vm> random_permutation(std::vector<Vm> objects);
 
 std::vector<Bin> vector_res_to_bins_res(std::vector<std::map<int,int>> packing_result);
 
-void after_process_add_bin(std::vector<Bin> &allocate_result, std::vector<std::pair<int, Vm>> &order_vm_info, std::map<int, int> &predict_data);
+void after_process_add_bin(std::vector<Bin> &allocate_result, std::map<int, int> &predict_data);
+void after_process_remove_bin(std::vector<Bin> &allocate_result, std::map<int, int> &predict_data);
 
 #endif //SDK_GCC_DATA_FORMAT_CHANGE_H

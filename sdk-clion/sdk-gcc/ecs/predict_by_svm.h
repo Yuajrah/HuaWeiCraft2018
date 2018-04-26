@@ -7,7 +7,6 @@
 
 #include <map>
 #include "type_def.h"
-#include "svm.h"
 
 std::map<int, int> predict_by_svm_1th (std::map<int, std::vector<double>> train_data);
 std::map<int, int> predict_by_svm_2th (std::map<int, std::vector<double>> train_data);

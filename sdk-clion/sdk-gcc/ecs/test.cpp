@@ -8,8 +8,7 @@
 #include "Random.h"
 #include "ml_predict.h"
 #include "date_utils.h"
-#include "NeuralNetwork.h"
-#include "gm.h"
+
 
 
 void test_ar(){
