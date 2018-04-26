@@ -29,6 +29,7 @@ std::map<int, int> predict_by_svm_1th (std::map<int, std::vector<double>> train_
 //        std::string Mode = "Ma";
         std::string Mode = "Smooth2";
 //        std::string Mode = "None";
+
         usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
         std::vector<std::vector<double>> train_x = useddata.trainData;
         std::vector<double> train_y  = useddata.targetData;
@@ -222,3 +223,144 @@ std::map<int, int> predict_by_svm_1th (std::map<int, std::vector<double>> train_
 //    return result;
 //
 //};
+
+
+/**
+ * 利用DCT获取特征
+ * @param train_data
+ * @return
+ */
+std::map<int, int> predict_by_svm_3th (std::map<int, std::vector<double>> train_data){
+    std::map<int,int> result;
+
+    for (auto &t: BasicInfo::vm_info) {
+        std::vector<double> ecs_data = train_data[t.first];
+        printf("训练第%d种服务器：\n",t.first);
+        /* 1. 准备训练集合*/
+
+        int mvStep = 6;
+        double alpha = 0.1;
+//        std::string Mode = "Ma";
+//        std::string Mode = "Smooth2";
+        std::string Mode = "None";
+
+        usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
+        std::vector<std::vector<double>> train_x = useddata.trainData;
+        for (int i=0;i<train_x.size();i++) {
+            std::vector<std::vector<double>> C = get_dct_matrix(train_x[i].size());
+            train_x[i] = dct(C, train_x[i]);
+        }
+        std::vector<double> train_y  = useddata.targetData;
+
+
+        /* 2. 初始化问题*/
+        SvmParam param;
+
+        param.nu = 0.5;
+        param.C = 0.13;
+        param.eps = 1e-3;
+
+
+        /* 3. 训练模型 */
+        SVR svr(train_x, train_y, param);
+        svr.train();
+
+        /* 4. 获取所需要的特征 */
+        std::vector<double> first_predict_data = useddata.fristPredictData;
+
+        /* 5. 开始预测 */
+        std::vector<double> predict_ecs_data;
+        for(int i=0; i < BasicInfo::need_predict_cnt + BasicInfo::extra_need_predict_cnt; i++)
+        {
+            std::vector<std::vector<double>> C = get_dct_matrix(first_predict_data.size());
+            std::vector<double> feature = dct(C, first_predict_data);
+            double tmp_predict = svr.predict(feature);
+
+            /* 6. 构造新的预测所需特征 */
+            first_predict_data.erase(first_predict_data.begin());
+            first_predict_data.push_back(std::max(tmp_predict, 0.0));
+
+            /* 7. 存储预测结果 */
+            predict_ecs_data.push_back(std::max(tmp_predict, 0.0));
+        }
+
+        double ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
+//        if (BasicInfo::extra_need_predict_cnt > 0) {
+//            ecs_sum = ecs_sum * 2.4;
+//        } else {
+//            ecs_sum = ecs_sum * 0.55;
+//        }
+        result[t.first] = round(std::max(0.0, ecs_sum));
+//        result[t.first] = (int)(predict_ecs_data[BasicInfo::need_predict_day-1]*BasicInfo::need_predict_day);
+    }
+
+    return result;
+
+};
+
+std::map<int, int> predict_by_svm_4th (std::map<int, std::vector<double>> train_data){
+    std::map<int,int> result;
+
+    for (auto &t: BasicInfo::vm_info) {
+        std::vector<double> ecs_data = dct(get_dct_matrix(train_data[t.first].size()), train_data[t.first]);
+        printf("训练第%d种服务器：\n",t.first);
+        /* 1. 准备训练集合*/
+
+        int mvStep = 6;
+        double alpha = 0.1;
+//        std::string Mode = "Ma";
+        std::string Mode = "Smooth2";
+//        std::string Mode = "None";
+
+        usedData useddata = getData(ecs_data, Mode, mvStep, alpha);
+        std::vector<std::vector<double>> train_x = useddata.trainData;
+        std::vector<double> train_y  = useddata.targetData;
+
+
+        /* 2. 初始化问题*/
+        SvmParam param;
+
+        param.nu = 0.5;
+        param.C = 0.13;
+        param.eps = 1e-3;
+
+
+        /* 3. 训练模型 */
+        SVR svr(train_x, train_y, param);
+        svr.train();
+
+        /* 4. 获取所需要的特征 */
+        std::vector<double> frist_predict_data = useddata.fristPredictData;
+
+        /* 5. 开始预测 */
+        std::vector<double> predict_ecs_data;
+        for(int i=0; i < BasicInfo::need_predict_cnt + BasicInfo::extra_need_predict_cnt; i++)
+        {
+            double tmp_predict = svr.predict(frist_predict_data);
+
+            /* 6. 构造新的预测所需特征 */
+            frist_predict_data.erase(frist_predict_data.begin());
+            frist_predict_data.push_back(tmp_predict);
+
+            /* 7. 存储预测结果 */
+            predict_ecs_data.push_back(tmp_predict);
+        }
+
+        predict_ecs_data = dct_inv(get_dct_matrix(predict_ecs_data.size()), predict_ecs_data);
+        for (auto &t: predict_ecs_data) {
+            t = std::max(t, 0.0);
+        }
+
+        double ecs_sum = std::accumulate(predict_ecs_data.begin() + BasicInfo::extra_need_predict_cnt, predict_ecs_data.end(), 0.0);
+//        if (BasicInfo::extra_need_predict_cnt > 0) {
+//            ecs_sum = ecs_sum * 2.4;
+//        } else {
+//            ecs_sum = ecs_sum * 0.55;
+//        }
+        result[t.first] = round(std::max(0.0, ecs_sum));
+//        result[t.first] = (int)(predict_ecs_data[BasicInfo::need_predict_day-1]*BasicInfo::need_predict_day);
+    }
+
+    return result;
+
+};

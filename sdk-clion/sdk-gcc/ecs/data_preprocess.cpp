@@ -351,7 +351,7 @@ usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, do
         used_data = smoothOrderTwo(ecs_data, alpha);
     }
 //    int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
-    int tmp_split = 7;
+    int tmp_split = 5;
     std::vector<std::vector<double>> train;
     std::vector<double> tmp_train;
     int index = 0;
