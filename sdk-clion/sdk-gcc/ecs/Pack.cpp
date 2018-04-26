@@ -115,7 +115,7 @@ std::vector<std::map<int,int>> Pack::packStepBest(std::vector<Server> &serverRes
 }
 
 
-std::vector<std::map<int,int>> Pack::packTypeBest(std::map<int, int> vm_num, Server server, std::vector<Server> &serverResult) {
+std::vector<std::map<int,int>> Pack::packTypeBest(Server server, std::vector<Server> &serverResult) {
     std::vector<std::map<int,int>>result_record_1;
     std::vector<std::map<int,int>>result_record_2;
     std::vector<Server> serverResult1;
@@ -397,7 +397,7 @@ void Pack::ZeroOnePack(std::vector<std::vector <int> > &dp, std::vector<std::vec
 void Pack::MultiplePack(std::vector<std::vector<int> > &dp, std::vector<std::vector<std::vector<int> > > &used, int C,
                         int D, int U, int V, int W, int M, int pos) {
     //物品容量大于背包容量，直接返回
-    if(C >= U || D >= V)
+    if(C > U || D > V)
         return;
     //物品数量为0，直接返回
     if(M <= 0)

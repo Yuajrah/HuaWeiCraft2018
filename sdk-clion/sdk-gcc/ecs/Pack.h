@@ -36,7 +36,7 @@ public:
     Pack(std::map<int, Server> servers,std::map<int,int> vm_num,std::map<int,Vm> vm_info, int vm_typenum);
 
     std::vector<std::map<int,int>> packStepBest(std::vector<Server> &serverResult);
-    std::vector<std::map<int,int>> packTypeBest(std::map<int, int> vm_num, Server server, std::vector<Server> &serverResult);
+    std::vector<std::map<int,int>> packTypeBest(Server server, std::vector<Server> &serverResult);
     double getFinalScore(std::vector<Server> serverResult,std::map<int,int> vm_num);
     double getOnceScore(Server server, std::map<int,int> record);
 };

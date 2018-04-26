@@ -71,7 +71,7 @@ std::map<int,int> onepacking(std::map<int, Vm> vm_info, Server server, std::map<
         current_flavor_info =  vm_info.find(19-pos);
         int core_need = current_flavor_info->second.core;
         int mem_need = current_flavor_info->second.mem;
-        int item_value=core_need + mem_need;//物品价值;
+        int item_value= core_need + mem_need;//物品价值;
 
         int item_num = tmp_vm_num[pos];//可用的物品数量
 
@@ -154,24 +154,29 @@ std::vector<std::map<int,int>> packing_ad(std::map<int,Vm> vm_info, std::map<int
 
         std::map<int,int> new_record = onepacking(vm_info, servers, predict_data);
 
+        bool isRepeat = true;
         //处理数据，tmp_vm_num数据更新，同时对predict_data数据更新
-        for(int i=1; i<=18; i++) {
-            std::map<int, int>::iterator iter;
-            iter = new_record.find(i);
-            if (iter == new_record.end()) {
-                continue;
-            } else if (iter->second != 0) {
-                std::map<int, int>::iterator itert;
-                itert = predict_data.find(i);
-                itert->second -= iter->second;
+        while(isRepeat){
+            for(int i=1; i<=18; i++) {
+                std::map<int, int>::iterator iter;
+                iter = new_record.find(i);
+                if (iter == new_record.end()) {
+                    continue;
+                } else if (iter->second != 0) {
+                    std::map<int, int>::iterator itert;
+                    itert = predict_data.find(i);
+                    itert->second -= iter->second;
+                    if(itert->second < iter->second)
+                        isRepeat = false;
+                }
             }
+            //首先初始化一个节点
+            Server sv = servers[serverType];
+            Server new_server = allocate_oneserver(sv.type, sv.core, sv.mem);
+            allocate_result.push_back(new_server);
+            server_number++;
+            result_record.push_back(new_record);
         }
-        //首先初始化一个节点
-        Server sv = servers[serverType];
-        Server new_server = allocate_oneserver(sv.type, sv.core, sv.mem);
-        allocate_result.push_back(new_server);
-        server_number++;
-        result_record.push_back(new_record);
         is_vm_empty = check_vmnum_empty(predict_data);
     }
     get_scores_p(predict_data_tmp, allocate_result, vm_info);
@@ -192,8 +197,6 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
     //用来保存虚拟机的剩余数量，反向对应，比如tmp_vm_num[18]对应vm1，tmp_vm_num[1]对应vm18
 
     bool is_vm_empty;
-
-
     is_vm_empty = check_vmnum_empty(predict_data);
 
     while(!is_vm_empty)
@@ -212,139 +215,37 @@ std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, 
 
 
         std::map<int,int> new_record = onepacking(vm_info, server, predict_data);
-
+        bool isRepeat = true;
         //处理数据，tmp_vm_num数据更新，同时对predict_data数据更新
-        for(int i=1; i<=18; i++) {
-            std::map<int, int>::iterator iter;
-            iter = new_record.find(i);
-            if (iter == new_record.end()) {
-                continue;
-            } else if (iter->second != 0) {
-                std::map<int, int>::iterator itert;
-                itert = predict_data.find(i);
-                itert->second -= iter->second;
+        while(isRepeat){
+            for(int i=1; i<=18; i++) {
+                std::map<int, int>::iterator iter;
+                iter = new_record.find(i);
+                if (iter == new_record.end()) {
+                    continue;
+                } else if (iter->second != 0) {
+                    std::map<int, int>::iterator itert;
+                    itert = predict_data.find(i);
+                    itert->second -= iter->second;
+                    if(itert->second < iter->second)
+                        isRepeat = false;
+                }
             }
+            //首先初始化一个节点
+            Server sv = server;
+            Server new_server = allocate_oneserver(sv.type, sv.core, sv.mem);
+            allocate_result.push_back(new_server);
+            server_number++;
+            result_record.push_back(new_record);
         }
-        //首先初始化一个节点
-        Server sv = server;
-        Server new_server = allocate_oneserver(sv.type, sv.core, sv.mem);
-        allocate_result.push_back(new_server);
-        server_number++;
-        result_record.push_back(new_record);
+
+
         is_vm_empty = check_vmnum_empty(predict_data);
     }
     get_scores_p(predict_data_tmp, allocate_result, vm_info);
     return result_record;
 }
 
-//std::vector<std::map<int,int>> packing(std::map<int,Vm> vm_info, Server server, std::map<int, int> predict_data, int value_type,std::vector<Server> &allocate_result){
-//    std::map<int, int> predict_data_tmp = predict_data;
-//    //首先确定优化目标
-//    //保存最终结果的map，vector中的ID对应编号为多少的分配结果
-//    std::vector<std::map<int,int>>result_record;
-//    // 初始化服务器节点
-//    int server_number = 0;
-//
-//    //归一化系数
-//    std::vector<double> paramA = getA(predict_data,vm_info);
-//
-//    //用来保存虚拟机的剩余数量，反向对应，比如tmp_vm_num[18]对应vm1，tmp_vm_num[1]对应vm18
-//    std::vector<int> tmp_vm_num(19,0);
-//    bool is_vm_empty;
-//    for(int i=1; i<=18; i++){
-//        std::map<int, int>::iterator iter;
-//        iter = predict_data.find(19-i);
-//        if(iter == predict_data.end()){
-//            tmp_vm_num[i] = 0;
-//        }else {
-//            tmp_vm_num[i] = iter->second;
-//        }
-//
-//    }
-//
-//    is_vm_empty = check_vmnum_empty(tmp_vm_num);
-//    /*对于预测文档的数据进行分配,每次装满一个二维多重背包，背包容量分别为服务器CPU核数U和MEM大小V(转化为GB)，物品数量最大值N为18，
-//     * 物品费用分别为CPU核数和MEM大小(转化为GB)，状态转移数组dp[N+1][max{U+1,V+1}]，同时利用一个二维数组记录选择了哪些物品used[U+1][V+1],
-//     * 最后通过读取use[U][V]的值来确定物品选择了多少件
-//    */
-//    //predict_data:first为id,second为数量，将为0的项去除，predict_data视为剩余未分配量
-//    while(!is_vm_empty)
-//    {
-//        //首先初始化一个节点
-//        Server new_server = allocate_oneserver(server.type, server.core, server.mem);
-//        allocate_result.push_back(new_server);
-//        server_number++;
-//
-//        //清除预测数据中value为0的项
-//        for(int i = 18; i>0; i--) {
-//            std::map<int, int>::iterator iter;
-//            iter = predict_data.find(i);
-//            if(iter == predict_data.end()){
-//                continue;
-//            }else if(iter->second == 0) {
-//                predict_data.erase(iter);
-//            }
-//        }
-//
-//
-//        std::map<int ,int >::iterator current_flavor = predict_data.begin();
-//        std::map<int,int> new_record;
-//        std::vector<std::vector <int> > dp (server.core+1, std::vector<int>(server.mem+1,0));
-//        std::vector<std::vector<std::vector<int> > > used(19, std::vector<std::vector<int> >(server.core+1, std::vector<int>(server.mem+1,0)));
-//
-//
-//
-//        //一次二维多重背包循环,pos表示前pos个物品
-//        for(int pos = 1; pos <= 18; pos++){
-//            //获取当前虚拟机的CPU和MEM限制，同时当前虚拟机id为current_flavor->first
-//            std::map<int, Vm>::iterator current_flavor_info;
-//            current_flavor_info =  vm_info.find(19-pos);
-//            int core_need = current_flavor_info->second.core;
-//            int mem_need = current_flavor_info->second.mem;
-//            int item_value;
-//            if(value_type == 1){
-//                item_value = core_need*paramA[0] + mem_need*paramA[1];//物品价值
-//            }else if(value_type == 2){
-//                item_value =core_need + mem_need;//物品价值
-//            }
-//            int item_num = tmp_vm_num[pos];//可用的物品数量
-//
-//            //void MultiplePack(int C, int D, int U, int V, int W, int M);
-//            //C表示物品费用1，D物品费用2，U背包费用1容量，V背包费用2容量，W物品价值，M物品数量
-//            MultiplePack(dp, used, core_need, mem_need, server.core, server.mem, item_value, item_num, pos);
-//
-//        }
-//        std::vector<int> choose_vm_num;
-//        choose_vm_num = get_path(used, vm_info, server.core, server.mem);
-//        //处理数据，tmp_vm_num数据更新，同时对predict_data数据更新
-//        for(int i=1; i<=18; i++){
-//            if(choose_vm_num[19 - i] != 0){
-//                new_record[i] = choose_vm_num[19 - i];
-//            }
-//
-//            std::map<int ,int >::iterator iter;
-//            iter = predict_data.find(19 - i);
-//            iter->second -= choose_vm_num[19 - i];
-//            tmp_vm_num[i] -= choose_vm_num[i];
-//        }
-//
-//        result_record.push_back(new_record);
-//        is_vm_empty = check_vmnum_empty(tmp_vm_num);
-//    }
-//
-//    return result_record;
-//}
-
-bool check_vmnum_empty(std::vector<int> &temp)
-{
-    bool isempty = true;
-    for(int i=1; i<=18; i++){
-        if(temp[i] != 0){
-            isempty = false;
-        }
-    }
-    return isempty;
-}
 
 
 bool check_vmnum_empty(std::map<int, int> predict_data){
