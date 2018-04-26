@@ -65,14 +65,17 @@ std::vector<std::vector<double>>  get_vector_test_method2(std::vector<std::vecto
 //利用平均值削去高峰
 std::vector<double> split_high(std::vector<double>, double rate);
 //获取数据
-usedData getData(std::vector<double>, std::string Mode, int moveStep, double alpha);
+usedData getData(std::vector<double>, std::string Mode, int moveStep, double alpha1);
 //获取间隔数据
 usedDataIntervel getIntervelData(std::vector<double>data, std::string Mode, int moveStep, double alpha, int intervel);
 //使用一结的指数平滑
 std::vector<double> smoothOrderOne(std::vector<double>, double alpha, int initNum);
 
 //使用二阶指数平滑
-std::vector<double> smoothOrderTwo(std::vector<double>, double alpha, int initNum);
+std::vector<double> smoothOrderTwo(std::vector<double>, double alpha1,double alpha2, int initNum);
+
+//使用三阶指数平滑
+std::vector<double>smoothOrderThree(std::vector<double>, double alpha,int initNum);
 
 std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std::vector<double> data, int lag, int interval, bool constant);
 #endif //SDK_CLION_DATA_PREPROCESS_H

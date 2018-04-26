@@ -276,10 +276,19 @@ std::vector<double> smoothOrderOne(std::vector<double> data, double alpha, int i
 }
 
 //二阶指数平滑
-std::vector<double> smoothOrderTwo(std::vector<double> data, double alpha, int initNum = 3)
+std::vector<double> smoothOrderTwo(std::vector<double> data, double alpha1, double alpha2, int initNum = 3)
 {
-    std::vector<double>dataOrder1 = smoothOrderOne(data, alpha, initNum);
-    std::vector<double> result = smoothOrderOne(dataOrder1, alpha, initNum);
+    std::vector<double>dataOrder1 = smoothOrderOne(data, alpha1, initNum);
+    std::vector<double> result = smoothOrderOne(dataOrder1, alpha2, initNum);
+    return result;
+}
+
+
+//三阶指数平滑
+std::vector<double>smoothOrderThree(std::vector<double>data, double alpha,int initNum=3)
+{
+    std::vector<double>dataOrder2 = smoothOrderTwo(data, alpha, initNum);
+    std::vector<double> result = smoothOrderOne(dataOrder2, alpha, initNum);
     return result;
 }
 /**
@@ -332,7 +341,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<double>> format_data(std
 
 
 //将所有的划分集合到一个函数里面
-usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, double alpha)
+usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, double alpha1)
 {
     usedData result;
     std::vector<double> used_data = ecs_data;
@@ -342,11 +351,16 @@ usedData getData(std::vector<double>ecs_data, std::string Mode, int moveStep, do
     }
     else if(Mode == "Smooth1")
     {
-        used_data = smoothOrderOne(ecs_data, alpha);
+        used_data = smoothOrderOne(ecs_data, alpha1);
     }
     else if (Mode == "Smooth2")
     {
-        used_data = smoothOrderTwo(ecs_data, alpha);
+        double alpha2 = 0.1;
+        used_data = smoothOrderTwo(ecs_data, alpha1,alpha2);
+    }
+    else if (Mode == "Smooth3")
+    {
+        used_data = smoothOrderThree(ecs_data, alpha1);
     }
     //int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
     int tmp_split = 7;
@@ -402,7 +416,7 @@ usedDataIntervel getIntervelData(std::vector<double> ecs_data, std::string Mode,
     }
     else if (Mode == "Smooth2")
     {
-        used_data = smoothOrderTwo(ecs_data, alpha);
+        used_data = smoothOrderTwo(ecs_data, alpha, alpha);
     }
     int tmp_split = int(round(12 * pow((used_data.size() / 100.0), 1.0/4)));
     std::vector<std::vector<double>> train;
